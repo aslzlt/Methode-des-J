@@ -1347,19 +1347,24 @@ function importData(file){
         dbUpsertCourse(cleanC);
       }
       
+      var importedEvents = 0;
       if (events.length > 0){
         if (!Array.isArray(state.events)) state.events = [];
         for (var e = 0; e < events.length; e++){
           if (events[e] && events[e].name && events[e].date){
-            state.events.push({ id: uid(), name: events[e].name, date: events[e].date });
+            var cleanE = { id: uid(), name: String(events[e].name), date: events[e].date };
+            state.events.push(cleanE);
+            dbSaveEvent(cleanE);
+            importedEvents++;
           }
         }
-        saveLocalEvents();
       }
 
       render();
-      toast(imported.length + " cours importé(s).");
-    } catch (e) { toast("Import impossible : fichier invalide."); }
+      var msg = imported.length + " cours importé(s)";
+      if (importedEvents > 0) msg += " · " + importedEvents + " événement(s)";
+      toast(msg + ".");
+    } catch (e) { console.error("Erreur d'import:", e); toast("Import impossible : fichier invalide."); }
   };
   reader.readAsText(file);
 }
