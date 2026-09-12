@@ -442,8 +442,63 @@
 <div id="toasts" aria-live="polite"></div>
 
 <script type="module">
-import { getUser, login, signup, logout, handleAuthCallback, onAuthChange } from "https://esm.sh/@netlify/identity";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 "use strict";
+
+/* ==========================================================================
+   AUTHENTIFICATION — Supabase
+   ⚠️ Remplace les deux valeurs ci-dessous par celles de TON projet :
+   Dashboard Supabase → Project Settings → API → Project URL / anon public key
+   ========================================================================== */
+var SUPABASE_URL = "https://omnvpdvarfdczchocgro.supabase.co";
+var SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9tbnZwZHZhcmZkY3pjaG9jZ3JvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODkwNjI1NjYsImV4cCI6MjEwNDYzODU2Nn0.-sC8t-4IJLgLe8ElaEYxjFEKBsR4Pr-MWHrDw4J41v0";
+var supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+function translateAuthError(msg){
+  var m = String(msg || "");
+  if (/Invalid login credentials/i.test(m)) return "Email ou mot de passe incorrect.";
+  if (/User already registered/i.test(m)) return "Un compte existe déjà avec cet email.";
+  if (/Password should be at least/i.test(m)) return "Le mot de passe doit contenir au moins 6 caractères.";
+  if (/Email not confirmed/i.test(m)) return "Merci de confirmer ton email avant de te connecter (vérifie ta boîte mail).";
+  if (/Unable to validate email address/i.test(m)) return "Adresse email invalide.";
+  if (/rate limit/i.test(m)) return "Trop de tentatives, réessaie dans quelques minutes.";
+  return m || "Authentification impossible.";
+}
+
+async function getUser(){
+  var res = await supabase.auth.getSession();
+  return res.data && res.data.session ? res.data.session.user : null;
+}
+
+async function login(email, password){
+  var res = await supabase.auth.signInWithPassword({ email: email, password: password });
+  if (res.error) throw res.error;
+  return res.data.user;
+}
+
+async function signup(email, password){
+  var res = await supabase.auth.signUp({ email: email, password: password });
+  if (res.error) throw res.error;
+  var user = res.data.user;
+  if (user) user.emailVerified = !!res.data.session;
+  return user;
+}
+
+function logout(){
+  return supabase.auth.signOut();
+}
+
+async function handleAuthCallback(){
+  // Supabase gère nativement les liens de confirmation / magic link (detectSessionInUrl).
+  return null;
+}
+
+function onAuthChange(cb){
+  supabase.auth.onAuthStateChange(function(event, session){
+    if (event === "SIGNED_OUT") cb("logout", null);
+    else if (session && session.user) cb("login", session.user);
+  });
+}
 
 /* ==========================================================================
    MÉTHODE DES J — Application multi-utilisateur sécurisée
@@ -670,8 +725,8 @@ function rowToCourse(row){
     subject: String(row.subject || "Sans matière"),
     link: String(row.link || ""),
     notes: String(row.notes || ""),
-    start: row.startDate,
-    createdAt: row.createdAt || new Date().toISOString(),
+    start: row.start_date,
+    createdAt: row.created_at || new Date().toISOString(),
     schedule: Array.isArray(row.schedule)
       ? row.schedule.filter(function(r){ return r && parseISO(r.date); })
           .map(function(r){ return { offset: Number(r.offset) || 0, date: r.date, done: !!r.done, doneAt: r.doneAt || null }; })
@@ -680,7 +735,17 @@ function rowToCourse(row){
 }
 
 function courseToRow(c){
-  return { id: c.id, name: c.name, subject: c.subject, link: c.link, notes: c.notes, startDate: c.start, createdAt: c.createdAt, schedule: c.schedule };
+  return {
+    id: c.id,
+    user_id: currentUser ? currentUser.id : null,
+    name: c.name,
+    subject: c.subject,
+    link: c.link,
+    notes: c.notes,
+    start_date: c.start,
+    created_at: c.createdAt,
+    schedule: c.schedule
+  };
 }
 
 function setSyncStatus(msg){
@@ -688,43 +753,56 @@ function setSyncStatus(msg){
   if (s) s.textContent = msg;
 }
 
-function apiRequest(url, options){
-  return fetch(url, Object.assign({ credentials: "same-origin", headers: { "Content-Type": "application/json" } }, options || {})).then(function(res){
-    if (res.status === 401) { showAuth(); throw new Error("Session expirée"); }
-    if (!res.ok) throw new Error("HTTP " + res.status);
-    return res.status === 204 ? null : res.json();
+function loadUserData(){
+  if (!currentUser) return Promise.resolve(defaultState());
+  setSyncStatus("🔄 Synchronisation de votre espace…");
+  return Promise.all([
+    supabase.from("courses").select("*").eq("user_id", currentUser.id).order("created_at", { ascending: true }),
+    supabase.from("events").select("*").eq("user_id", currentUser.id)
+  ]).then(function(results){
+    var coursesRes = results[0], eventsRes = results[1];
+    if (coursesRes.error) throw coursesRes.error;
+    if (eventsRes.error) throw eventsRes.error;
+    setSyncStatus("✅ Données synchronisées.");
+    return {
+      courses: (coursesRes.data || []).map(rowToCourse),
+      events: (eventsRes.data || []).map(function(e){ return { id: e.id, name: e.name, date: e.event_date }; })
+    };
+  }).catch(function(e){
+    console.error("Erreur de chargement:", e);
+    setSyncStatus("⚠️ Synchronisation momentanément indisponible.");
+    toast("Impossible de charger vos révisions.");
+    return defaultState();
   });
 }
 
-function loadUserData(){
-  setSyncStatus("🔄 Synchronisation de votre espace…");
-  return apiRequest("/api/data").then(function(data){
-      setSyncStatus("✅ Données synchronisées.");
-      return { courses: (data.courses || []).map(rowToCourse), events: (data.events || []).map(function(e){ return { id:e.id, name:e.name, date:e.eventDate }; }) };
-    })
-    .catch(function(e){
-      console.error("Erreur de chargement:", e);
-      setSyncStatus("⚠️ Synchronisation momentanément indisponible.");
-      toast("Impossible de charger vos révisions.");
-      return defaultState();
-    });
-}
-
 function dbUpsertCourse(course){
-  return apiRequest("/api/data?resource=course", { method:"PUT", body:JSON.stringify(courseToRow(course)) })
-    .then(function(){ setSyncStatus("✅ Données synchronisées."); return true; })
-    .catch(function(e){ console.error("Erreur sauvegarde:", e); toast("Échec de synchronisation."); return false; });
+  if (!currentUser) return Promise.resolve(false);
+  return supabase.from("courses").upsert(courseToRow(course)).then(function(res){
+    if (res.error) throw res.error;
+    setSyncStatus("✅ Données synchronisées.");
+    return true;
+  }).catch(function(e){ console.error("Erreur sauvegarde:", e); toast("Échec de synchronisation."); return false; });
 }
 
 function dbDeleteCourse(id){
-  return apiRequest("/api/data?resource=course&id=" + encodeURIComponent(id), { method:"DELETE" })
-    .then(function(){ return true; }).catch(function(e){ console.error("Erreur suppression:", e); toast("Échec de la suppression."); return false; });
+  if (!currentUser) return Promise.resolve(false);
+  return supabase.from("courses").delete().eq("id", id).then(function(res){
+    if (res.error) throw res.error;
+    return true;
+  }).catch(function(e){ console.error("Erreur suppression:", e); toast("Échec de la suppression."); return false; });
 }
 function dbSaveEvent(event){
-  return apiRequest("/api/data?resource=event", { method:"POST", body:JSON.stringify(event) }).catch(function(){ toast("Échec de synchronisation de l’événement."); });
+  if (!currentUser) return Promise.resolve(false);
+  return supabase.from("events").insert({ id: event.id, user_id: currentUser.id, name: event.name, event_date: event.date })
+    .then(function(res){ if (res.error) throw res.error; return true; })
+    .catch(function(){ toast("Échec de synchronisation de l’événement."); return false; });
 }
 function dbDeleteEvent(id){
-  return apiRequest("/api/data?resource=event&id=" + encodeURIComponent(id), { method:"DELETE" }).catch(function(){ toast("Échec de suppression de l’événement."); });
+  if (!currentUser) return Promise.resolve(false);
+  return supabase.from("events").delete().eq("id", id)
+    .then(function(res){ if (res.error) throw res.error; return true; })
+    .catch(function(){ toast("Échec de suppression de l’événement."); return false; });
 }
 
 /* ==========================================================================
@@ -898,7 +976,7 @@ async function handleAuthSubmit(ev){
     await enterApp(user);
   } catch (error) {
     message.style.color = "var(--danger)";
-    message.textContent = error && error.status === 401 ? "Email ou mot de passe incorrect." : (error && error.message ? error.message : "Authentification impossible.");
+    message.textContent = translateAuthError(error && error.message);
   } finally { submit.disabled = false; }
 }
 
@@ -1387,11 +1465,15 @@ function bindEvents(){
       if (t.id === "importBtn"){ var f = el("importFile"); if (f) f.click(); return; }
       if (t.id === "clearBtn"){
         if (typeof confirm === "function" && !confirm("Supprimer TOUS les cours ? Action irréversible.")) return;
-        var idsToDelete = state.courses.map(function(c){ return c.id; });
         state.courses = [];
         state.events = [];
         render();
-        apiRequest("/api/data?resource=all", { method:"DELETE" }).catch(function(){ toast("Échec de la suppression."); });
+        if (currentUser){
+          Promise.all([
+            supabase.from("courses").delete().eq("user_id", currentUser.id),
+            supabase.from("events").delete().eq("user_id", currentUser.id)
+          ]).catch(function(){ toast("Échec de la suppression."); });
+        }
         toast("Tout a été supprimé."); return;
       }
       if (t.id === "resetDoneBtn"){
