@@ -258,6 +258,19 @@
   .auth-message{min-height:24px;text-align:center;margin:12px 0 0;color:var(--danger)}
   .user-email{max-width:190px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
+  /* ============ Pomodoro ============ */
+  .pomo-card{max-width:340px;text-align:center}
+  .pomo-mode{font-weight:700;font-size:.9rem;letter-spacing:.03em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+  .pomo-time{font-size:3.4rem;font-weight:800;font-variant-numeric:tabular-nums;margin:6px 0 4px;transition:color .3s ease}
+  .pomo-time.work{color:var(--brand)}
+  .pomo-time.short-break{color:var(--ok)}
+  .pomo-time.long-break{color:var(--warn)}
+  .pomo-cycles{color:var(--muted);font-size:.85rem;margin-bottom:16px}
+  .pomo-controls{display:flex;gap:8px;justify-content:center;margin-bottom:18px}
+  .pomo-settings{display:grid;grid-template-columns:1fr 1fr;gap:10px;text-align:left;border-top:1px solid var(--line);padding-top:14px}
+  .pomo-settings label{font-size:.78rem;color:var(--muted);display:block;margin-bottom:3px}
+  .pomo-settings input{width:100%}
+
   /* ============ Toast & Confettis ============ */
   #toasts{position:fixed;left:0;right:0;bottom:16px;display:grid;gap:8px;justify-items:center;pointer-events:none;padding:0 12px;z-index:999}
   .toast{
@@ -307,6 +320,7 @@
     <div class="toolbar">
       <button id="themeBtn" class="btn ghost small">🌓 Auto</button>
       <button id="openEventModalBtn" class="btn small primary">+ Événement spécial</button>
+      <button id="openPomoBtn" class="btn small">🍅 Pomodoro</button>
       <button id="notifBtn" class="btn">🔔 Activer les rappels</button>
       <button id="installBtn" class="btn ghost small hide">📲 Installer l'app</button>
       <button id="exportBtn" class="btn ghost small" title="Télécharger mes données">⬇ Exporter</button>
@@ -449,6 +463,30 @@
         <button type="submit" class="btn primary">Enregistrer</button>
       </div>
     </form>
+  </div>
+</div>
+
+<!-- Modal Pomodoro -->
+<div id="pomoModal" class="modal-overlay hide" aria-hidden="true">
+  <div class="modal-card pomo-card">
+    <div class="section-head" style="margin-bottom:8px">
+      <h2>🍅 Pomodoro</h2>
+      <button id="closePomoModal" class="btn ghost small">✕</button>
+    </div>
+    <div class="pomo-mode" id="pomoModeLabel">Travail</div>
+    <div class="pomo-time work" id="pomoTime">25:00</div>
+    <div class="pomo-cycles" id="pomoCycles">0 session(s) terminée(s)</div>
+    <div class="pomo-controls">
+      <button id="pomoStartPause" class="btn primary">▶ Démarrer</button>
+      <button id="pomoReset" class="btn ghost">↺ Réinitialiser</button>
+      <button id="pomoSkip" class="btn ghost">⏭ Passer</button>
+    </div>
+    <div class="pomo-settings">
+      <div><label for="pomoWork">Travail (min)</label><input id="pomoWork" type="number" min="1" max="180" step="1"></div>
+      <div><label for="pomoShort">Pause courte (min)</label><input id="pomoShort" type="number" min="1" max="60" step="1"></div>
+      <div><label for="pomoLong">Pause longue (min)</label><input id="pomoLong" type="number" min="1" max="90" step="1"></div>
+      <div><label for="pomoCyclesBefore">Sessions avant pause longue</label><input id="pomoCyclesBefore" type="number" min="1" max="12" step="1"></div>
+    </div>
   </div>
 </div>
 
@@ -937,6 +975,171 @@ function checkDailyNotifications(){
       return metaSet("lastNotifDay", t).then(function(){ return true; });
     });
   });
+}
+
+/* ==========================================================================
+   5bis. POMODORO — minuteur de concentration (réglages sauvegardés sur l'appareil)
+   ========================================================================== */
+var POMO_DEFAULTS = { work: 25, short: 5, long: 15, cyclesBefore: 4 };
+var pomo = {
+  settings: Object.assign({}, POMO_DEFAULTS),
+  mode: "work",
+  remaining: POMO_DEFAULTS.work * 60,
+  running: false,
+  cyclesCompleted: 0,
+  timerId: null
+};
+
+function clampInt(v, min, max, fallback){
+  var n = parseInt(v, 10);
+  if (isNaN(n)) return fallback;
+  return Math.min(max, Math.max(min, n));
+}
+
+function loadPomoSettings(){
+  try {
+    var raw = localStorage.getItem("pomoSettings");
+    if (raw){
+      var parsed = JSON.parse(raw);
+      pomo.settings = {
+        work: clampInt(parsed.work, 1, 180, POMO_DEFAULTS.work),
+        short: clampInt(parsed.short, 1, 60, POMO_DEFAULTS.short),
+        long: clampInt(parsed.long, 1, 90, POMO_DEFAULTS.long),
+        cyclesBefore: clampInt(parsed.cyclesBefore, 1, 12, POMO_DEFAULTS.cyclesBefore)
+      };
+    }
+  } catch (e) {}
+  pomo.remaining = pomoModeDuration(pomo.mode);
+}
+
+function savePomoSettings(){
+  try { localStorage.setItem("pomoSettings", JSON.stringify(pomo.settings)); } catch (e) {}
+}
+
+function pomoModeDuration(mode){
+  if (mode === "short-break") return pomo.settings.short * 60;
+  if (mode === "long-break") return pomo.settings.long * 60;
+  return pomo.settings.work * 60;
+}
+
+function pomoModeLabel(mode){
+  if (mode === "short-break") return "Pause courte";
+  if (mode === "long-break") return "Pause longue";
+  return "Travail";
+}
+
+function formatPomoTime(totalSeconds){
+  var s = Math.max(0, Math.round(totalSeconds));
+  var m = Math.floor(s / 60);
+  return pad2(m) + ":" + pad2(s % 60);
+}
+
+function renderPomoDisplay(){
+  if (!hasDOM()) return;
+  var timeEl = el("pomoTime"), modeEl = el("pomoModeLabel"), cyclesEl = el("pomoCycles"), btn = el("pomoStartPause");
+  if (timeEl){
+    timeEl.textContent = formatPomoTime(pomo.remaining);
+    timeEl.className = "pomo-time " + pomo.mode;
+  }
+  if (modeEl) modeEl.textContent = pomoModeLabel(pomo.mode);
+  if (cyclesEl) cyclesEl.textContent = plural(pomo.cyclesCompleted, "session terminée", "sessions terminées");
+  if (btn) btn.textContent = pomo.running ? "⏸ Pause" : "▶ Démarrer";
+  var w = el("pomoWork"), sh = el("pomoShort"), lo = el("pomoLong"), cb = el("pomoCyclesBefore");
+  if (w && document.activeElement !== w) w.value = pomo.settings.work;
+  if (sh && document.activeElement !== sh) sh.value = pomo.settings.short;
+  if (lo && document.activeElement !== lo) lo.value = pomo.settings.long;
+  if (cb && document.activeElement !== cb) cb.value = pomo.settings.cyclesBefore;
+}
+
+function pomoBeep(){
+  try {
+    var Ctx = window.AudioContext || window.webkitAudioContext;
+    if (!Ctx) return;
+    var ctx = new Ctx();
+    var o = ctx.createOscillator(), g = ctx.createGain();
+    o.type = "sine"; o.frequency.value = 880;
+    g.gain.setValueAtTime(0.001, ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.2, ctx.currentTime + 0.02);
+    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);
+    o.connect(g); g.connect(ctx.destination);
+    o.start(); o.stop(ctx.currentTime + 0.55);
+    o.onended = function(){ try { ctx.close(); } catch(e){} };
+  } catch (e) {}
+}
+
+function pomoStopInterval(){
+  if (pomo.timerId){ clearInterval(pomo.timerId); pomo.timerId = null; }
+}
+
+function pomoTick(){
+  pomo.remaining -= 1;
+  if (pomo.remaining <= 0){ pomoAdvanceMode(true); return; }
+  renderPomoDisplay();
+}
+
+function pomoAdvanceMode(natural){
+  pomoStopInterval();
+  var wasWork = pomo.mode === "work";
+  if (wasWork) pomo.cyclesCompleted += 1;
+
+  var nextMode = wasWork
+    ? ((pomo.cyclesCompleted % pomo.settings.cyclesBefore === 0) ? "long-break" : "short-break")
+    : "work";
+
+  pomo.mode = nextMode;
+  pomo.remaining = pomoModeDuration(nextMode);
+  pomo.running = false;
+  renderPomoDisplay();
+
+  if (natural){
+    pomoBeep();
+    var title = wasWork ? "🍅 Session terminée !" : "🔔 Pause terminée !";
+    var body = wasWork
+      ? (nextMode === "long-break" ? "Belle série ! Prends une pause longue." : "Prends une petite pause.")
+      : "Retour au travail, courage !";
+    showNotif(title, body);
+    toast(title + " " + body);
+  }
+}
+
+function startPomo(){
+  if (pomo.running) return;
+  if (pomo.remaining <= 0) pomo.remaining = pomoModeDuration(pomo.mode);
+  pomo.running = true;
+  pomoStopInterval();
+  pomo.timerId = setInterval(pomoTick, 1000);
+  renderPomoDisplay();
+}
+
+function pausePomo(){
+  pomo.running = false;
+  pomoStopInterval();
+  renderPomoDisplay();
+}
+
+function resetPomo(){
+  pomo.running = false;
+  pomoStopInterval();
+  pomo.mode = "work";
+  pomo.cyclesCompleted = 0;
+  pomo.remaining = pomoModeDuration("work");
+  renderPomoDisplay();
+}
+
+function skipPomo(){
+  pomoAdvanceMode(false);
+}
+
+function updatePomoSettingFromInputs(){
+  pomo.settings = {
+    work: clampInt(el("pomoWork") ? el("pomoWork").value : pomo.settings.work, 1, 180, pomo.settings.work),
+    short: clampInt(el("pomoShort") ? el("pomoShort").value : pomo.settings.short, 1, 60, pomo.settings.short),
+    long: clampInt(el("pomoLong") ? el("pomoLong").value : pomo.settings.long, 1, 90, pomo.settings.long),
+    cyclesBefore: clampInt(el("pomoCyclesBefore") ? el("pomoCyclesBefore").value : pomo.settings.cyclesBefore, 1, 12, pomo.settings.cyclesBefore)
+  };
+  savePomoSettings();
+  if (!pomo.running) pomo.remaining = pomoModeDuration(pomo.mode);
+  renderPomoDisplay();
 }
 
 /* ==========================================================================
@@ -1478,6 +1681,29 @@ function bindEvents(){
     });
   }
 
+  var openPomoBtn = el("openPomoBtn"), closePomoModal = el("closePomoModal"), pomoModal = el("pomoModal");
+  if (openPomoBtn && pomoModal){
+    openPomoBtn.addEventListener("click", function(){
+      renderPomoDisplay();
+      pomoModal.classList.remove("hide");
+    });
+  }
+  if (closePomoModal && pomoModal){
+    closePomoModal.addEventListener("click", function(){ pomoModal.classList.add("hide"); });
+  }
+  var pomoStartPauseBtn = el("pomoStartPause");
+  if (pomoStartPauseBtn){
+    pomoStartPauseBtn.addEventListener("click", function(){ pomo.running ? pausePomo() : startPomo(); });
+  }
+  var pomoResetBtn = el("pomoReset");
+  if (pomoResetBtn) pomoResetBtn.addEventListener("click", resetPomo);
+  var pomoSkipBtn = el("pomoSkip");
+  if (pomoSkipBtn) pomoSkipBtn.addEventListener("click", skipPomo);
+  ["pomoWork", "pomoShort", "pomoLong", "pomoCyclesBefore"].forEach(function(id){
+    var input = el(id);
+    if (input) input.addEventListener("change", updatePomoSettingFromInputs);
+  });
+
   // Sauvegarde des notes à la volée (input / change)
   document.body.addEventListener("input", function(ev){
     var target = ev.target;
@@ -1547,6 +1773,8 @@ async function init(){
     var savedTheme = "auto";
     try { savedTheme = localStorage.getItem("theme") || "auto"; } catch(e){}
     applyTheme(savedTheme);
+    loadPomoSettings();
+    renderPomoDisplay();
 
     var start = el("courseStart");
     if (start && !start.value) start.value = todayISO();
