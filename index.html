@@ -271,6 +271,14 @@
   .pomo-settings label{font-size:.78rem;color:var(--muted);display:block;margin-bottom:3px}
   .pomo-settings input{width:100%}
 
+  /* ============ Modale Explication ============ */
+  .info-modal-card{max-width:640px;max-height:82vh;overflow-y:auto;text-align:left}
+  .info-modal-card h3{margin:18px 0 6px;font-size:1.02rem}
+  .info-modal-card h3:first-of-type{margin-top:4px}
+  .info-modal-card p, .info-modal-card li{color:var(--ink);font-size:.94rem;line-height:1.55}
+  .info-modal-card ul{margin:4px 0;padding-left:20px}
+  .info-modal-card .info-source{margin-top:16px;padding-top:12px;border-top:1px solid var(--line);font-size:.82rem;color:var(--muted)}
+
   /* ============ Toast & Confettis ============ */
   #toasts{position:fixed;left:0;right:0;bottom:16px;display:grid;gap:8px;justify-items:center;pointer-events:none;padding:0 12px;z-index:999}
   .toast{
@@ -321,6 +329,7 @@
       <button id="themeBtn" class="btn ghost small">🌓 Auto</button>
       <button id="openEventModalBtn" class="btn small primary">+ Événement spécial</button>
       <button id="openPomoBtn" class="btn small">🍅 Pomodoro</button>
+      <button id="openMethodInfoBtn" class="btn ghost small">📖 Explication Méthode J</button>
       <button id="notifBtn" class="btn">🔔 Activer les rappels</button>
       <button id="installBtn" class="btn ghost small hide">📲 Installer l'app</button>
       <button id="exportBtn" class="btn ghost small" title="Télécharger mes données">⬇ Exporter</button>
@@ -487,6 +496,45 @@
       <div><label for="pomoLong">Pause longue (min)</label><input id="pomoLong" type="number" min="1" max="90" step="1"></div>
       <div><label for="pomoCyclesBefore">Sessions avant pause longue</label><input id="pomoCyclesBefore" type="number" min="1" max="12" step="1"></div>
     </div>
+  </div>
+</div>
+
+<!-- Modal Explication Méthode J -->
+<div id="methodInfoModal" class="modal-overlay hide" aria-hidden="true">
+  <div class="modal-card info-modal-card">
+    <div class="section-head" style="margin-bottom:8px">
+      <h2>📖 Explication de la Méthode des J</h2>
+      <button id="closeMethodInfoModal" class="btn ghost small">✕</button>
+    </div>
+
+    <h3>🧠 Le principe</h3>
+    <p>La méthode des J consiste à retravailler un cours plusieurs fois, à des moments précis exprimés en nombre de jours écoulés depuis la première fois où on l'a vu (ce jour de référence est appelé J0). J1 veut dire « le lendemain », J7 « une semaine plus tard », etc. Chaque relecture vient raviver le souvenir avant qu'il ne s'efface trop.</p>
+
+    <h3>📉 Pourquoi ça marche : la courbe de l'oubli</h3>
+    <p>Dès 1885, le psychologue Hermann Ebbinghaus a montré qu'une information tout juste apprise s'estompe très vite si on ne la retravaille pas, selon une courbe proche d'une décroissance exponentielle. Plus on attend avant de revoir un cours, plus on en a déjà perdu.</p>
+
+    <h3>⏳ L'effet d'espacement</h3>
+    <p>De très nombreuses études convergent : à volume de travail égal, mieux vaut répartir ses révisions dans le temps plutôt que tout revoir d'un bloc juste avant un contrôle (le fameux « bachotage »). Des séances courtes et régulières ancrent bien mieux les connaissances en mémoire à long terme.</p>
+
+    <h3>📈 Des intervalles de plus en plus grands</h3>
+    <p>L'astuce de la méthode des J est d'espacer de <em>plus en plus</em> les révisions au fil du temps — un peu comme les rappels de vaccin, eux aussi de plus en plus espacés. Une fois qu'un cours commence à bien s'ancrer, on peut attendre plus longtemps avant d'y revenir, ce qui libère du temps pour apprendre de nouvelles choses.</p>
+
+    <h3>🗓 Les versions les plus courantes</h3>
+    <ul>
+      <li><b>Version classique</b> (celle utilisée par cette appli) : J0 · J1 · J3 · J7 · J14 · J30.</li>
+      <li><b>Variante « week-end »</b> : J0 · J2 · J5 · J14 — pensée pour éviter que les révisions tombent toujours le même jour de la semaine que le cours, et pour alléger la première semaine.</li>
+      <li><b>Version allégée</b> : J0 · J3 · J10 · J30 — moins de séances, à réserver aux cours plus simples ou secondaires.</li>
+    </ul>
+
+    <h3>⚠️ Les pièges à éviter</h3>
+    <ul>
+      <li>Le bachotage donne une <b>fausse impression d'efficacité</b> à court terme : l'oubli continue de faire son travail en coulisses, même si on a l'impression d'avoir tout retenu.</li>
+      <li>Rater une échéance n'est pas grave : mieux vaut reprendre le planning là où il en est que tout recommencer à zéro.</li>
+      <li>Le <b>moment</b> de la révision compte, mais sa <b>qualité</b> aussi : se re-tester activement (plutôt que relire passivement ses notes) reste le geste le plus efficace à chaque piqûre de rappel.</li>
+      <li>Adapte l'intensité de tes révisions à l'importance réelle de chaque cours (coefficient, difficulté) plutôt que de traiter toutes les matières à l'identique.</li>
+    </ul>
+
+    <p class="info-source">Contenu reformulé à partir de l'article « Tout savoir sur la Méthode des J » — <a href="https://noubliejamais.fr/blog/tout-savoir-sur-la-methode-des-j/" target="_blank" rel="noopener">lire l'article complet sur noubliejamais.fr ↗</a></p>
   </div>
 </div>
 
@@ -1703,6 +1751,14 @@ function bindEvents(){
     var input = el(id);
     if (input) input.addEventListener("change", updatePomoSettingFromInputs);
   });
+
+  var openMethodInfoBtn = el("openMethodInfoBtn"), closeMethodInfoModal = el("closeMethodInfoModal"), methodInfoModal = el("methodInfoModal");
+  if (openMethodInfoBtn && methodInfoModal){
+    openMethodInfoBtn.addEventListener("click", function(){ methodInfoModal.classList.remove("hide"); });
+  }
+  if (closeMethodInfoModal && methodInfoModal){
+    closeMethodInfoModal.addEventListener("click", function(){ methodInfoModal.classList.add("hide"); });
+  }
 
   // Sauvegarde des notes à la volée (input / change)
   document.body.addEventListener("input", function(ev){
