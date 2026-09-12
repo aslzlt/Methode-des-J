@@ -345,6 +345,20 @@
         <label for="courseStart">Date de début (J0)</label>
         <input id="courseStart" name="courseStart" type="date" required>
       </div>
+      <div>
+        <label for="courseExclude">Exclure un jour de la semaine (optionnel)</label>
+        <select id="courseExclude" name="courseExclude">
+          <option value="">Aucun</option>
+          <option value="1">Lundi</option>
+          <option value="2">Mardi</option>
+          <option value="3">Mercredi</option>
+          <option value="4">Jeudi</option>
+          <option value="5">Vendredi</option>
+          <option value="6">Samedi</option>
+          <option value="0">Dimanche</option>
+        </select>
+        <span class="small muted">Une révision prévue ce jour-là sera décalée au lendemain.</span>
+      </div>
       <div class="form-actions">
         <button type="submit" class="btn primary">Ajouter le cours</button>
         <button type="reset" class="btn ghost">Effacer</button>
@@ -511,6 +525,7 @@ var META_CACHE_NAME = "methode-j-meta-v1";
 var swRegistration = null;
 var deferredInstallPrompt = null;
 var OFFSETS = [1, 3, 7, 14, 30];
+var WEEKDAY_NAMES = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"];
 
 var state = { courses: [], events: [] };
 var ui = { filter: "all", subject: "all", theme: "auto" };
@@ -579,16 +594,30 @@ function applyTheme(t){
 function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
 function plural(n, sing, plur){ return n + " " + (Math.abs(n) > 1 ? (plur || sing + "s") : sing); }
 
-function computeSchedule(startISO, offsets){
+function skipExcludedWeekday(iso, excludeWeekday){
+  if (excludeWeekday === null || excludeWeekday === undefined || excludeWeekday === "") return iso;
+  var wd = Number(excludeWeekday);
+  if (isNaN(wd) || wd < 0 || wd > 6) return iso;
+  var guard = 0;
+  while (iso && parseISO(iso).getDay() === wd && guard < 7){
+    iso = addDays(iso, 1);
+    guard++;
+  }
+  return iso;
+}
+
+function computeSchedule(startISO, offsets, excludeWeekday){
   var list = (offsets && offsets.length ? offsets : OFFSETS).slice().sort(function(a,b){ return a - b; });
   var out = [{ offset: 0, date: startISO, done: false, doneAt: null }];
   for (var i = 0; i < list.length; i++){
-    out.push({ offset: list[i], date: addDays(startISO, list[i]), done: false, doneAt: null });
+    out.push({ offset: list[i], date: skipExcludedWeekday(addDays(startISO, list[i]), excludeWeekday), done: false, doneAt: null });
   }
   return out;
 }
 
-function makeCourse(name, subject, link, startISO){
+function makeCourse(name, subject, link, startISO, excludeWeekday){
+  var ew = (excludeWeekday === "" || excludeWeekday === undefined || excludeWeekday === null) ? null : Number(excludeWeekday);
+  if (ew !== null && (isNaN(ew) || ew < 0 || ew > 6)) ew = null;
   return {
     id: uid(),
     name: String(name || "").trim(),
@@ -597,13 +626,14 @@ function makeCourse(name, subject, link, startISO){
     notes: "",
     start: startISO,
     createdAt: new Date().toISOString(),
-    schedule: computeSchedule(startISO)
+    excludeWeekday: ew,
+    schedule: computeSchedule(startISO, null, ew)
   };
 }
 
-function addCourse(name, subject, link, startISO){
+function addCourse(name, subject, link, startISO, excludeWeekday){
   if (!String(name || "").trim() || !parseISO(startISO)) return null;
-  var c = makeCourse(name, subject, link, startISO);
+  var c = makeCourse(name, subject, link, startISO, excludeWeekday);
   state.courses.push(c);
   dbUpsertCourse(c);
   return c;
@@ -727,6 +757,7 @@ function rowToCourse(row){
     notes: String(row.notes || ""),
     start: row.start_date,
     createdAt: row.created_at || new Date().toISOString(),
+    excludeWeekday: (row.exclude_weekday === null || row.exclude_weekday === undefined) ? null : Number(row.exclude_weekday),
     schedule: Array.isArray(row.schedule)
       ? row.schedule.filter(function(r){ return r && parseISO(r.date); })
           .map(function(r){ return { offset: Number(r.offset) || 0, date: r.date, done: !!r.done, doneAt: r.doneAt || null }; })
@@ -744,6 +775,7 @@ function courseToRow(c){
     notes: c.notes,
     start_date: c.start,
     created_at: c.createdAt,
+    exclude_weekday: (c.excludeWeekday === null || c.excludeWeekday === undefined) ? null : c.excludeWeekday,
     schedule: c.schedule
   };
 }
@@ -975,6 +1007,7 @@ async function handleAuthSubmit(ev){
     message.style.color = "var(--danger)";
     await enterApp(user);
   } catch (error) {
+    console.error("Erreur d'authentification:", error);
     message.style.color = "var(--danger)";
     message.textContent = translateAuthError(error && error.message);
   } finally { submit.disabled = false; }
@@ -1189,12 +1222,13 @@ function renderAll(){
     if (!slotsHTML) slotsHTML = '<span class="small muted">Aucune révision dans ce filtre.</span>';
 
     var linkHtml = c.link ? '<a href="' + esc(c.link) + '" target="_blank" rel="noopener" class="resource-link">🔗 Lien ressource</a>' : '';
+    var excludeHtml = (c.excludeWeekday !== null && c.excludeWeekday !== undefined) ? ' <span class="tag">🚫 ' + esc(WEEKDAY_NAMES[c.excludeWeekday]) + '</span>' : '';
 
     html += '' +
       '<article class="course">' +
         '<div class="course-head">' +
           '<div>' +
-            '<div class="title"><strong>' + esc(c.name) + '</strong> <span class="tag subject">' + esc(c.subject) + '</span> ' + linkHtml + '</div>' +
+            '<div class="title"><strong>' + esc(c.name) + '</strong> <span class="tag subject">' + esc(c.subject) + '</span>' + excludeHtml + ' ' + linkHtml + '</div>' +
             '<div class="sub small muted">J0 : ' + formatDate(c.start) + ' · ' + doneCount + '/' + c.schedule.length + ' validées</div>' +
           '</div>' +
           '<div class="actions">' +
@@ -1245,14 +1279,16 @@ function renderNotifStatus(){
    ========================================================================== */
 function onFormSubmit(ev){
   ev.preventDefault();
-  var name = el("courseName"), subj = el("courseSubject"), link = el("courseLink"), start = el("courseStart");
-  var c = addCourse(name ? name.value : "", subj ? subj.value : "", link ? link.value : "", start ? start.value : "");
+  var name = el("courseName"), subj = el("courseSubject"), link = el("courseLink"), start = el("courseStart"), exclude = el("courseExclude");
+  var c = addCourse(name ? name.value : "", subj ? subj.value : "", link ? link.value : "", start ? start.value : "", exclude ? exclude.value : "");
   if (!c){ toast("Vérifie le nom du cours et la date (J0)."); return; }
   var due = dueOn(todayISO()).length;
-  toast("« " + c.name + " » ajouté — 5 révisions planifiées." + (due ? " " + plural(due, "révision") + " aujourd'hui !" : ""));
+  var excludeMsg = (c.excludeWeekday !== null && c.excludeWeekday !== undefined) ? " (" + WEEKDAY_NAMES[c.excludeWeekday] + " exclu)" : "";
+  toast("« " + c.name + " » ajouté — 5 révisions planifiées" + excludeMsg + "." + (due ? " " + plural(due, "révision") + " aujourd'hui !" : ""));
   if (name) name.value = "";
   if (subj) subj.value = "";
   if (link) link.value = "";
+  if (exclude) exclude.value = "";
   render();
   checkDailyNotifications();
 }
@@ -1339,6 +1375,7 @@ function importData(file){
           notes: String(c.notes || ""),
           start: c.start,
           createdAt: c.createdAt || new Date().toISOString(),
+          excludeWeekday: (c.excludeWeekday === null || c.excludeWeekday === undefined || isNaN(Number(c.excludeWeekday))) ? null : Number(c.excludeWeekday),
           schedule: c.schedule.filter(function(r){ return r && parseISO(r.date); })
             .map(function(r){ return { offset: Number(r.offset) || 0, date: r.date, done: !!r.done, doneAt: r.doneAt || null }; })
         };
