@@ -1,0 +1,1451 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<meta name="description" content="Révise tes cours avec la méthode des J : J1, J3, J7, J14, J30, dans un espace personnel sécurisé.">
+<title>Méthode des J — Planificateur de révisions</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#4f46e5">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Méthode des J">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" href="icon-192.png">
+<style>
+  /* ============ Design tokens ============ */
+  :root{
+    --bg:#f4f6fb;
+    --card:#ffffff;
+    --ink:#0f172a;
+    --muted:#64748b;
+    --line:#e2e8f0;
+    --brand:#4f46e5;
+    --brand-ink:#ffffff;
+    --ok:#059669;
+    --ok-bg:#d1fae5;
+    --warn:#b45309;
+    --warn-bg:#fef3c7;
+    --danger:#be123c;
+    --danger-bg:#ffe4e6;
+    --radius:14px;
+    --shadow:0 1px 2px rgba(15,23,42,.05), 0 8px 24px rgba(15,23,42,.06);
+  }
+  
+  [data-theme="dark"] {
+    --bg:#0b1120; --card:#111a2e; --ink:#e2e8f0; --muted:#94a3b8; --line:#24324d;
+    --brand:#818cf8; --brand-ink:#0b1120; --ok:#34d399; --ok-bg:#064e3b;
+    --warn:#fbbf24; --warn-bg:#452b06; --danger:#fb7185; --danger-bg:#4c0519;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 30px rgba(0,0,0,.35);
+  }
+  
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#0b1120; --card:#111a2e; --ink:#e2e8f0; --muted:#94a3b8; --line:#24324d;
+      --brand:#818cf8; --brand-ink:#0b1120; --ok:#34d399; --ok-bg:#064e3b;
+      --warn:#fbbf24; --warn-bg:#452b06; --danger:#fb7185; --danger-bg:#4c0519;
+      --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 30px rgba(0,0,0,.35);
+    }
+  }
+
+  /* ============ Base ============ */
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--bg); color:var(--ink);
+    font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,Inter,Arial,sans-serif;
+    -webkit-text-size-adjust:100%;
+    min-height:100vh;
+  }
+  h1,h2,h3{margin:0;line-height:1.2}
+  a{color:var(--brand)}
+  .wrap{max-width:1100px;margin:0 auto;padding:16px}
+  .card{
+    background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    box-shadow:var(--shadow);padding:18px;margin-bottom:16px;
+  }
+  .muted{color:var(--muted)}
+  .small{font-size:.85rem}
+  .hide{display:none !important}
+
+  /* ============ Header ============ */
+  header.top{
+    display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;
+    padding:14px 0 18px;
+  }
+  .brand{display:flex;align-items:center;gap:12px}
+  .logo{
+    width:40px;height:40px;border-radius:12px;flex:none;
+    background:linear-gradient(135deg,var(--brand),#06b6d4);
+    display:grid;place-items:center;color:#fff;font-weight:700;font-size:1.05rem;
+  }
+  header.top h1{font-size:1.25rem}
+  header.top p{margin:2px 0 0;color:var(--muted);font-size:.9rem}
+
+  /* ============ Buttons ============ */
+  button{font:inherit;cursor:pointer}
+  .btn{
+    border:1px solid var(--line);background:var(--card);color:var(--ink);
+    padding:.55rem .9rem;border-radius:10px;font-weight:600;transition:.15s transform,.15s filter;
+  }
+  .btn:hover{filter:brightness(.97)}
+  .btn:active{transform:translateY(1px)}
+  .btn.primary{background:var(--brand);color:var(--brand-ink);border-color:transparent}
+  .btn.ok{background:var(--ok);color:#fff;border-color:transparent}
+  .btn.ghost{background:transparent}
+  .btn.small{padding:.35rem .6rem;font-size:.85rem;border-radius:8px}
+  .btn.danger{color:var(--danger);border-color:var(--danger)}
+
+  /* ============ Form ============ */
+  form{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));align-items:end}
+  label{display:block;font-size:.8rem;font-weight:600;color:var(--muted);margin-bottom:6px}
+  input[type=text],input[type=email],input[type=password],input[type=date],input[type=url],textarea,select{
+    width:100%;padding:.6rem .7rem;border:1px solid var(--line);border-radius:10px;
+    background:var(--bg);color:var(--ink);font:inherit;
+  }
+  input:focus,textarea:focus,select:focus,button:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+  .form-actions{grid-column:1/-1;display:flex;gap:10px;flex-wrap:wrap}
+
+  /* ============ Stats ============ */
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px}
+  .stat{padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+  .stat b{display:block;font-size:1.5rem}
+  .stat span{font-size:.8rem;color:var(--muted)}
+  
+  .progress-bar-wrap{margin-top:14px;background:var(--bg);border-radius:999px;height:10px;overflow:hidden;border:1px solid var(--line)}
+  .progress-bar-fill{background:var(--brand);height:100%;width:0%;transition:width .4s ease}
+
+  /* ============ Sections & lists ============ */
+  .section-head{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:12px}
+  .section-head h2{font-size:1.05rem}
+  
+  .item{
+    display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;
+    padding:12px;border:1px solid var(--line);border-radius:12px;margin-bottom:10px;background:var(--card);
+    transition:transform .2s ease, opacity .2s ease, background-color .3s ease;
+  }
+  .item.just-done{
+    animation: pulseDone .4s ease;
+    background-color: var(--ok-bg);
+  }
+  @keyframes pulseDone{
+    0%{ transform: scale(1); }
+    50%{ transform: scale(1.02); }
+    100%{ transform: scale(1); }
+  }
+
+  .item.done{opacity:.75}
+  .item .title{font-weight:700}
+  .item .sub{color:var(--muted);font-size:.85rem;display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:2px}
+  .item .actions{display:flex;gap:8px;flex-wrap:wrap}
+
+  .tag{
+    display:inline-block;padding:2px 8px;border-radius:999px;font-size:.75rem;font-weight:700;
+    background:var(--line);color:var(--ink);
+  }
+  .tag.today{background:var(--brand);color:var(--brand-ink)}
+  .tag.over{background:var(--danger-bg);color:var(--danger)}
+  .tag.done{background:var(--ok-bg);color:var(--ok)}
+  .tag.subject{background:var(--bg);border:1px solid var(--line);font-weight:600}
+  
+  .resource-link{
+    display:inline-flex;align-items:center;gap:4px;font-size:.8rem;color:var(--brand);
+    text-decoration:none;background:var(--bg);padding:2px 6px;border-radius:6px;border:1px solid var(--line);
+  }
+  .resource-link:hover{text-decoration:underline}
+
+  .empty{
+    border:1px dashed var(--line);border-radius:12px;padding:18px;text-align:center;color:var(--muted);
+  }
+
+  /* ============ Course rows & Notes ============ */
+  .course{border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:12px}
+  .course:last-child{margin-bottom:0}
+  .course-head{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+  .schedule{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+  .slot{
+    display:flex;flex-direction:column;gap:2px;min-width:104px;
+    border:1px solid var(--line);border-radius:10px;padding:6px 8px;background:var(--bg);
+    transition:transform .15s ease;
+  }
+  .slot:hover{transform:translateY(-2px)}
+  .slot b{font-size:.75rem;letter-spacing:.02em}
+  .slot span{font-size:.8rem;color:var(--muted)}
+  .slot.done{background:var(--ok-bg);border-color:transparent}
+  .slot.done b,.slot.done span{color:var(--ok)}
+  .slot.today{background:var(--brand);border-color:transparent}
+  .slot.today b,.slot.today span{color:var(--brand-ink)}
+  .slot.over{background:var(--danger-bg);border-color:transparent}
+  .slot.over b,.slot.over span{color:var(--danger)}
+  .slot button{margin-top:4px}
+
+  .course-notes-box {
+    margin-top: 10px;
+  }
+  .course-notes-box textarea {
+    resize: vertical;
+    min-height: 50px;
+    font-size: 0.85rem;
+  }
+
+  /* ============ Calendrier en temps réel & Événements ============ */
+  .calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 6px;
+  }
+  .cal-day-cell {
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 8px;
+    background: var(--bg);
+    min-height: 85px;
+    text-align: left;
+  }
+  .cal-day-cell.is-today {
+    border-color: var(--brand);
+    box-shadow: 0 0 0 1px var(--brand);
+  }
+  .cal-badge {
+    font-size: 10px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    padding: 1px 4px;
+    border-radius: 4px;
+    margin-top: 2px;
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .cal-badge.special {
+    background: var(--warn-bg);
+    color: var(--warn);
+    border-color: transparent;
+    font-weight: 700;
+  }
+
+  /* Modal style */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+    display: grid; place-items: center; z-index: 1000; padding: 16px;
+  }
+  .modal-card {
+    background: var(--card); border: 1px solid var(--line);
+    border-radius: var(--radius); padding: 20px; width: 100%; max-width: 400px;
+    box-shadow: var(--shadow);
+  }
+
+  .filters{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+  .chip{
+    border:1px solid var(--line);background:var(--card);color:var(--muted);
+    padding:.3rem .7rem;border-radius:999px;font-size:.8rem;font-weight:600;
+  }
+  .chip[aria-pressed="true"]{background:var(--brand);color:var(--brand-ink);border-color:transparent}
+
+  .toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+  .notif-status{font-size:.85rem;color:var(--muted)}
+  footer{color:var(--muted);font-size:.85rem;padding:8px 0 28px;text-align:center}
+
+  .auth-screen{min-height:100vh;display:grid;place-items:center;padding:24px}
+  .auth-card{width:min(440px,100%);padding:28px}
+  .auth-card .brand{justify-content:center;margin-bottom:24px}
+  .auth-card form{display:grid;grid-template-columns:1fr;gap:14px}
+  .auth-card h2{text-align:center;margin-bottom:6px}
+  .auth-card .auth-intro{text-align:center;margin:0 0 20px}
+  .auth-switch{text-align:center;margin:18px 0 0}
+  .auth-message{min-height:24px;text-align:center;margin:12px 0 0;color:var(--danger)}
+  .user-email{max-width:190px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+  /* ============ Toast & Confettis ============ */
+  #toasts{position:fixed;left:0;right:0;bottom:16px;display:grid;gap:8px;justify-items:center;pointer-events:none;padding:0 12px;z-index:999}
+  .toast{
+    background:var(--ink);color:var(--bg);padding:.6rem .9rem;border-radius:10px;font-size:.9rem;
+    box-shadow:var(--shadow);max-width:90vw;animation: fadeInUp .25s ease;
+  }
+  @keyframes fadeInUp{
+    from{ opacity:0; transform:translateY(10px); }
+    to{ opacity:1; transform:translateY(0); }
+  }
+
+  @media (max-width:560px){
+    .wrap{padding:12px}
+    .card{padding:14px}
+    .item{align-items:flex-start}
+    .item .actions{width:100%}
+    .slot{flex:1 1 44%}
+    .calendar-grid { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+  }
+</style>
+</head>
+<body>
+<main id="authScreen" class="auth-screen">
+  <section class="card auth-card" aria-labelledby="authTitle">
+    <div class="brand"><div class="logo" aria-hidden="true">J+</div><h1>Méthode des J</h1></div>
+    <h2 id="authTitle">Se connecter</h2>
+    <p id="authIntro" class="auth-intro muted">Retrouve tes cours et tes révisions personnelles.</p>
+    <form id="authForm">
+      <div><label for="authEmail">Adresse email</label><input id="authEmail" type="email" autocomplete="email" required></div>
+      <div><label for="authPassword">Mot de passe</label><input id="authPassword" type="password" autocomplete="current-password" minlength="6" required></div>
+      <button id="authSubmit" type="submit" class="btn primary">Se connecter</button>
+    </form>
+    <p id="authMessage" class="auth-message small" role="status" aria-live="polite"></p>
+    <p class="auth-switch small muted"><span id="authSwitchText">Pas encore de compte ?</span> <button id="authSwitch" class="btn ghost small" type="button">S’inscrire</button></p>
+  </section>
+</main>
+<div id="appShell" class="wrap hide">
+
+  <header class="top">
+    <div class="brand">
+      <div class="logo" aria-hidden="true">J+</div>
+      <div>
+        <h1>Méthode des J</h1>
+        <p id="todayLabel">—</p>
+      </div>
+    </div>
+    <div class="toolbar">
+      <button id="themeBtn" class="btn ghost small">🌓 Auto</button>
+      <button id="openEventModalBtn" class="btn small primary">+ Événement spécial</button>
+      <button id="notifBtn" class="btn">🔔 Activer les rappels</button>
+      <button id="installBtn" class="btn ghost small hide">📲 Installer l'app</button>
+      <button id="exportBtn" class="btn ghost small" title="Télécharger mes données">⬇ Exporter</button>
+      <button id="importBtn" class="btn ghost small" title="Charger un fichier exporté">⬆ Importer</button>
+      <span id="userEmail" class="small muted user-email"></span>
+      <button id="logoutBtn" class="btn ghost small">Déconnexion</button>
+    </div>
+  </header>
+
+  <p id="iosHint" class="small muted hide" style="margin:-8px 0 16px">
+    📱 Sur iPhone/iPad : ouvre ce site dans <strong>Safari</strong>, appuie sur <strong>Partager</strong> puis
+    <strong>« Sur l'écran d'accueil »</strong>. C'est nécessaire pour que les notifications fonctionnent sur iOS.
+  </p>
+
+  <!-- ============ Ajouter un cours ============ -->
+  <section class="card" aria-labelledby="hForm">
+    <div class="section-head">
+      <h2 id="hForm">➕ Ajouter un cours</h2>
+      <span class="small muted">J1 · J3 · J7 · J14 · J30 générés automatiquement</span>
+    </div>
+    <form id="courseForm" autocomplete="off">
+      <div>
+        <label for="courseName">Nom du cours</label>
+        <input id="courseName" name="courseName" type="text" placeholder="Ex. Dérivées et limites" required maxlength="120">
+      </div>
+      <div>
+        <label for="courseSubject">Matière</label>
+        <input id="courseSubject" name="courseSubject" type="text" list="subjectsList" placeholder="Ex. Maths" maxlength="60">
+        <datalist id="subjectsList"></datalist>
+      </div>
+      <div>
+        <label for="courseLink">Lien ou ressource (Optionnel)</label>
+        <input id="courseLink" name="courseLink" type="url" placeholder="https://notion.so/... ou PDF" maxlength="255">
+      </div>
+      <div>
+        <label for="courseStart">Date de début (J0)</label>
+        <input id="courseStart" name="courseStart" type="date" required>
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="btn primary">Ajouter le cours</button>
+        <button type="reset" class="btn ghost">Effacer</button>
+      </div>
+    </form>
+  </section>
+
+  <!-- ============ Stats & Progression ============ -->
+  <section class="card" aria-label="Statistiques">
+    <div class="stats">
+      <div class="stat"><b id="statDue">0</b><span>À réviser aujourd'hui</span></div>
+      <div class="stat"><b id="statOver">0</b><span>En retard</span></div>
+      <div class="stat"><b id="statDone">0</b><span>Révisions validées</span></div>
+      <div class="stat"><b id="statRate">0%</b><span>Complétion globale</span></div>
+      <div class="stat"><b id="statWeek">0%</b><span>Succès (7 derniers jours)</span></div>
+    </div>
+    <div class="progress-bar-wrap">
+      <div id="progressBar" class="progress-bar-fill"></div>
+    </div>
+  </section>
+
+  <!-- ============ Aujourd'hui ============ -->
+  <section class="card" aria-labelledby="hToday">
+    <div class="section-head">
+      <h2 id="hToday">📌 À réviser aujourd'hui</h2>
+      <span id="todayDate" class="small muted"></span>
+    </div>
+    <div id="todayList"></div>
+  </section>
+
+  <!-- ============ Calendrier en temps réel ============ -->
+  <section class="card" aria-labelledby="hCalendar">
+    <div class="section-head">
+      <h2 id="hCalendar">📅 Calendrier en temps réel (14 prochains jours)</h2>
+    </div>
+    <div id="realtimeCalendar" class="calendar-grid"></div>
+  </section>
+
+  <!-- ============ Toutes mes révisions ============ -->
+  <section class="card" aria-labelledby="hAll">
+    <div class="section-head">
+      <h2 id="hAll">🗓 Toutes mes révisions & Notes</h2>
+      <div class="filters" id="filters">
+        <select id="subjectFilter" class="chip" aria-label="Filtrer par matière" style="appearance:auto">
+          <option value="all">Toutes les matières</option>
+        </select>
+        <button class="chip" data-filter="all" aria-pressed="true">Tout</button>
+        <button class="chip" data-filter="pending" aria-pressed="false">À venir</button>
+        <button class="chip" data-filter="done" aria-pressed="false">Faites</button>
+      </div>
+    </div>
+    <div id="allList"></div>
+  </section>
+
+  <!-- ============ Danger zone ============ -->
+  <section class="card" aria-labelledby="hData">
+    <div class="section-head">
+      <h2 id="hData">🗂 Mes données</h2>
+      <span class="small muted" id="syncStatus">Chargement de votre espace…</span>
+    </div>
+    <div class="toolbar">
+      <button id="resetDoneBtn" class="btn small">↺ Repartir de zéro (décocher toutes les révisions)</button>
+      <button id="clearBtn" class="btn small danger">🗑 Tout supprimer</button>
+      <span id="notifStatus" class="notif-status"></span>
+    </div>
+  </section>
+
+  <footer>Méthode des J — tes révisions, synchronisées dans ton espace personnel.</footer>
+</div>
+
+<!-- Modal Événement spécial -->
+<div id="eventModal" class="modal-overlay hide" aria-hidden="true">
+  <div class="modal-card">
+    <div class="section-head" style="margin-bottom:8px">
+      <h2>📌 Ajouter un événement spécial</h2>
+      <button id="closeEventModal" class="btn ghost small">✕</button>
+    </div>
+    <form id="eventForm" style="grid-template-columns: 1fr;">
+      <div>
+        <label for="eventName">Titre de l'événement</label>
+        <input id="eventName" type="text" placeholder="Ex. Examen Blanc / Concours" required maxlength="100">
+      </div>
+      <div>
+        <label for="eventDate">Date</label>
+        <input id="eventDate" type="date" required>
+      </div>
+      <div class="form-actions" style="margin-top:8px">
+        <button type="submit" class="btn primary">Enregistrer</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<input type="file" id="importFile" accept="application/json,.json" class="hide">
+<div id="toasts" aria-live="polite"></div>
+
+<script type="module">
+import { getUser, login, signup, logout, handleAuthCallback, onAuthChange } from "https://esm.sh/@netlify/identity";
+"use strict";
+
+/* ==========================================================================
+   MÉTHODE DES J — Application multi-utilisateur sécurisée
+   ========================================================================== */
+
+var currentUser = null;
+var authMode = "login";
+
+var META_CACHE_NAME = "methode-j-meta-v1";
+var swRegistration = null;
+var deferredInstallPrompt = null;
+var OFFSETS = [1, 3, 7, 14, 30];
+
+var state = { courses: [], events: [] };
+var ui = { filter: "all", subject: "all", theme: "auto" };
+
+/* ==========================================================================
+   1. DATES & THEME
+   ========================================================================== */
+function pad2(n){ return (n < 10 ? "0" : "") + n; }
+function toISO(d){ return d.getFullYear() + "-" + pad2(d.getMonth() + 1) + "-" + pad2(d.getDate()); }
+
+function parseISO(s){
+  if (typeof s !== "string") return null;
+  var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s.trim());
+  if (!m) return null;
+  var d = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]), 0, 0, 0, 0);
+  if (d.getFullYear() !== Number(m[1]) || d.getMonth() !== Number(m[2]) - 1 || d.getDate() !== Number(m[3])) return null;
+  return d;
+}
+
+function addDays(iso, n){
+  var d = parseISO(iso);
+  if (!d) return null;
+  d.setDate(d.getDate() + n);
+  return toISO(d);
+}
+
+function diffDays(a, b){
+  var da = parseISO(a), db = parseISO(b);
+  if (!da || !db) return 0;
+  return Math.round((db - da) / 86400000);
+}
+
+function todayISO(){ return toISO(new Date()); }
+
+function formatDate(iso){
+  var d = parseISO(iso);
+  if (!d) return iso;
+  try {
+    return d.toLocaleDateString("fr-FR", { weekday:"short", day:"numeric", month:"short", year:"numeric" });
+  } catch (e) {
+    return iso;
+  }
+}
+
+function relLabel(iso){
+  var n = diffDays(todayISO(), iso);
+  if (n === 0) return "aujourd'hui";
+  if (n === 1) return "demain";
+  if (n === -1) return "hier";
+  if (n > 0) return "dans " + n + " jours";
+  return "il y a " + Math.abs(n) + " jours";
+}
+
+function applyTheme(t){
+  ui.theme = t;
+  try { localStorage.setItem("theme", t); } catch(e){}
+  if (t === "auto") document.documentElement.removeAttribute("data-theme");
+  else document.documentElement.setAttribute("data-theme", t);
+  var btn = el("themeBtn");
+  if (btn) btn.textContent = t === "dark" ? "🌙 Sombre" : (t === "light" ? "☀️ Clair" : "🌓 Auto");
+}
+
+/* ==========================================================================
+   2. MÉTIER : cours, liens, notes, événements & calendrier
+   ========================================================================== */
+function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+function plural(n, sing, plur){ return n + " " + (Math.abs(n) > 1 ? (plur || sing + "s") : sing); }
+
+function computeSchedule(startISO, offsets){
+  var list = (offsets && offsets.length ? offsets : OFFSETS).slice().sort(function(a,b){ return a - b; });
+  var out = [{ offset: 0, date: startISO, done: false, doneAt: null }];
+  for (var i = 0; i < list.length; i++){
+    out.push({ offset: list[i], date: addDays(startISO, list[i]), done: false, doneAt: null });
+  }
+  return out;
+}
+
+function makeCourse(name, subject, link, startISO){
+  return {
+    id: uid(),
+    name: String(name || "").trim(),
+    subject: String(subject || "").trim() || "Sans matière",
+    link: String(link || "").trim(),
+    notes: "",
+    start: startISO,
+    createdAt: new Date().toISOString(),
+    schedule: computeSchedule(startISO)
+  };
+}
+
+function addCourse(name, subject, link, startISO){
+  if (!String(name || "").trim() || !parseISO(startISO)) return null;
+  var c = makeCourse(name, subject, link, startISO);
+  state.courses.push(c);
+  dbUpsertCourse(c);
+  return c;
+}
+
+function removeCourse(id){
+  state.courses = state.courses.filter(function(c){ return c.id !== id; });
+  dbDeleteCourse(id);
+}
+
+function findCourse(id){
+  for (var i = 0; i < state.courses.length; i++) if (state.courses[i].id === id) return state.courses[i];
+  return null;
+}
+
+function findReview(id, dateISO){
+  var c = findCourse(id);
+  if (!c) return null;
+  for (var i = 0; i < c.schedule.length; i++) if (c.schedule[i].date === dateISO) return c.schedule[i];
+  return null;
+}
+
+function setReviewDone(id, dateISO, done){
+  var r = findReview(id, dateISO);
+  if (!r) return null;
+  r.done = !!done;
+  r.doneAt = done ? new Date().toISOString() : null;
+  var c = findCourse(id);
+  if (c) dbUpsertCourse(c);
+  return r;
+}
+
+function updateCourseNotes(id, notesText){
+  var c = findCourse(id);
+  if (!c) return;
+  c.notes = String(notesText || "");
+  dbUpsertCourse(c);
+}
+
+function addSpecialEvent(name, dateISO){
+  if (!name || !parseISO(dateISO)) return;
+  if (!Array.isArray(state.events)) state.events = [];
+  var event = { id: uid(), name: String(name).trim(), date: dateISO };
+  state.events.push(event);
+  dbSaveEvent(event);
+}
+
+function removeSpecialEvent(id){
+  if (!Array.isArray(state.events)) return;
+  state.events = state.events.filter(function(e){ return e.id !== id; });
+  dbDeleteEvent(id);
+}
+
+function allReviews(){
+  var out = [];
+  for (var i = 0; i < state.courses.length; i++){
+    var c = state.courses[i];
+    for (var j = 0; j < c.schedule.length; j++){
+      var r = c.schedule[j];
+      if (r.offset === 0) continue;
+      out.push({ course: c, review: r });
+    }
+  }
+  out.sort(function(a, b){ return a.review.date < b.review.date ? -1 : a.review.date > b.review.date ? 1 : 0; });
+  return out;
+}
+
+function dueOn(iso){
+  return allReviews().filter(function(x){ return !x.review.done && x.review.date === iso; });
+}
+
+function overdue(onISO){
+  var ref = onISO || todayISO();
+  return allReviews().filter(function(x){ return !x.review.done && x.review.date < ref; });
+}
+
+function computeStats(){
+  var list = allReviews(), due = 0, over = 0, done = 0;
+  var t = todayISO();
+  var tMinus7 = addDays(t, -7);
+  var weekTotal = 0, weekDone = 0;
+
+  for (var i = 0; i < list.length; i++){
+    var r = list[i].review;
+    if (r.done) done++;
+    else if (r.date < t) over++;
+    else if (r.date === t) due++;
+
+    if (r.date > tMinus7 && r.date <= t) {
+      weekTotal++;
+      if (r.done) weekDone++;
+    }
+  }
+  
+  var rate = list.length > 0 ? Math.round((done / list.length) * 100) : 0;
+  var weekRate = weekTotal > 0 ? Math.round((weekDone / weekTotal) * 100) : 0;
+
+  return { due: due, overdue: over, done: done, courses: state.courses.length, rate: rate, weekRate: weekRate };
+}
+
+function subjectsUsed(){
+  var seen = [];
+  for (var i = 0; i < state.courses.length; i++){
+    var s = state.courses[i].subject;
+    if (s && seen.indexOf(s) === -1) seen.push(s);
+  }
+  return seen.sort(function(a, b){ return a.localeCompare(b, "fr"); });
+}
+
+/* ==========================================================================
+   3. PERSISTANCE SÉCURISÉE
+   ========================================================================== */
+function defaultState(){ return { courses: [], events: [] }; }
+
+function rowToCourse(row){
+  return {
+    id: row.id,
+    name: String(row.name || "Cours"),
+    subject: String(row.subject || "Sans matière"),
+    link: String(row.link || ""),
+    notes: String(row.notes || ""),
+    start: row.startDate,
+    createdAt: row.createdAt || new Date().toISOString(),
+    schedule: Array.isArray(row.schedule)
+      ? row.schedule.filter(function(r){ return r && parseISO(r.date); })
+          .map(function(r){ return { offset: Number(r.offset) || 0, date: r.date, done: !!r.done, doneAt: r.doneAt || null }; })
+      : []
+  };
+}
+
+function courseToRow(c){
+  return { id: c.id, name: c.name, subject: c.subject, link: c.link, notes: c.notes, startDate: c.start, createdAt: c.createdAt, schedule: c.schedule };
+}
+
+function setSyncStatus(msg){
+  var s = el("syncStatus");
+  if (s) s.textContent = msg;
+}
+
+function apiRequest(url, options){
+  return fetch(url, Object.assign({ credentials: "same-origin", headers: { "Content-Type": "application/json" } }, options || {})).then(function(res){
+    if (res.status === 401) { showAuth(); throw new Error("Session expirée"); }
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    return res.status === 204 ? null : res.json();
+  });
+}
+
+function loadUserData(){
+  setSyncStatus("🔄 Synchronisation de votre espace…");
+  return apiRequest("/api/data").then(function(data){
+      setSyncStatus("✅ Données synchronisées.");
+      return { courses: (data.courses || []).map(rowToCourse), events: (data.events || []).map(function(e){ return { id:e.id, name:e.name, date:e.eventDate }; }) };
+    })
+    .catch(function(e){
+      console.error("Erreur de chargement:", e);
+      setSyncStatus("⚠️ Synchronisation momentanément indisponible.");
+      toast("Impossible de charger vos révisions.");
+      return defaultState();
+    });
+}
+
+function dbUpsertCourse(course){
+  return apiRequest("/api/data?resource=course", { method:"PUT", body:JSON.stringify(courseToRow(course)) })
+    .then(function(){ setSyncStatus("✅ Données synchronisées."); return true; })
+    .catch(function(e){ console.error("Erreur sauvegarde:", e); toast("Échec de synchronisation."); return false; });
+}
+
+function dbDeleteCourse(id){
+  return apiRequest("/api/data?resource=course&id=" + encodeURIComponent(id), { method:"DELETE" })
+    .then(function(){ return true; }).catch(function(e){ console.error("Erreur suppression:", e); toast("Échec de la suppression."); return false; });
+}
+function dbSaveEvent(event){
+  return apiRequest("/api/data?resource=event", { method:"POST", body:JSON.stringify(event) }).catch(function(){ toast("Échec de synchronisation de l’événement."); });
+}
+function dbDeleteEvent(id){
+  return apiRequest("/api/data?resource=event&id=" + encodeURIComponent(id), { method:"DELETE" }).catch(function(){ toast("Échec de suppression de l’événement."); });
+}
+
+/* ==========================================================================
+   4. PWA & Notifications
+   ========================================================================== */
+function isIOS(){ return /iphone|ipad|ipod/i.test((typeof navigator !== "undefined" && navigator.userAgent) || ""); }
+function isStandalone(){
+  return (typeof window !== "undefined" && window.matchMedia && window.matchMedia("(display-mode: standalone)").matches)
+    || (typeof navigator !== "undefined" && navigator.standalone === true);
+}
+
+function registerServiceWorker(){
+  if (typeof navigator === "undefined" || !("serviceWorker" in navigator)) return Promise.resolve(null);
+  return navigator.serviceWorker.register("sw.js").then(function(reg){
+    swRegistration = reg;
+    return reg;
+  }).catch(function(){ return null; });
+}
+
+function registerPeriodicSync(reg){
+  if (!reg || !("periodicSync" in reg) || typeof navigator === "undefined" || !("permissions" in navigator)) return;
+  navigator.permissions.query({ name: "periodic-background-sync" }).then(function(status){
+    if (status.state !== "granted") return;
+    reg.periodicSync.register("daily-revisions-check", { minInterval: 24 * 60 * 60 * 1000 }).catch(function(){});
+  }).catch(function(){});
+}
+
+function metaGet(key){
+  if (typeof caches === "undefined") return Promise.resolve(null);
+  return caches.open(META_CACHE_NAME).then(function(cache){
+    return cache.match(key).then(function(res){ return res ? res.text() : null; });
+  }).catch(function(){ return null; });
+}
+
+function metaSet(key, value){
+  if (typeof caches === "undefined") return Promise.resolve(false);
+  return caches.open(META_CACHE_NAME).then(function(cache){
+    return cache.put(key, new Response(value)).then(function(){ return true; });
+  }).catch(function(){ return false; });
+}
+
+function notificationsSupported(){
+  return typeof Notification !== "undefined" && typeof Notification.requestPermission === "function";
+}
+
+function notifPermission(){
+  return notificationsSupported() ? Notification.permission : "unsupported";
+}
+
+function requestNotifPermission(){
+  if (!notificationsSupported()){ toast("Ce navigateur ne gère pas les notifications."); return Promise.resolve("unsupported"); }
+  try {
+    var p = Notification.requestPermission();
+    return (p && typeof p.then === "function" ? p : Promise.resolve(p)).then(function(res){
+      var perm = res || Notification.permission;
+      if (perm === "granted"){
+        var due = dueOn(todayISO()).length;
+        showNotif("Rappels activés ✅", due > 0 ? plural(due, "révision") + " à faire aujourd'hui." : "Aucune révision prévue aujourd'hui.");
+        toast("Rappels activés !");
+        if (swRegistration) registerPeriodicSync(swRegistration);
+      }
+      render();
+      return perm;
+    }).catch(function(){ return Notification.permission; });
+  } catch (e) { return Promise.resolve(Notification.permission); }
+}
+
+function showNotif(title, body){
+  if (notifPermission() !== "granted") return Promise.resolve(false);
+  var opts = { body: body, tag: "methode-j", lang: "fr", icon: "icon-192.png", badge: "icon-192.png" };
+  if (typeof navigator !== "undefined" && navigator.serviceWorker && navigator.serviceWorker.ready){
+    return navigator.serviceWorker.ready.then(function(reg){
+      return reg.showNotification(title, opts).then(function(){ return true; });
+    }).catch(function(){ return legacyNotify(title, opts); });
+  }
+  return legacyNotify(title, opts);
+}
+
+function legacyNotify(title, opts){
+  try {
+    var n = new Notification(title, opts);
+    n.onclick = function(){ try { window.focus(); } catch (e) {} try { n.close(); } catch (e) {} };
+    return Promise.resolve(true);
+  } catch (e) { return Promise.resolve(false); }
+}
+
+function checkDailyNotifications(){
+  if (notifPermission() !== "granted") return Promise.resolve(false);
+  var t = todayISO();
+  var remaining = dueOn(t).length;
+  var late = overdue(t).length;
+  if (!remaining && !late) return Promise.resolve(false);
+  return metaGet("lastNotifDay").then(function(last){
+    if (last === t) return false;
+    var msg = remaining > 0
+      ? plural(remaining, "révision") + " à faire aujourd'hui" + (late ? " · " + plural(late, "révision") + " en retard" : "") + "."
+      : "Aucune révision restante aujourd'hui · " + plural(late, "révision") + " en retard.";
+    return showNotif("📚 Révisions du jour", msg).then(function(shown){
+      if (!shown) return false;
+      return metaSet("lastNotifDay", t).then(function(){ return true; });
+    });
+  });
+}
+
+/* ==========================================================================
+   5. INTERFACE & RENDU
+   ========================================================================== */
+function el(id){ return typeof document !== "undefined" && document.getElementById ? document.getElementById(id) : null; }
+function hasDOM(){ return typeof document !== "undefined" && !!document.getElementById; }
+
+function esc(s){
+  return String(s == null ? "" : s)
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+}
+
+function toast(msg){
+  if (!hasDOM()) return;
+  var box = el("toasts");
+  if (!box) return;
+  var t = document.createElement("div");
+  t.className = "toast";
+  t.textContent = msg;
+  box.appendChild(t);
+  setTimeout(function(){ if (t.parentNode) t.parentNode.removeChild(t); }, 3500);
+}
+
+function setAuthMode(mode){
+  authMode = mode;
+  var signupMode = mode === "signup";
+  el("authTitle").textContent = signupMode ? "Créer un compte" : "Se connecter";
+  el("authIntro").textContent = signupMode ? "Crée ton espace personnel de révision." : "Retrouve tes cours et tes révisions personnelles.";
+  el("authSubmit").textContent = signupMode ? "S’inscrire" : "Se connecter";
+  el("authSwitchText").textContent = signupMode ? "Déjà un compte ?" : "Pas encore de compte ?";
+  el("authSwitch").textContent = signupMode ? "Se connecter" : "S’inscrire";
+  el("authPassword").autocomplete = signupMode ? "new-password" : "current-password";
+  el("authMessage").textContent = "";
+}
+
+function showAuth(message){
+  currentUser = null;
+  state = defaultState();
+  el("appShell").classList.add("hide");
+  el("authScreen").classList.remove("hide");
+  if (message) el("authMessage").textContent = message;
+}
+
+function showApp(user){
+  currentUser = user;
+  el("authScreen").classList.add("hide");
+  el("appShell").classList.remove("hide");
+  el("userEmail").textContent = user.email || "Compte connecté";
+  render();
+}
+
+async function handleAuthSubmit(ev){
+  ev.preventDefault();
+  var submit = el("authSubmit"), message = el("authMessage");
+  submit.disabled = true;
+  message.textContent = "Connexion en cours…";
+  try {
+    var email = el("authEmail").value.trim();
+    var password = el("authPassword").value;
+    var user = authMode === "signup" ? await signup(email, password) : await login(email, password);
+    if (authMode === "signup" && !user.emailVerified){
+      message.style.color = "var(--ok)";
+      message.textContent = "Compte créé. Consulte ton email pour confirmer ton inscription.";
+      return;
+    }
+    message.style.color = "var(--danger)";
+    await enterApp(user);
+  } catch (error) {
+    message.style.color = "var(--danger)";
+    message.textContent = error && error.status === 401 ? "Email ou mot de passe incorrect." : (error && error.message ? error.message : "Authentification impossible.");
+  } finally { submit.disabled = false; }
+}
+
+async function enterApp(user){
+  showApp(user);
+  var fresh = await loadUserData();
+  state = fresh;
+  render();
+  checkDailyNotifications();
+}
+
+function render(){
+  if (!hasDOM()) return;
+  renderHead();
+  renderSubjects();
+  renderStats();
+  renderToday();
+  renderRealtimeCalendar();
+  renderAll();
+  renderNotifStatus();
+}
+
+function renderHead(){
+  var t = todayISO();
+  var l = el("todayLabel"); if (l) l.textContent = formatDate(t);
+  var d = el("todayDate"); if (d) d.textContent = formatDate(t);
+}
+
+function renderSubjects(){
+  var subjects = subjectsUsed();
+  var dl = el("subjectsList");
+  if (dl) dl.innerHTML = subjects.map(function(s){ return '<option value="' + esc(s) + '"></option>'; }).join("");
+  
+  var sf = el("subjectFilter");
+  if (sf) {
+    var current = ui.subject;
+    sf.innerHTML = '<option value="all">Toutes les matières</option>' + subjects.map(function(s){
+      return '<option value="' + esc(s) + '"' + (current === s ? ' selected' : '') + '>' + esc(s) + '</option>';
+    }).join("");
+  }
+}
+
+function renderStats(){
+  var s = computeStats();
+  var set = function(id, v){ var n = el(id); if (n) n.textContent = String(v); };
+  
+  set("statDue", s.due);
+  set("statOver", s.overdue);
+  set("statDone", s.done);
+  set("statCourses", s.courses);
+  set("statRate", s.rate + "%");
+  set("statWeek", s.weekRate + "%");
+  
+  var pb = el("progressBar");
+  if (pb) pb.style.width = s.rate + "%";
+}
+
+function reviewItemHTML(course, review, showDate){
+  var cls = review.done ? "done" : "";
+  var tag = review.done
+    ? '<span class="tag done">Fait</span>'
+    : (review.date === todayISO() ? '<span class="tag today">Aujourd\'hui</span>'
+      : (review.date < todayISO() ? '<span class="tag over">En retard</span>' : '<span class="tag">' + formatDate(review.date) + '</span>'));
+
+  var linkHtml = course.link 
+    ? '<a href="' + esc(course.link) + '" target="_blank" rel="noopener" class="resource-link" title="Ouvrir la ressource">🔗 Lien ressource</a>' 
+    : '';
+
+  var buttons = review.done
+    ? '<button class="btn small" data-action="undo" data-id="' + course.id + '" data-date="' + review.date + '">↺ Annuler</button>'
+    : '<button class="btn ok small" data-action="done" data-id="' + course.id + '" data-date="' + review.date + '">✓ Fait</button>';
+
+  return '' +
+    '<div class="item ' + cls + '" data-review-card="' + course.id + '-' + review.date + '">' +
+      '<div>' +
+        '<div class="title"><span class="tag">J' + review.offset + '</span> ' + esc(course.name) + '</div>' +
+        '<div class="sub">' + tag +
+          '<span class="tag subject">' + esc(course.subject) + '</span>' +
+          linkHtml +
+          (showDate ? '<span>' + formatDate(review.date) + ' · ' + relLabel(review.date) + '</span>' : '') +
+        '</div>' +
+      '</div>' +
+      '<div class="actions">' + buttons + '</div>' +
+    '</div>';
+}
+
+function renderToday(){
+  var box = el("todayList");
+  if (!box) return;
+  var t = todayISO();
+  var due = dueOn(t);
+  var late = overdue(t);
+  var html = "";
+
+  // 1. Afficher les révisions prévues aujourd'hui
+  for (var i = 0; i < due.length; i++) html += reviewItemHTML(due[i].course, due[i].review, false);
+  
+  // 2. Afficher les révisions en retard
+  for (var j = 0; j < late.length; j++) html += reviewItemHTML(late[j].course, late[j].review, true);
+
+  // 3. Afficher les événements spéciaux prévus aujourd'hui
+  if (Array.isArray(state.events)){
+    for (var e = 0; e < state.events.length; e++){
+      var ev = state.events[e];
+      if (ev.date === t){
+        html += '' +
+          '<div class="item" style="border-left: 4px solid var(--warn);">' +
+            '<div>' +
+              '<div class="title"><span class="tag special" style="background:var(--warn-bg); color:var(--warn);">Événement</span> ' + esc(ev.name) + '</div>' +
+              '<div class="sub"><span class="tag today">Aujourd\'hui</span></div>' +
+            '</div>' +
+            '<div class="actions">' +
+              '<button class="btn small danger" data-action="delete-event" data-id="' + ev.id + '">Supprimer</button>' +
+            '</div>' +
+          '</div>';
+      }
+    }
+  }
+
+  if (!html){
+    html = '<div class="empty">🎉 Rien à réviser aujourd\'hui. Ajoute un cours pour générer son calendrier J1 → J30.</div>';
+  }
+  box.innerHTML = html;
+}
+
+function renderRealtimeCalendar(){
+  var container = el("realtimeCalendar");
+  if (!container) return;
+  var html = "";
+  var t = todayISO();
+
+  for (var i = 0; i < 14; i++){
+    var dateStr = addDays(t, i);
+    var isToday = (dateStr === t);
+    var dayItems = [];
+
+    // Révisions sur cette date
+    for (var c = 0; c < state.courses.length; c++){
+      var course = state.courses[c];
+      for (var s = 0; s < course.schedule.length; s++){
+        var rev = course.schedule[s];
+        if (rev.date === dateStr){
+          dayItems.push('<span class="cal-badge' + (rev.done ? ' done' : '') + '">J' + rev.offset + ' : ' + esc(course.name) + '</span>');
+        }
+      }
+    }
+
+    // Événements spéciaux sur cette date
+    if (Array.isArray(state.events)){
+      for (var e = 0; e < state.events.length; e++){
+        var ev = state.events[e];
+        if (ev.date === dateStr){
+          dayItems.push('<span class="cal-badge special">📌 ' + esc(ev.name) + ' <button class="btn ghost" style="font-size:9px;padding:0;border:none;cursor:pointer;" data-action="delete-event" data-id="' + ev.id + '">×</button></span>');
+        }
+      }
+    }
+
+    var dObj = parseISO(dateStr);
+    var dayLabel = dObj ? dObj.toLocaleDateString("fr-FR", { weekday: "short", day: "numeric", month: "numeric" }) : dateStr;
+
+    html += '' +
+      '<div class="cal-day-cell ' + (isToday ? 'is-today' : '') + '">' +
+        '<div style="font-size:0.75rem;font-weight:700;color:var(--muted);margin-bottom:4px;">' + dayLabel + '</div>' +
+        '<div style="display:flex;flex-direction:column;gap:2px;">' + (dayItems.join("") || '<span style="font-size:10px;color:var(--muted)">—</span>') + '</div>' +
+      '</div>';
+  }
+  container.innerHTML = html;
+}
+
+function renderAll(){
+  var box = el("allList");
+  if (!box) return;
+  if (!state.courses.length){
+    box.innerHTML = '<div class="empty">Aucun cours pour l\'instant.</div>';
+    return;
+  }
+
+  var t = todayISO();
+  var ordered = state.courses.slice().sort(function(a, b){ return a.start < b.start ? -1 : a.start > b.start ? 1 : 0; });
+  var html = "";
+
+  for (var i = 0; i < ordered.length; i++){
+    var c = ordered[i];
+    
+    if (ui.subject !== "all" && c.subject !== ui.subject) continue;
+
+    var slots = c.schedule.slice().sort(function(a, b){ return a.offset - b.offset; })
+      .filter(function(r){
+        if (ui.filter === "done") return r.done;
+        if (ui.filter === "pending") return !r.done && r.date >= t;
+        return true;
+      });
+
+    var doneCount = 0;
+    for (var k = 0; k < c.schedule.length; k++) if (c.schedule[k].done) doneCount++;
+
+    var slotsHTML = "";
+    for (var j = 0; j < slots.length; j++){
+      var r = slots[j];
+      var klass = r.done ? "done" : (r.date === t ? "today" : (r.date < t ? "over" : ""));
+      var label = r.offset === 0 ? "J0 · cours" : "J" + r.offset;
+      var btn = r.offset === 0
+        ? ""
+        : (r.done
+            ? '<button class="btn small" data-action="undo" data-id="' + c.id + '" data-date="' + r.date + '">↺</button>'
+            : '<button class="btn small" data-action="done" data-id="' + c.id + '" data-date="' + r.date + '">✓</button>');
+      slotsHTML += '<div class="slot ' + klass + '"><b>' + label + '</b><span>' +
+        (r.done ? '✓ Fait' : formatDate(r.date)) + '</span>' + btn + '</div>';
+    }
+    if (!slotsHTML) slotsHTML = '<span class="small muted">Aucune révision dans ce filtre.</span>';
+
+    var linkHtml = c.link ? '<a href="' + esc(c.link) + '" target="_blank" rel="noopener" class="resource-link">🔗 Lien ressource</a>' : '';
+
+    html += '' +
+      '<article class="course">' +
+        '<div class="course-head">' +
+          '<div>' +
+            '<div class="title"><strong>' + esc(c.name) + '</strong> <span class="tag subject">' + esc(c.subject) + '</span> ' + linkHtml + '</div>' +
+            '<div class="sub small muted">J0 : ' + formatDate(c.start) + ' · ' + doneCount + '/' + c.schedule.length + ' validées</div>' +
+          '</div>' +
+          '<div class="actions">' +
+            '<button class="btn small danger" data-action="delete" data-id="' + c.id + '">Supprimer</button>' +
+          '</div>' +
+        '</div>' +
+        '<div class="schedule">' + slotsHTML + '</div>' +
+        '<div class="course-notes-box">' +
+          '<label for="note-' + c.id + '" class="small muted">Notes personnelles :</label>' +
+          '<textarea id="note-' + c.id + '" data-course-note="' + c.id + '" placeholder="Ajouter des notes, astuces ou rappels pour ce cours...">' + esc(c.notes || "") + '</textarea>' +
+        '</div>' +
+      '</article>';
+  }
+  
+  if (!html && ordered.length > 0){
+    html = '<div class="empty">Aucun cours trouvé pour cette matière.</div>';
+  }
+  
+  box.innerHTML = html;
+}
+
+function renderNotifStatus(){
+  var s = el("notifStatus");
+  var b = el("notifBtn");
+  var perm = notifPermission();
+  if (s){
+    s.textContent = perm === "granted"
+      ? "🔔 Rappels activés — une notification s'affiche chaque jour où une révision est prévue."
+      : perm === "denied"
+        ? "🔕 Notifications bloquées par le navigateur."
+        : perm === "unsupported"
+          ? "⚠️ Notifications non prises en charge par ce navigateur."
+          : "🔔 Rappels désactivés.";
+  }
+  if (b){
+    b.textContent = perm === "granted" ? "🔔 Rappels activés" : "🔔 Activer les rappels";
+    b.disabled = perm === "granted";
+  }
+  var hint = el("iosHint");
+  if (hint){
+    if (isIOS() && !isStandalone()) hint.classList.remove("hide");
+    else hint.classList.add("hide");
+  }
+}
+
+/* ==========================================================================
+   6. Événements & Interactions utilisateur
+   ========================================================================== */
+function onFormSubmit(ev){
+  ev.preventDefault();
+  var name = el("courseName"), subj = el("courseSubject"), link = el("courseLink"), start = el("courseStart");
+  var c = addCourse(name ? name.value : "", subj ? subj.value : "", link ? link.value : "", start ? start.value : "");
+  if (!c){ toast("Vérifie le nom du cours et la date (J0)."); return; }
+  var due = dueOn(todayISO()).length;
+  toast("« " + c.name + " » ajouté — 5 révisions planifiées." + (due ? " " + plural(due, "révision") + " aujourd'hui !" : ""));
+  if (name) name.value = "";
+  if (subj) subj.value = "";
+  if (link) link.value = "";
+  render();
+  checkDailyNotifications();
+}
+
+function onActionClick(ev){
+  var target = ev.target;
+  while (target && target !== document && !(target.getAttribute && target.getAttribute("data-action"))) target = target.parentNode;
+  if (!target || !target.getAttribute) return;
+  var action = target.getAttribute("data-action");
+  var id = target.getAttribute("data-id");
+  var date = target.getAttribute("data-date");
+  if (!action) return;
+
+  if (action === "done"){
+    var cardEl = document.querySelector('[data-review-card="' + id + '-' + date + '"]');
+    if(cardEl) cardEl.classList.add("just-done");
+    
+    setReviewDone(id, date, true);
+    toast("Révision validée 👍");
+    setTimeout(render, 300);
+  } else if (action === "undo"){
+    setReviewDone(id, date, false);
+    toast("Révision remise à faire.");
+    render();
+  } else if (action === "delete"){
+    var c = findCourse(id);
+    var label = c ? c.name : "ce cours";
+    if (!(typeof confirm === "function" && confirm("Supprimer « " + label + " » et tout son calendrier ?"))) return;
+    removeCourse(id);
+    toast("Cours supprimé.");
+    render();
+  } else if (action === "delete-event"){
+    removeSpecialEvent(id);
+    toast("Événement supprimé.");
+    render();
+  }
+}
+
+function onFilterClick(ev){
+  var b = ev.target;
+  if (!b || !b.getAttribute || !b.getAttribute("data-filter")) return;
+  ui.filter = b.getAttribute("data-filter");
+  var all = document.querySelectorAll("#filters .chip[data-filter]");
+  for (var i = 0; i < all.length; i++){
+    all[i].setAttribute("aria-pressed", all[i].getAttribute("data-filter") === ui.filter ? "true" : "false");
+  }
+  renderAll();
+}
+
+function exportData(){
+  try {
+    var exportPayload = { courses: state.courses, events: state.events };
+    var blob = new Blob([JSON.stringify(exportPayload, null, 2)], { type: "application/json" });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url;
+    a.download = "methode-des-j-" + todayISO() + ".json";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
+    toast("Export téléchargé.");
+  } catch (e) { toast("Export impossible sur ce navigateur."); }
+}
+
+function importData(file){
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(){
+    try {
+      var data = JSON.parse(String(reader.result));
+      var courses = (data && Array.isArray(data.courses)) ? data.courses : (Array.isArray(data) ? data : []);
+      var events = (data && Array.isArray(data.events)) ? data.events : [];
+      
+      var imported = [];
+      for (var i = 0; i < courses.length; i++){
+        var c = courses[i];
+        if (!c || typeof c !== "object" || !parseISO(c.start) || !Array.isArray(c.schedule)) continue;
+        var cleanC = {
+          id: uid(),
+          name: String(c.name || "Cours"),
+          subject: String(c.subject || "Sans matière"),
+          link: String(c.link || ""),
+          notes: String(c.notes || ""),
+          start: c.start,
+          createdAt: c.createdAt || new Date().toISOString(),
+          schedule: c.schedule.filter(function(r){ return r && parseISO(r.date); })
+            .map(function(r){ return { offset: Number(r.offset) || 0, date: r.date, done: !!r.done, doneAt: r.doneAt || null }; })
+        };
+        imported.push(cleanC);
+        state.courses.push(cleanC);
+        dbUpsertCourse(cleanC);
+      }
+      
+      if (events.length > 0){
+        if (!Array.isArray(state.events)) state.events = [];
+        for (var e = 0; e < events.length; e++){
+          if (events[e] && events[e].name && events[e].date){
+            state.events.push({ id: uid(), name: events[e].name, date: events[e].date });
+          }
+        }
+        saveLocalEvents();
+      }
+
+      render();
+      toast(imported.length + " cours importé(s).");
+    } catch (e) { toast("Import impossible : fichier invalide."); }
+  };
+  reader.readAsText(file);
+}
+
+function bindEvents(){
+  if (!hasDOM()) return;
+  
+  if (typeof window !== "undefined"){
+    window.addEventListener("beforeinstallprompt", function(e){
+      e.preventDefault();
+      deferredInstallPrompt = e;
+      var b = el("installBtn");
+      if (b) b.classList.remove("hide");
+    });
+    window.addEventListener("appinstalled", function(){
+      deferredInstallPrompt = null;
+      var b = el("installBtn");
+      if (b) b.classList.add("hide");
+      toast("Application installée !");
+    });
+  }
+
+  var themeBtn = el("themeBtn");
+  if (themeBtn){
+    themeBtn.addEventListener("click", function(){
+      var next = ui.theme === "auto" ? "dark" : (ui.theme === "dark" ? "light" : "auto");
+      applyTheme(next);
+    });
+  }
+
+  el("authForm").addEventListener("submit", handleAuthSubmit);
+  el("authSwitch").addEventListener("click", function(){ setAuthMode(authMode === "login" ? "signup" : "login"); });
+  el("logoutBtn").addEventListener("click", async function(){
+    try { await logout(); } finally { showAuth("Vous êtes déconnecté."); }
+  });
+
+  var subjFilter = el("subjectFilter");
+  if(subjFilter){
+    subjFilter.addEventListener("change", function(e){
+      ui.subject = e.target.value;
+      renderAll();
+    });
+  }
+
+  var form = el("courseForm");
+  if (form) form.addEventListener("submit", onFormSubmit);
+
+  // Gestion de la modale d'événements spéciaux
+  var modal = el("eventModal");
+  var openModalBtn = el("openEventModalBtn");
+  var closeModalBtn = el("closeEventModal");
+  var eventForm = el("eventForm");
+
+  if (openModalBtn && modal){
+    openModalBtn.addEventListener("click", function(){
+      modal.classList.remove("hide");
+      var dInput = el("eventDate");
+      if (dInput && !dInput.value) dInput.value = todayISO();
+    });
+  }
+  if (closeModalBtn && modal){
+    closeModalBtn.addEventListener("click", function(){ modal.classList.add("hide"); });
+  }
+  if (eventForm && modal){
+    eventForm.addEventListener("submit", function(e){
+      e.preventDefault();
+      var evName = el("eventName").value;
+      var evDate = el("eventDate").value;
+      addSpecialEvent(evName, evDate);
+      modal.classList.add("hide");
+      el("eventName").value = "";
+      render();
+      toast("Événement spécial ajouté !");
+    });
+  }
+
+  // Sauvegarde des notes à la volée (input / change)
+  document.body.addEventListener("input", function(ev){
+    var target = ev.target;
+    if (target && target.getAttribute && target.getAttribute("data-course-note")){
+      var courseId = target.getAttribute("data-course-note");
+      updateCourseNotes(courseId, target.value);
+    }
+  });
+  
+  document.body.addEventListener("click", function(ev){
+    var t = ev.target;
+    if (t && t.getAttribute){
+      if (t.getAttribute("data-filter")) return onFilterClick(ev);
+      if (t.getAttribute("data-action")) return onActionClick(ev);
+      if (t.id === "notifBtn") return void requestNotifPermission().then(render);
+      if (t.id === "installBtn"){
+        if (!deferredInstallPrompt) return;
+        deferredInstallPrompt.prompt();
+        deferredInstallPrompt.userChoice.then(function(){
+          deferredInstallPrompt = null;
+          var ib = el("installBtn");
+          if (ib) ib.classList.add("hide");
+        });
+        return;
+      }
+      if (t.id === "exportBtn") return exportData();
+      if (t.id === "importBtn"){ var f = el("importFile"); if (f) f.click(); return; }
+      if (t.id === "clearBtn"){
+        if (typeof confirm === "function" && !confirm("Supprimer TOUS les cours ? Action irréversible.")) return;
+        var idsToDelete = state.courses.map(function(c){ return c.id; });
+        state.courses = [];
+        state.events = [];
+        render();
+        apiRequest("/api/data?resource=all", { method:"DELETE" }).catch(function(){ toast("Échec de la suppression."); });
+        toast("Tout a été supprimé."); return;
+      }
+      if (t.id === "resetDoneBtn"){
+        for (var i = 0; i < state.courses.length; i++){
+          for (var j = 0; j < state.courses[i].schedule.length; j++){
+            state.courses[i].schedule[j].done = false;
+            state.courses[i].schedule[j].doneAt = null;
+          }
+          dbUpsertCourse(state.courses[i]);
+        }
+        render(); toast("Toutes les révisions sont redevenues à faire."); return;
+      }
+    }
+  });
+  
+  var file = el("importFile");
+  if (file) file.addEventListener("change", function(e){ importData(e.target.files && e.target.files[0]); e.target.value = ""; });
+}
+
+/* ==========================================================================
+   7. Démarrage
+   ========================================================================== */
+async function init(){
+  registerServiceWorker().then(function(reg){
+    if (reg && notifPermission() === "granted") registerPeriodicSync(reg);
+  });
+  
+  if (hasDOM()){
+    var savedTheme = "auto";
+    try { savedTheme = localStorage.getItem("theme") || "auto"; } catch(e){}
+    applyTheme(savedTheme);
+
+    var start = el("courseStart");
+    if (start && !start.value) start.value = todayISO();
+    bindEvents();
+    setAuthMode("login");
+  }
+
+  try { await handleAuthCallback(); } catch (error) { el("authMessage").textContent = error.message || "Lien d’authentification invalide."; }
+  var user = await getUser();
+  if (user) await enterApp(user); else showAuth();
+
+  onAuthChange(function(event, userNow){
+    if (event === "logout") showAuth();
+    else if (userNow && (!currentUser || userNow.id !== currentUser.id)) enterApp(userNow);
+  });
+  
+  if (typeof setInterval === "function"){
+    setInterval(checkDailyNotifications, 60000);
+    setInterval(function(){ if (hasDOM()) renderHead(); }, 60000);
+  }
+}
+
+init();
+</script>
+</body>
+</html>
