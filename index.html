@@ -57,6 +57,7 @@
     font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,Inter,Arial,sans-serif;
     -webkit-text-size-adjust:100%;
     min-height:100vh;
+    overflow-x: hidden;
   }
   h1,h2,h3{margin:0;line-height:1.2}
   a{color:var(--brand)}
@@ -96,6 +97,36 @@
   .btn.ghost{background:transparent}
   .btn.small{padding:.35rem .6rem;font-size:.85rem;border-radius:8px}
   .btn.danger{color:var(--danger);border-color:var(--danger)}
+
+  /* ============ Side Menu ============ */
+  .side-menu-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1040;
+    opacity: 0; transition: opacity 0.3s ease;
+  }
+  .side-menu-overlay.show { opacity: 1; }
+  
+  .side-menu {
+    position: fixed; top: 0; left: 0; bottom: 0; width: 280px; max-width: 85vw;
+    background: var(--card); border-right: 1px solid var(--line);
+    z-index: 1050; transform: translateX(-100%); transition: transform 0.3s ease;
+    display: flex; flex-direction: column; box-shadow: var(--shadow);
+  }
+  .side-menu.open { transform: translateX(0); }
+  
+  .side-menu-header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 16px; border-bottom: 1px solid var(--line);
+  }
+  .side-menu-content {
+    padding: 16px; display: flex; flex-direction: column; gap: 10px; overflow-y: auto;
+  }
+  .menu-btn {
+    width: 100%; text-align: left; display: flex; justify-content: flex-start;
+    padding: 10px 14px;
+  }
+  .menu-divider {
+    border: none; border-top: 1px solid var(--line); margin: 6px 0;
+  }
 
   /* ============ Form ============ */
   form{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));align-items:end}
@@ -319,25 +350,37 @@
 
   <header class="top">
     <div class="brand">
+      <button id="menuToggle" class="btn ghost" aria-label="Ouvrir le menu" style="font-size: 1.3rem; padding: 0.2rem 0.6rem;">☰</button>
       <div class="logo" aria-hidden="true">J+</div>
       <div>
         <h1>Méthode des J</h1>
         <p id="todayLabel">—</p>
       </div>
     </div>
-    <div class="toolbar">
-      <button id="themeBtn" class="btn ghost small">🌓 Auto</button>
-      <button id="openEventModalBtn" class="btn small primary">+ Événement spécial</button>
-      <button id="openPomoBtn" class="btn small">🍅 Pomodoro</button>
-      <button id="openMethodInfoBtn" class="btn ghost small">📖 Explication Méthode J</button>
-      <button id="notifBtn" class="btn">🔔 Activer les rappels</button>
-      <button id="installBtn" class="btn ghost small hide">📲 Installer l'app</button>
-      <button id="exportBtn" class="btn ghost small" title="Télécharger mes données">⬇ Exporter</button>
-      <button id="importBtn" class="btn ghost small" title="Charger un fichier exporté">⬆ Importer</button>
-      <span id="userEmail" class="small muted user-email"></span>
-      <button id="logoutBtn" class="btn ghost small">Déconnexion</button>
-    </div>
   </header>
+
+  <!-- ============ MENU LATÉRAL ============ -->
+  <div id="sideMenuOverlay" class="side-menu-overlay hide"></div>
+  <nav id="sideMenu" class="side-menu">
+    <div class="side-menu-header">
+      <div style="font-weight: bold; font-size: 1.1rem;">Menu</div>
+      <button id="closeMenuBtn" class="btn ghost small">✕</button>
+    </div>
+    <div class="side-menu-content">
+      <span id="userEmail" class="small muted user-email" style="display:block; padding: 0 8px; margin-bottom: 4px; font-weight: 600;"></span>
+      <hr class="menu-divider">
+      <button id="themeBtn" class="btn ghost menu-btn">🌓 Auto</button>
+      <button id="openEventModalBtn" class="btn primary menu-btn">+ Événement spécial</button>
+      <button id="openPomoBtn" class="btn menu-btn">🍅 Pomodoro</button>
+      <button id="openMethodInfoBtn" class="btn ghost menu-btn">📖 Explication Méthode J</button>
+      <button id="notifBtn" class="btn menu-btn">🔔 Activer les rappels</button>
+      <button id="exportBtn" class="btn ghost menu-btn" title="Télécharger mes données">⬇ Exporter</button>
+      <button id="importBtn" class="btn ghost menu-btn" title="Charger un fichier exporté">⬆ Importer</button>
+      <button id="installBtn" class="btn ghost menu-btn hide">📲 Installer l'app</button>
+      <hr class="menu-divider">
+      <button id="logoutBtn" class="btn ghost menu-btn danger" style="color: var(--danger);">Déconnexion</button>
+    </div>
+  </nav>
 
   <p id="iosHint" class="small muted hide" style="margin:-8px 0 16px">
     📱 Sur iPhone/iPad : ouvre ce site dans <strong>Safari</strong>, appuie sur <strong>Partager</strong> puis
@@ -1673,6 +1716,36 @@ function bindEvents(){
       if (b) b.classList.add("hide");
       toast("Application installée !");
     });
+  }
+
+  // --- MENU LATÉRAL INTERACTIF ---
+  var menuToggle = el("menuToggle");
+  var closeMenuBtn = el("closeMenuBtn");
+  var sideMenu = el("sideMenu");
+  var sideMenuOverlay = el("sideMenuOverlay");
+
+  function toggleMenu(show) {
+    if (show) {
+      sideMenuOverlay.classList.remove("hide");
+      setTimeout(function(){ 
+        sideMenu.classList.add("open"); 
+        sideMenuOverlay.classList.add("show");
+      }, 10);
+    } else {
+      sideMenu.classList.remove("open");
+      sideMenuOverlay.classList.remove("show");
+      setTimeout(function(){ sideMenuOverlay.classList.add("hide"); }, 300);
+    }
+  }
+
+  if (menuToggle) menuToggle.addEventListener("click", function(){ toggleMenu(true); });
+  if (closeMenuBtn) closeMenuBtn.addEventListener("click", function(){ toggleMenu(false); });
+  if (sideMenuOverlay) sideMenuOverlay.addEventListener("click", function(){ toggleMenu(false); });
+
+  // Refermer le menu si on clique sur un bouton intérieur
+  var menuButtons = document.querySelectorAll(".menu-btn");
+  for (var i = 0; i < menuButtons.length; i++) {
+    menuButtons[i].addEventListener("click", function(){ toggleMenu(false); });
   }
 
   var themeBtn = el("themeBtn");
