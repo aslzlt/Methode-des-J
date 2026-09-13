@@ -498,6 +498,23 @@
 </style>
 </head>
 <body>
+<div id="bootErrorBanner" style="display:none;position:fixed;inset:0;z-index:9999;background:#1c0d14;color:#ffe4e9;font:600 15px/1.5 system-ui,sans-serif;padding:24px;text-align:center;">
+  <div style="max-width:480px;margin:15vh auto 0;">
+    ⚠️ L'application n'a pas pu se charger.<br><br>
+    Le plus souvent, ça arrive quand la page est ouverte directement en double-cliquant sur le fichier (adresse commençant par <code>file://</code>) au lieu d'être ouverte via son adresse web (<code>http://</code> ou <code>https://</code>), ou quand la connexion internet est coupée : la page a besoin du réseau pour charger la partie « comptes et sauvegarde ».<br><br>
+    Ouvre plutôt l'adresse en ligne du site (ou lance un petit serveur local si tu testes le fichier), puis recharge la page.
+  </div>
+</div>
+<script>
+  // Garde-fou : si le module principal (comptes/sauvegarde) n'a pas démarré après
+  // quelques secondes, on affiche un message clair plutôt qu'une page muette.
+  setTimeout(function(){
+    if (!window.__appBooted) {
+      var b = document.getElementById("bootErrorBanner");
+      if (b) b.style.display = "block";
+    }
+  }, 6000);
+</script>
 <main id="authScreen" class="auth-screen">
   <section class="card auth-card" aria-labelledby="authTitle">
     <div class="brand"><div class="logo" aria-hidden="true">J+</div><h1>Méthode des J</h1></div>
@@ -2574,6 +2591,7 @@ function bindEvents(){
    7. Démarrage
    ========================================================================== */
 async function init(){
+  window.__appBooted = true;
   registerServiceWorker().then(function(reg){
     if (reg && notifPermission() === "granted") registerPeriodicSync(reg);
   });
