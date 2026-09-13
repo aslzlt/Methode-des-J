@@ -492,6 +492,9 @@
   .flash-tabs{display:flex;gap:8px;margin-bottom:14px}
   .flash-tabs .chip{flex:1;text-align:center}
   .flash-empty{border:1.5px dashed var(--line);border-radius:var(--radius-sm);padding:22px 14px;text-align:center;color:var(--muted);font-weight:600;font-size:.9rem}
+  .flash-import-row{display:flex;justify-content:flex-end;margin-bottom:8px}
+  .flash-import-hint{font-size:.74rem;color:var(--muted);margin:0 0 14px;line-height:1.5}
+  .flash-import-hint code{background:var(--card-soft);padding:.05rem .32rem;border-radius:4px;font-size:.72rem}
 
   .flash-progress{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-size:.8rem;color:var(--muted);font-weight:700}
   .flash-stage{perspective:1200px;height:200px;margin-bottom:14px;touch-action:pan-y}
@@ -924,6 +927,11 @@
     </div>
 
     <div id="flashManageView" class="hide">
+      <div class="flash-import-row">
+        <button type="button" id="flashImportBtn" class="btn ghost small">⬆️ Importer depuis un fichier</button>
+        <input type="file" id="flashImportFile" accept=".csv,.tsv,.txt,.json,text/csv,text/plain,application/json" class="hide">
+      </div>
+      <p class="flash-import-hint">Formats acceptés : CSV / TXT (une carte par ligne, ex. <code>question;réponse</code> — séparateur virgule, point-virgule, tabulation ou tiret) ou JSON (tableau d'objets <code>{"q":"...","a":"..."}</code>).</p>
       <div id="flashList" class="flash-list"></div>
       <form id="flashForm" class="flash-form">
         <div>
@@ -2653,6 +2661,136 @@ function onFlashFormSubmit(ev){
   renderFlashReview();
 }
 
+function stripCsvQuotes(s){
+  s = (s || "").trim();
+  if (s.length >= 2 && s[0] === '"' && s[s.length - 1] === '"'){
+    s = s.slice(1, -1).replace(/""/g, '"');
+  }
+  return s.trim();
+}
+
+function isFlashHeaderWord(s){
+  return /^(question|q|recto|front|terme|mot)$/i.test((s || "").trim());
+}
+
+function splitCsvLine(line, delimiter){
+  var fields = [], cur = "", inQuotes = false;
+  for (var i = 0; i < line.length; i++){
+    var ch = line[i];
+    if (inQuotes){
+      if (ch === '"'){
+        if (line[i + 1] === '"'){ cur += '"'; i++; }
+        else inQuotes = false;
+      } else cur += ch;
+    } else {
+      if (ch === '"' && cur === ""){ inQuotes = true; }
+      else if (ch === delimiter){ fields.push(cur); cur = ""; }
+      else cur += ch;
+    }
+  }
+  fields.push(cur);
+  return fields.map(function(f){ return f.trim(); });
+}
+
+function tryCsvSplit(raw, delimiter){
+  var fields = splitCsvLine(raw, delimiter);
+  if (fields.length >= 2 && fields[0] && fields[1]){
+    return [fields[0], fields.slice(1).join(delimiter)];
+  }
+  return null;
+}
+
+function parseFlashcardsFile(text, filename){
+  var ext = (filename || "").split(".").pop().toLowerCase();
+  var trimmed = String(text || "").trim();
+  var cards = [];
+
+  // 1) Tentative JSON (extension .json ou contenu qui ressemble à du JSON)
+  if (ext === "json" || trimmed.indexOf("[") === 0 || trimmed.indexOf("{") === 0){
+    try {
+      var data = JSON.parse(trimmed);
+      if (Array.isArray(data)){
+        data.forEach(function(item){
+          if (!item) return;
+          if (Array.isArray(item) && item.length >= 2){
+            cards.push({ q: String(item[0]), a: String(item[1]) });
+          } else if (typeof item === "object"){
+            var q = item.q || item.question || item.front || item.recto || item.terme;
+            var a = item.a || item.answer || item.back || item.verso || item.definition;
+            if (q && a) cards.push({ q: String(q), a: String(a) });
+          }
+        });
+      } else if (data && typeof data === "object"){
+        Object.keys(data).forEach(function(k){
+          if (data[k] !== undefined && data[k] !== null && String(data[k]).trim()) cards.push({ q: String(k), a: String(data[k]) });
+        });
+      }
+      if (cards.length) return cards;
+    } catch (e){ /* pas du JSON valide : on tente le format ligne par ligne ci-dessous */ }
+  }
+
+  // 2) Format texte : une carte par ligne (tabulation, point-virgule et virgule gèrent les guillemets CSV)
+  var lines = trimmed.split(/\r\n|\r|\n/);
+  lines.forEach(function(line){
+    var raw = line.trim();
+    if (!raw) return;
+    var pair = null;
+
+    if (raw.indexOf("\t") !== -1){
+      var idx = raw.indexOf("\t");
+      pair = [raw.slice(0, idx), raw.slice(idx + 1)];
+    }
+    if (!pair && raw.indexOf(";") !== -1) pair = tryCsvSplit(raw, ";");
+    if (!pair && raw.indexOf(",") !== -1) pair = tryCsvSplit(raw, ",");
+    if (!pair){
+      var plainDelims = [" - ", " – ", " : ", ":"];
+      for (var i = 0; i < plainDelims.length; i++){
+        var d = plainDelims[i];
+        var di = raw.indexOf(d);
+        if (di > 0){ pair = [raw.slice(0, di), raw.slice(di + d.length)]; break; }
+      }
+    }
+
+    if (pair){
+      var q = stripCsvQuotes(pair[0]), a = stripCsvQuotes(pair[1]);
+      if (q && a) cards.push({ q: q, a: a });
+    }
+  });
+
+  // On retire une éventuelle ligne d'en-tête ("question;réponse")
+  if (cards.length && isFlashHeaderWord(cards[0].q)) cards.shift();
+
+  return cards;
+}
+
+function importFlashcardsFile(file){
+  if (!file || !flashState.courseId) return;
+  var reader = new FileReader();
+  reader.onload = function(){
+    try {
+      var cards = parseFlashcardsFile(String(reader.result), file.name);
+      var added = 0;
+      cards.forEach(function(c){
+        var q = (c.q || "").trim().slice(0, 300);
+        var a = (c.a || "").trim().slice(0, 500);
+        if (q && a){
+          addFlashcard(flashState.courseId, q, a);
+          added++;
+        }
+      });
+      refreshFlashCardsFromStore();
+      renderFlashList();
+      renderFlashReview();
+      toast(added > 0 ? added + " carte(s) importée(s) 🗂" : "Aucune carte valide trouvée dans ce fichier.");
+    } catch (e){
+      console.error("Erreur d'import des flashcards:", e);
+      toast("Import impossible : fichier invalide.");
+    }
+  };
+  reader.onerror = function(){ toast("Impossible de lire ce fichier."); };
+  reader.readAsText(file);
+}
+
 /* ==========================================================================
    6. Événements & Interactions utilisateur
    ========================================================================== */
@@ -2994,6 +3132,15 @@ function bindEvents(){
   if (flashFormEl) flashFormEl.addEventListener("submit", onFlashFormSubmit);
   var flashCancelEditBtn = el("flashCancelEdit");
   if (flashCancelEditBtn) flashCancelEditBtn.addEventListener("click", resetFlashForm);
+  var flashImportBtn = el("flashImportBtn"), flashImportFile = el("flashImportFile");
+  if (flashImportBtn && flashImportFile){
+    flashImportBtn.addEventListener("click", function(){ flashImportFile.click(); });
+    flashImportFile.addEventListener("change", function(){
+      var f = flashImportFile.files && flashImportFile.files[0];
+      importFlashcardsFile(f);
+      flashImportFile.value = "";
+    });
+  }
 
   // Swipe tactile sur la carte : glisser = naviguer, taper (sans glisser) = retourner
   var flashCardEl = el("flashCard");
