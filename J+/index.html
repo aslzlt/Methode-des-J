@@ -1408,6 +1408,7 @@ var pomo = {
   settings: Object.assign({}, POMO_DEFAULTS),
   mode: "work",
   remaining: POMO_DEFAULTS.work * 60,
+  endAt: null,
   running: false,
   started: false,
   cyclesCompleted: 0,
@@ -1611,6 +1612,7 @@ function renderPomoMini(){
   else mini.classList.add("hide");
 }
 
+// Petit carillon franc utilisé au retour au travail (fin de pause)
 function pomoBeep(){
   try {
     var Ctx = window.AudioContext || window.webkitAudioContext;
@@ -1631,6 +1633,33 @@ function pomoBeep(){
   } catch (e) {}
 }
 
+// Musique douce jouée à l'entrée en pause : un petit arpège chaud et enveloppé,
+// bien plus enveloppant que le carillon utilisé pour reprendre le travail.
+function pomoSoftChime(){
+  try {
+    var Ctx = window.AudioContext || window.webkitAudioContext;
+    if (!Ctx) return;
+    var ctx = new Ctx();
+    var master = ctx.createGain();
+    master.gain.value = 0.18;
+    master.connect(ctx.destination);
+    // Arpège apaisant (accord Do majorX ajouté : Do5, Mi5, Sol5, Ré6) avec attaque douce et longue traîne
+    var notes = [523.25, 659.25, 783.99, 1046.5];
+    notes.forEach(function(freq, idx){
+      var start = ctx.currentTime + idx * 0.22;
+      var dur = 1.6;
+      var o = ctx.createOscillator(), g = ctx.createGain();
+      o.type = "sine"; o.frequency.value = freq;
+      g.gain.setValueAtTime(0.0001, start);
+      g.gain.linearRampToValueAtTime(0.5, start + 0.35);
+      g.gain.exponentialRampToValueAtTime(0.0001, start + dur);
+      o.connect(g); g.connect(master);
+      o.start(start); o.stop(start + dur + 0.05);
+    });
+    setTimeout(function(){ try { ctx.close(); } catch(e){} }, 2600);
+  } catch (e) {}
+}
+
 function pomoVibrate(){
   try { if (navigator.vibrate) navigator.vibrate([120, 60, 120]); } catch (e) {}
 }
@@ -1639,9 +1668,21 @@ function pomoStopInterval(){
   if (pomo.timerId){ clearInterval(pomo.timerId); pomo.timerId = null; }
 }
 
+// Recalcule le temps restant à partir de l'horodatage de fin (endAt) plutôt que
+// de décrémenter seconde par seconde : ça évite toute dérive quand l'onglet est
+// en arrière-plan, l'écran verrouillé ou le minuteur ralenti par le navigateur,
+// et ça permet de bien rattraper (et faire sonner) la fin de session même après
+// une longue mise en veille.
+function pomoSyncRemaining(){
+  if (!pomo.running || !pomo.endAt) return pomo.remaining;
+  return Math.round((pomo.endAt - Date.now()) / 1000);
+}
+
 function pomoTick(){
-  pomo.remaining -= 1;
-  if (pomo.remaining <= 0){ pomoAdvanceMode(true); return; }
+  if (!pomo.running) return;
+  var remaining = pomoSyncRemaining();
+  if (remaining <= 0){ pomoAdvanceMode(true); return; }
+  pomo.remaining = remaining;
   renderPomoDisplay();
 }
 
@@ -1658,12 +1699,14 @@ function pomoAdvanceMode(natural){
 
   pomo.mode = nextMode;
   pomo.remaining = pomoModeDuration(nextMode);
+  pomo.endAt = null;
   pomo.running = false;
   renderPomoDisplay();
 
   if (natural){
     addPomoHistoryEntry(finishedMode, finishedMinutes, pomo.title);
-    pomoBeep();
+    var enteringBreak = nextMode === "short-break" || nextMode === "long-break";
+    if (enteringBreak) pomoSoftChime(); else pomoBeep();
     pomoVibrate();
     var title = wasWork ? "🍅 Session terminée !" : "🔔 Pause terminée !";
     var body = wasWork
@@ -1696,13 +1739,16 @@ function startPomo(){
   if (pomo.remaining <= 0) pomo.remaining = pomoModeDuration(pomo.mode);
   pomo.running = true;
   pomo.started = true;
+  pomo.endAt = Date.now() + pomo.remaining * 1000;
   pomoStopInterval();
   pomo.timerId = setInterval(pomoTick, 1000);
   renderPomoDisplay();
 }
 
 function pausePomo(){
+  if (pomo.running) pomo.remaining = Math.max(0, pomoSyncRemaining());
   pomo.running = false;
+  pomo.endAt = null;
   pomoStopInterval();
   renderPomoDisplay();
 }
@@ -1710,6 +1756,7 @@ function pausePomo(){
 function resetPomo(){
   pomo.running = false;
   pomo.started = false;
+  pomo.endAt = null;
   pomoStopInterval();
   pomo.mode = "work";
   pomo.cyclesCompleted = 0;
@@ -1722,7 +1769,8 @@ function resetPomo(){
 
 function stopPomo(){
   var totalSeconds = pomoModeDuration(pomo.mode);
-  var elapsedSeconds = totalSeconds - pomo.remaining;
+  var currentRemaining = pomo.running ? Math.max(0, pomoSyncRemaining()) : pomo.remaining;
+  var elapsedSeconds = totalSeconds - currentRemaining;
   pomoStopInterval();
   if (elapsedSeconds > 0){
     var elapsedMinutes = Math.max(1, Math.round(elapsedSeconds / 60));
@@ -1730,6 +1778,17 @@ function stopPomo(){
   }
   resetPomo();
   toast("Pomodoro arrêté.");
+}
+
+// Recale l'affichage (et déclenche la sonnerie si besoin) dès que l'onglet
+// redevient visible ou que l'appareil se réveille : répare le cas où le
+// rappel de fin de session/pause ne se déclenchait pas quand le téléphone
+// était verrouillé ou l'onglet en arrière-plan.
+function pomoCatchUp(){
+  if (!pomo.running) return;
+  var remaining = pomoSyncRemaining();
+  if (remaining <= 0) pomoAdvanceMode(true);
+  else { pomo.remaining = remaining; renderPomoDisplay(); }
 }
 
 function skipPomo(){
@@ -2497,6 +2556,18 @@ function bindEvents(){
   
   var file = el("importFile");
   if (file) file.addEventListener("change", function(e){ importData(e.target.files && e.target.files[0]); e.target.value = ""; });
+
+  // Rattrape le minuteur Pomodoro (et déclenche le rappel manqué) dès que
+  // l'onglet redevient visible ou que l'appareil se réveille.
+  if (typeof document !== "undefined"){
+    document.addEventListener("visibilitychange", function(){
+      if (document.visibilityState === "visible") pomoCatchUp();
+    });
+  }
+  if (typeof window !== "undefined"){
+    window.addEventListener("focus", pomoCatchUp);
+    window.addEventListener("pageshow", pomoCatchUp);
+  }
 }
 
 /* ==========================================================================
