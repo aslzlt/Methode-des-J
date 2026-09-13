@@ -14,38 +14,58 @@
 <link rel="apple-touch-icon" href="icon-192.png">
 <link rel="icon" href="icon-192.png">
 <style>
+  /* ============ Fonts ============ */
+  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700&display=swap');
+
   /* ============ Design tokens ============ */
   :root{
-    --bg:#f4f6fb;
+    --bg:#eef1f9;
+    --bg-grad-a:#eef1fb;
+    --bg-grad-b:#e7ecfb;
     --card:#ffffff;
-    --ink:#0f172a;
-    --muted:#64748b;
-    --line:#e2e8f0;
-    --brand:#4f46e5;
+    --card-soft:#f8f9fe;
+    --ink:#141a33;
+    --muted:#6b7290;
+    --line:#e4e7f3;
+    --brand:#5b53f0;
+    --brand2:#06b6d4;
     --brand-ink:#ffffff;
+    --brand-soft:#eeecff;
     --ok:#059669;
-    --ok-bg:#d1fae5;
+    --ok-bg:#d9f7ea;
     --warn:#b45309;
-    --warn-bg:#fef3c7;
-    --danger:#be123c;
-    --danger-bg:#ffe4e6;
-    --radius:14px;
-    --shadow:0 1px 2px rgba(15,23,42,.05), 0 8px 24px rgba(15,23,42,.06);
+    --warn-bg:#fef1d6;
+    --danger:#e11d48;
+    --danger-bg:#ffe4e9;
+    --radius:18px;
+    --radius-sm:12px;
+    --shadow:0 1px 2px rgba(30,32,80,.04), 0 10px 30px -8px rgba(30,32,80,.12);
+    --shadow-lg:0 20px 45px -15px rgba(40,35,120,.28);
+    --font-display:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+    --font-body:"Manrope",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
   }
-  
+
   [data-theme="dark"] {
-    --bg:#0b1120; --card:#111a2e; --ink:#e2e8f0; --muted:#94a3b8; --line:#24324d;
-    --brand:#818cf8; --brand-ink:#0b1120; --ok:#34d399; --ok-bg:#064e3b;
-    --warn:#fbbf24; --warn-bg:#452b06; --danger:#fb7185; --danger-bg:#4c0519;
-    --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 30px rgba(0,0,0,.35);
+    --bg:#0a0e1c; --bg-grad-a:#0a0e1c; --bg-grad-b:#121835; --card:#141a33; --card-soft:#181f3f;
+    --ink:#eef0fb; --muted:#98a0c4; --line:#262e52;
+    --brand:#8b85ff; --brand2:#22d3ee; --brand-ink:#0a0e1c; --brand-soft:#1c2350;
+    --ok:#34d399; --ok-bg:#0d3a2c;
+    --warn:#fbbf24; --warn-bg:#3a2a06;
+    --danger:#fb7185; --danger-bg:#3d0f1e;
+    --shadow:0 1px 2px rgba(0,0,0,.35), 0 14px 34px -10px rgba(0,0,0,.55);
+    --shadow-lg:0 24px 55px -18px rgba(0,0,0,.65);
   }
-  
+
   @media (prefers-color-scheme: dark){
     :root:not([data-theme="light"]){
-      --bg:#0b1120; --card:#111a2e; --ink:#e2e8f0; --muted:#94a3b8; --line:#24324d;
-      --brand:#818cf8; --brand-ink:#0b1120; --ok:#34d399; --ok-bg:#064e3b;
-      --warn:#fbbf24; --warn-bg:#452b06; --danger:#fb7185; --danger-bg:#4c0519;
-      --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 30px rgba(0,0,0,.35);
+      --bg:#0a0e1c; --bg-grad-a:#0a0e1c; --bg-grad-b:#121835; --card:#141a33; --card-soft:#181f3f;
+      --ink:#eef0fb; --muted:#98a0c4; --line:#262e52;
+      --brand:#8b85ff; --brand2:#22d3ee; --brand-ink:#0a0e1c; --brand-soft:#1c2350;
+      --ok:#34d399; --ok-bg:#0d3a2c;
+      --warn:#fbbf24; --warn-bg:#3a2a06;
+      --danger:#fb7185; --danger-bg:#3d0f1e;
+      --shadow:0 1px 2px rgba(0,0,0,.35), 0 14px 34px -10px rgba(0,0,0,.55);
+      --shadow-lg:0 24px 55px -18px rgba(0,0,0,.65);
     }
   }
 
@@ -53,17 +73,24 @@
   *{box-sizing:border-box}
   html,body{margin:0;padding:0}
   body{
-    background:var(--bg); color:var(--ink);
-    font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,Inter,Arial,sans-serif;
+    background:
+      radial-gradient(1100px 520px at 100% -10%, color-mix(in srgb, var(--brand) 12%, transparent), transparent),
+      radial-gradient(900px 500px at -10% 0%, color-mix(in srgb, var(--brand2) 10%, transparent), transparent),
+      linear-gradient(180deg, var(--bg-grad-a), var(--bg-grad-b));
+    background-attachment:fixed;
+    color:var(--ink);
+    font:16px/1.55 var(--font-body);
     -webkit-text-size-adjust:100%;
     min-height:100vh;
+    overflow-x: hidden;
   }
-  h1,h2,h3{margin:0;line-height:1.2}
+  h1,h2,h3{margin:0;line-height:1.2;font-family:var(--font-display)}
   a{color:var(--brand)}
-  .wrap{max-width:1100px;margin:0 auto;padding:16px}
+  .wrap{max-width:1100px;margin:0 auto;padding:20px}
   .card{
     background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
-    box-shadow:var(--shadow);padding:18px;margin-bottom:16px;
+    box-shadow:var(--shadow);padding:22px;margin-bottom:18px;
+    transition:box-shadow .25s ease, transform .25s ease;
   }
   .muted{color:var(--muted)}
   .small{font-size:.85rem}
@@ -72,59 +99,109 @@
   /* ============ Header ============ */
   header.top{
     display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;
-    padding:14px 0 18px;
+    padding:6px 4px 22px;
   }
-  .brand{display:flex;align-items:center;gap:12px}
+  .brand{display:flex;align-items:center;gap:14px}
   .logo{
-    width:40px;height:40px;border-radius:12px;flex:none;
-    background:linear-gradient(135deg,var(--brand),#06b6d4);
-    display:grid;place-items:center;color:#fff;font-weight:700;font-size:1.05rem;
+    width:44px;height:44px;border-radius:13px;flex:none;
+    background:linear-gradient(135deg,var(--brand),var(--brand2));
+    display:grid;place-items:center;color:#fff;font-weight:800;font-size:1.05rem;
+    font-family:var(--font-display);
+    box-shadow:0 8px 18px -6px color-mix(in srgb, var(--brand) 60%, transparent);
   }
-  header.top h1{font-size:1.25rem}
-  header.top p{margin:2px 0 0;color:var(--muted);font-size:.9rem}
+  header.top h1{font-size:1.3rem;font-weight:800;letter-spacing:-.01em}
+  header.top p{margin:2px 0 0;color:var(--muted);font-size:.88rem}
 
   /* ============ Buttons ============ */
   button{font:inherit;cursor:pointer}
   .btn{
     border:1px solid var(--line);background:var(--card);color:var(--ink);
-    padding:.55rem .9rem;border-radius:10px;font-weight:600;transition:.15s transform,.15s filter;
+    padding:.6rem 1rem;border-radius:11px;font-weight:600;font-size:.92rem;
+    transition:.15s transform ease,.15s filter ease,.15s box-shadow ease,.15s background-color ease,.15s border-color ease;
   }
-  .btn:hover{filter:brightness(.97)}
-  .btn:active{transform:translateY(1px)}
-  .btn.primary{background:var(--brand);color:var(--brand-ink);border-color:transparent}
+  .btn:hover{filter:brightness(.97);transform:translateY(-1px);box-shadow:0 6px 14px -8px rgba(20,20,50,.25)}
+  .btn:active{transform:translateY(0px);box-shadow:none}
+  .btn.primary{
+    background:linear-gradient(135deg,var(--brand),color-mix(in srgb, var(--brand) 70%, var(--brand2)));
+    color:var(--brand-ink);border-color:transparent;
+    box-shadow:0 8px 18px -8px color-mix(in srgb, var(--brand) 65%, transparent);
+  }
+  .btn.primary:hover{filter:brightness(1.05)}
   .btn.ok{background:var(--ok);color:#fff;border-color:transparent}
-  .btn.ghost{background:transparent}
-  .btn.small{padding:.35rem .6rem;font-size:.85rem;border-radius:8px}
-  .btn.danger{color:var(--danger);border-color:var(--danger)}
+  .btn.ghost{background:transparent;box-shadow:none}
+  .btn.ghost:hover{background:var(--card-soft)}
+  .btn.small{padding:.4rem .7rem;font-size:.82rem;border-radius:9px}
+  .btn.danger{color:var(--danger);border-color:color-mix(in srgb, var(--danger) 35%, var(--line))}
+  .btn.danger:hover{background:var(--danger-bg)}
+
+  /* ============ Side Menu ============ */
+  .side-menu-overlay {
+    position: fixed; inset: 0; background: rgba(10,12,30,0.55); backdrop-filter: blur(2px); z-index: 1040;
+    opacity: 0; transition: opacity 0.3s ease;
+  }
+  .side-menu-overlay.show { opacity: 1; }
+
+  .side-menu {
+    position: fixed; top: 0; left: 0; bottom: 0; width: 290px; max-width: 85vw;
+    background: var(--card); border-right: 1px solid var(--line);
+    z-index: 1050; transform: translateX(-100%); transition: transform 0.3s cubic-bezier(.4,0,.2,1);
+    display: flex; flex-direction: column; box-shadow: var(--shadow-lg);
+  }
+  .side-menu.open { transform: translateX(0); }
+
+  .side-menu-header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 18px 18px 16px; border-bottom: 1px solid var(--line);
+  }
+  .side-menu-content {
+    padding: 16px; display: flex; flex-direction: column; gap: 8px; overflow-y: auto;
+  }
+  .menu-btn {
+    width: 100%; text-align: left; display: flex; justify-content: flex-start;
+    padding: 11px 14px; border-radius: 11px;
+  }
+  .menu-divider {
+    border: none; border-top: 1px solid var(--line); margin: 8px 0;
+  }
 
   /* ============ Form ============ */
-  form{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));align-items:end}
-  label{display:block;font-size:.8rem;font-weight:600;color:var(--muted);margin-bottom:6px}
-  input[type=text],input[type=email],input[type=password],input[type=date],input[type=url],textarea,select{
-    width:100%;padding:.6rem .7rem;border:1px solid var(--line);border-radius:10px;
-    background:var(--bg);color:var(--ink);font:inherit;
+  form{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));align-items:end}
+  label{display:block;font-size:.78rem;font-weight:700;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.03em}
+  input[type=text],input[type=email],input[type=password],input[type=date],input[type=url],input[type=number],textarea,select{
+    width:100%;padding:.65rem .8rem;border:1.5px solid var(--line);border-radius:11px;
+    background:var(--card-soft);color:var(--ink);font:inherit;
+    transition:border-color .15s ease, background-color .15s ease;
   }
-  input:focus,textarea:focus,select:focus,button:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+  input[type=text]:hover,input[type=email]:hover,input[type=password]:hover,input[type=date]:hover,input[type=url]:hover,textarea:hover,select:hover{border-color:color-mix(in srgb, var(--brand) 35%, var(--line))}
+  input:focus,textarea:focus,select:focus,button:focus-visible{outline:2px solid var(--brand);outline-offset:2px;border-color:var(--brand)}
   .form-actions{grid-column:1/-1;display:flex;gap:10px;flex-wrap:wrap}
 
   /* ============ Stats ============ */
   .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px}
-  .stat{padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--card)}
-  .stat b{display:block;font-size:1.5rem}
-  .stat span{font-size:.8rem;color:var(--muted)}
-  
-  .progress-bar-wrap{margin-top:14px;background:var(--bg);border-radius:999px;height:10px;overflow:hidden;border:1px solid var(--line)}
-  .progress-bar-fill{background:var(--brand);height:100%;width:0%;transition:width .4s ease}
+  .stat{
+    padding:14px 16px;border:1px solid var(--line);border-radius:var(--radius-sm);background:var(--card-soft);
+    transition:transform .2s ease;
+  }
+  .stat:hover{transform:translateY(-2px)}
+  .stat b{display:block;font-size:1.7rem;font-family:var(--font-display);font-weight:800;
+    background:linear-gradient(135deg,var(--brand),var(--brand2));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .stat span{font-size:.8rem;color:var(--muted);font-weight:600}
+  .stat.stat-accent{background:var(--brand-soft);border-color:transparent}
+  .stat.stat-accent b{background:linear-gradient(135deg,var(--ok),var(--brand2));-webkit-background-clip:text;background-clip:text;color:transparent}
+
+  .progress-bar-wrap{margin-top:16px;background:var(--card-soft);border-radius:999px;height:11px;overflow:hidden;border:1px solid var(--line)}
+  .progress-bar-fill{background:linear-gradient(90deg,var(--brand),var(--brand2));height:100%;width:0%;transition:width .5s cubic-bezier(.4,0,.2,1);border-radius:999px}
 
   /* ============ Sections & lists ============ */
-  .section-head{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:12px}
-  .section-head h2{font-size:1.05rem}
-  
+  .section-head{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:14px}
+  .section-head h2{font-size:1.08rem;font-weight:800;letter-spacing:-.01em}
+
   .item{
     display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;
-    padding:12px;border:1px solid var(--line);border-radius:12px;margin-bottom:10px;background:var(--card);
-    transition:transform .2s ease, opacity .2s ease, background-color .3s ease;
+    padding:13px 14px;border:1px solid var(--line);border-radius:var(--radius-sm);margin-bottom:10px;background:var(--card-soft);
+    transition:transform .2s ease, opacity .2s ease, background-color .3s ease, box-shadow .2s ease;
   }
+  .item:hover{box-shadow:0 6px 16px -10px rgba(20,20,60,.25)}
   .item.just-done{
     animation: pulseDone .4s ease;
     background-color: var(--ok-bg);
@@ -135,85 +212,115 @@
     100%{ transform: scale(1); }
   }
 
-  .item.done{opacity:.75}
+  .item.done{opacity:.7}
   .item .title{font-weight:700}
-  .item .sub{color:var(--muted);font-size:.85rem;display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:2px}
+  .item .sub{color:var(--muted);font-size:.85rem;display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:3px}
   .item .actions{display:flex;gap:8px;flex-wrap:wrap}
 
   .tag{
-    display:inline-block;padding:2px 8px;border-radius:999px;font-size:.75rem;font-weight:700;
-    background:var(--line);color:var(--ink);
+    display:inline-block;padding:3px 9px;border-radius:999px;font-size:.72rem;font-weight:800;
+    background:var(--line);color:var(--ink);letter-spacing:.01em;
   }
-  .tag.today{background:var(--brand);color:var(--brand-ink)}
+  .tag.today{background:linear-gradient(135deg,var(--brand),var(--brand2));color:var(--brand-ink)}
   .tag.over{background:var(--danger-bg);color:var(--danger)}
   .tag.done{background:var(--ok-bg);color:var(--ok)}
-  .tag.subject{background:var(--bg);border:1px solid var(--line);font-weight:600}
-  
+  .tag.subject{background:var(--brand-soft);border:1px solid transparent;color:var(--brand);font-weight:700}
+
   .resource-link{
-    display:inline-flex;align-items:center;gap:4px;font-size:.8rem;color:var(--brand);
-    text-decoration:none;background:var(--bg);padding:2px 6px;border-radius:6px;border:1px solid var(--line);
+    display:inline-flex;align-items:center;gap:4px;font-size:.8rem;color:var(--brand);font-weight:600;
+    text-decoration:none;background:var(--brand-soft);padding:3px 8px;border-radius:8px;border:1px solid transparent;
   }
-  .resource-link:hover{text-decoration:underline}
+  .resource-link:hover{filter:brightness(.96)}
 
   .empty{
-    border:1px dashed var(--line);border-radius:12px;padding:18px;text-align:center;color:var(--muted);
+    border:1.5px dashed var(--line);border-radius:var(--radius-sm);padding:26px 18px;text-align:center;color:var(--muted);
+    background:var(--card-soft);font-weight:600;
   }
 
   /* ============ Course rows & Notes ============ */
-  .course{border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:12px}
+  .course{border:1px solid var(--line);border-radius:var(--radius-sm);padding:14px;margin-bottom:14px;background:var(--card-soft);transition:box-shadow .2s ease}
+  .course:hover{box-shadow:0 8px 20px -12px rgba(20,20,60,.25)}
   .course:last-child{margin-bottom:0}
   .course-head{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
-  .schedule{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+  .schedule{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
   .slot{
     display:flex;flex-direction:column;gap:2px;min-width:104px;
-    border:1px solid var(--line);border-radius:10px;padding:6px 8px;background:var(--bg);
-    transition:transform .15s ease;
+    border:1px solid var(--line);border-radius:11px;padding:8px 10px;background:var(--card);
+    transition:transform .15s ease, box-shadow .15s ease;
   }
-  .slot:hover{transform:translateY(-2px)}
-  .slot b{font-size:.75rem;letter-spacing:.02em}
-  .slot span{font-size:.8rem;color:var(--muted)}
+  .slot:hover{transform:translateY(-2px);box-shadow:0 6px 14px -8px rgba(20,20,60,.25)}
+  .slot b{font-size:.72rem;letter-spacing:.03em;text-transform:uppercase;color:var(--muted)}
+  .slot span{font-size:.82rem;color:var(--ink);font-weight:600}
   .slot.done{background:var(--ok-bg);border-color:transparent}
   .slot.done b,.slot.done span{color:var(--ok)}
-  .slot.today{background:var(--brand);border-color:transparent}
+  .slot.today{background:linear-gradient(135deg,var(--brand),var(--brand2));border-color:transparent}
   .slot.today b,.slot.today span{color:var(--brand-ink)}
   .slot.over{background:var(--danger-bg);border-color:transparent}
   .slot.over b,.slot.over span{color:var(--danger)}
   .slot button{margin-top:4px}
 
   .course-notes-box {
-    margin-top: 10px;
+    margin-top: 12px;
   }
   .course-notes-box textarea {
     resize: vertical;
-    min-height: 50px;
+    min-height: 54px;
     font-size: 0.85rem;
   }
+
+  /* ============ Heatmap d'activité ============ */
+  .heatmap{
+    display:grid;
+    grid-template-rows:repeat(7,1fr);
+    grid-auto-flow:column;
+    grid-auto-columns:16px;
+    gap:4px;
+    overflow-x:auto;
+    padding-bottom:6px;
+  }
+  .heatmap-cell{
+    width:16px;height:16px;border-radius:5px;
+    background:var(--card-soft);border:1px solid var(--line);
+    transition:transform .12s ease;
+    display:inline-block;
+  }
+  .heatmap-cell:hover{transform:scale(1.25)}
+  .heatmap-cell.lvl-0{background:var(--card-soft)}
+  .heatmap-cell.lvl-1{background:color-mix(in srgb, var(--ok) 25%, var(--card-soft));border-color:transparent}
+  .heatmap-cell.lvl-2{background:color-mix(in srgb, var(--ok) 50%, var(--card-soft));border-color:transparent}
+  .heatmap-cell.lvl-3{background:color-mix(in srgb, var(--ok) 75%, var(--card-soft));border-color:transparent}
+  .heatmap-cell.lvl-4{background:var(--ok);border-color:transparent}
+  .heatmap-legend{display:flex;align-items:center;gap:4px;margin-top:4px}
+  .heatmap-legend .heatmap-cell{width:12px;height:12px}
 
   /* ============ Calendrier en temps réel & Événements ============ */
   .calendar-grid {
     display: grid;
     grid-template-columns: repeat(7, minmax(0, 1fr));
-    gap: 6px;
+    gap: 8px;
   }
   .cal-day-cell {
     border: 1px solid var(--line);
-    border-radius: 10px;
+    border-radius: var(--radius-sm);
     padding: 8px;
-    background: var(--bg);
-    min-height: 85px;
+    background: var(--card-soft);
+    min-height: 88px;
     text-align: left;
+    transition:border-color .15s ease;
   }
   .cal-day-cell.is-today {
     border-color: var(--brand);
-    box-shadow: 0 0 0 1px var(--brand);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--brand) 35%, transparent);
+    background:var(--brand-soft);
   }
   .cal-badge {
     font-size: 10px;
+    font-weight:600;
     background: var(--card);
     border: 1px solid var(--line);
-    padding: 1px 4px;
-    border-radius: 4px;
-    margin-top: 2px;
+    padding: 2px 5px;
+    border-radius: 6px;
+    margin-top: 3px;
     display: block;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -223,59 +330,170 @@
     background: var(--warn-bg);
     color: var(--warn);
     border-color: transparent;
-    font-weight: 700;
+    font-weight: 800;
   }
 
   /* Modal style */
   .modal-overlay {
-    position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+    position: fixed; inset: 0; background: rgba(10,12,30,0.55); backdrop-filter: blur(3px);
     display: grid; place-items: center; z-index: 1000; padding: 16px;
+    animation: fadeIn .15s ease;
   }
+  @keyframes fadeIn{ from{opacity:0} to{opacity:1} }
   .modal-card {
     background: var(--card); border: 1px solid var(--line);
-    border-radius: var(--radius); padding: 20px; width: 100%; max-width: 400px;
-    box-shadow: var(--shadow);
+    border-radius: var(--radius); padding: 22px; width: 100%; max-width: 420px;
+    box-shadow: var(--shadow-lg);
+    animation: modalPop .2s cubic-bezier(.4,0,.2,1);
   }
+  @keyframes modalPop{ from{opacity:0; transform:translateY(8px) scale(.98)} to{opacity:1; transform:translateY(0) scale(1)} }
 
   .filters{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
   .chip{
     border:1px solid var(--line);background:var(--card);color:var(--muted);
-    padding:.3rem .7rem;border-radius:999px;font-size:.8rem;font-weight:600;
+    padding:.35rem .8rem;border-radius:999px;font-size:.8rem;font-weight:700;
+    transition:.15s all ease;
   }
-  .chip[aria-pressed="true"]{background:var(--brand);color:var(--brand-ink);border-color:transparent}
+  .chip:hover{border-color:color-mix(in srgb, var(--brand) 40%, var(--line))}
+  .chip[aria-pressed="true"]{background:linear-gradient(135deg,var(--brand),var(--brand2));color:var(--brand-ink);border-color:transparent}
 
-  .toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+  .toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
   .notif-status{font-size:.85rem;color:var(--muted)}
-  footer{color:var(--muted);font-size:.85rem;padding:8px 0 28px;text-align:center}
+  footer{color:var(--muted);font-size:.85rem;padding:14px 0 32px;text-align:center}
 
-  .auth-screen{min-height:100vh;display:grid;place-items:center;padding:24px}
-  .auth-card{width:min(440px,100%);padding:28px}
-  .auth-card .brand{justify-content:center;margin-bottom:24px}
-  .auth-card form{display:grid;grid-template-columns:1fr;gap:14px}
-  .auth-card h2{text-align:center;margin-bottom:6px}
-  .auth-card .auth-intro{text-align:center;margin:0 0 20px}
-  .auth-switch{text-align:center;margin:18px 0 0}
-  .auth-message{min-height:24px;text-align:center;margin:12px 0 0;color:var(--danger)}
+  .auth-screen{
+    min-height:100vh;display:grid;place-items:center;padding:24px;
+  }
+  .auth-card{width:min(440px,100%);padding:34px}
+  .auth-card .brand{justify-content:center;margin-bottom:26px}
+  .auth-card form{display:grid;grid-template-columns:1fr;gap:16px}
+  .auth-card h2{text-align:center;margin-bottom:6px;font-size:1.4rem}
+  .auth-card .auth-intro{text-align:center;margin:0 0 22px}
+  .auth-switch{text-align:center;margin:20px 0 0}
+  .auth-message{min-height:24px;text-align:center;margin:12px 0 0;color:var(--danger);font-weight:600}
   .user-email{max-width:190px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
+  /* ============ Pomodoro ============ */
+  .pomo-card{max-width:340px;text-align:center;position:relative;overflow:hidden;transition:box-shadow .4s ease}
+  .pomo-mode{font-weight:800;font-size:.85rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;position:relative;z-index:2}
+  .pomo-ring-wrap{position:relative;width:220px;height:220px;margin:4px auto 6px;display:grid;place-items:center}
+  .pomo-ring-wrap svg{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg)}
+  .pomo-ring-bg{fill:none;stroke:var(--line);stroke-width:8}
+  .pomo-ring-progress{
+    fill:none;stroke-width:8;stroke-linecap:round;
+    stroke:var(--brand);
+    transition:stroke-dashoffset .35s linear, stroke .3s ease;
+    filter:drop-shadow(0 0 6px color-mix(in srgb, var(--brand) 55%, transparent));
+  }
+  .pomo-time{font-size:3.6rem;font-weight:800;font-variant-numeric:tabular-nums;margin:6px 0 4px;transition:color .3s ease;font-family:var(--font-display);position:relative;z-index:2}
+  .pomo-time.work{color:var(--brand)}
+  .pomo-time.short-break{color:var(--ok)}
+  .pomo-time.long-break{color:var(--warn)}
+  .pomo-ring-wrap.short-break .pomo-ring-progress{stroke:var(--ok);filter:drop-shadow(0 0 6px color-mix(in srgb, var(--ok) 55%, transparent))}
+  .pomo-ring-wrap.long-break .pomo-ring-progress{stroke:var(--warn);filter:drop-shadow(0 0 6px color-mix(in srgb, var(--warn) 55%, transparent))}
+  .pomo-cycles{color:var(--muted);font-size:.85rem;margin-bottom:18px;font-weight:600;position:relative;z-index:2}
+
+  /* Halo tournant + pulsation quand le minuteur tourne */
+  .pomo-card.pomo-running::before{
+    content:"";position:absolute;inset:-60%;z-index:0;pointer-events:none;
+    background:conic-gradient(from 0deg, var(--brand), var(--brand2), var(--ok), var(--brand));
+    opacity:.16;animation:pomoSpin 6s linear infinite;
+  }
+  [data-theme="dark"] .pomo-card.pomo-running::before{ opacity:.28; }
+  .pomo-card.pomo-running .pomo-ring-wrap{animation:pomoPulse 1.6s ease-in-out infinite}
+  @keyframes pomoSpin{ from{ transform:rotate(0deg);} to{ transform:rotate(360deg);} }
+  @keyframes pomoPulse{
+    0%,100%{ transform:scale(1); }
+    50%{ transform:scale(1.035); }
+  }
+  .pomo-controls{display:flex;gap:8px;justify-content:center;margin-bottom:20px;flex-wrap:wrap}
+  .pomo-settings{display:grid;grid-template-columns:1fr 1fr;gap:12px;text-align:left;border-top:1px solid var(--line);padding-top:16px}
+  .pomo-settings label{font-size:.72rem;color:var(--muted);display:block;margin-bottom:4px}
+  .pomo-settings input{width:100%}
+  .pomo-title-field{margin-bottom:14px}
+  .pomo-title-field input{width:100%;text-align:center;font-weight:600}
+  .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+
+  /* ============ Mini-widget Pomodoro flottant ============ */
+  .pomo-mini{
+    position:fixed; right:18px; bottom:18px; z-index:1010;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:0;
+    width:64px; height:64px; border-radius:50%; border:none; padding:0;
+    background:var(--card); color:var(--ink);
+    box-shadow:var(--shadow-lg); border:2px solid var(--brand);
+    cursor:pointer; transition:transform .18s ease, box-shadow .18s ease;
+  }
+  .pomo-mini:hover{ transform:translateY(-2px) scale(1.04); }
+  .pomo-mini:active{ transform:translateY(0) scale(.98); }
+  .pomo-mini.short-break{ border-color:var(--ok); }
+  .pomo-mini.long-break{ border-color:var(--warn); }
+  .pomo-mini.pomo-mini-running{ animation:pomoMiniPulse 1.8s ease-in-out infinite; }
+  @keyframes pomoMiniPulse{
+    0%,100%{ box-shadow:var(--shadow-lg), 0 0 0 0 color-mix(in srgb, var(--brand) 35%, transparent); }
+    50%{ box-shadow:var(--shadow-lg), 0 0 0 8px transparent; }
+  }
+  .pomo-mini-emoji{ font-size:1.05rem; line-height:1; }
+  .pomo-mini-time{ font-size:.66rem; font-weight:800; font-variant-numeric:tabular-nums; font-family:var(--font-display); margin-top:1px; }
+  @media (max-width:560px){
+    .pomo-mini{ width:56px; height:56px; right:14px; bottom:14px; }
+    .pomo-mini-emoji{ font-size:.95rem; }
+    .pomo-mini-time{ font-size:.6rem; }
+  }
+
+  /* ============ Modale d'alerte Pomodoro (pause / fin) ============ */
+  .pomo-alert-card{ max-width:380px; text-align:center; }
+  .pomo-alert-emoji{ font-size:2.6rem; margin-bottom:6px; }
+  .pomo-alert-card h2{ font-size:1.15rem; margin-bottom:6px; }
+  .pomo-alert-card p{ margin:0; }
+
+  /* ============ Historique Pomodoro ============ */
+  .pomo-history-list{ display:flex; flex-direction:column; gap:8px; max-height:340px; overflow-y:auto; }
+  .pomo-history-empty{ color:var(--muted); font-size:.9rem; text-align:center; padding:18px 0; }
+  .pomo-history-item{
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    padding:10px 12px; border:1px solid var(--line); border-radius:var(--radius-sm); background:var(--card-soft);
+  }
+  .pomo-history-item .pomo-history-type{ display:flex; align-items:center; gap:8px; font-weight:700; font-size:.88rem; }
+  .pomo-history-item .pomo-history-when{ font-size:.78rem; color:var(--muted); }
+  .pomo-history-badge{
+    font-size:.72rem; font-weight:800; padding:.2rem .55rem; border-radius:999px;
+    background:var(--brand-soft); color:var(--brand);
+  }
+  .pomo-history-badge.short-break, .pomo-history-badge.long-break{ background:var(--ok-bg); color:var(--ok); }
+  .pomo-history-badge.long-break{ background:var(--warn-bg); color:var(--warn); }
+
+  /* ============ Modale Explication ============ */
+  .info-modal-card{max-width:640px;max-height:82vh;overflow-y:auto;text-align:left}
+  .info-modal-card h3{margin:20px 0 6px;font-size:1.02rem;font-weight:800}
+  .info-modal-card h3:first-of-type{margin-top:6px}
+  .info-modal-card p, .info-modal-card li{color:var(--ink);font-size:.94rem;line-height:1.6}
+  .info-modal-card ul{margin:4px 0;padding-left:20px}
+  .info-modal-card .info-source{margin-top:18px;padding-top:14px;border-top:1px solid var(--line);font-size:.82rem;color:var(--muted)}
+
   /* ============ Toast & Confettis ============ */
-  #toasts{position:fixed;left:0;right:0;bottom:16px;display:grid;gap:8px;justify-items:center;pointer-events:none;padding:0 12px;z-index:999}
+  #toasts{position:fixed;left:0;right:0;bottom:20px;display:grid;gap:8px;justify-items:center;pointer-events:none;padding:0 12px;z-index:999}
   .toast{
-    background:var(--ink);color:var(--bg);padding:.6rem .9rem;border-radius:10px;font-size:.9rem;
-    box-shadow:var(--shadow);max-width:90vw;animation: fadeInUp .25s ease;
+    background:var(--ink);color:var(--bg);padding:.65rem 1rem;border-radius:11px;font-size:.9rem;font-weight:600;
+    box-shadow:var(--shadow-lg);max-width:90vw;animation: fadeInUp .25s ease;
   }
   @keyframes fadeInUp{
     from{ opacity:0; transform:translateY(10px); }
     to{ opacity:1; transform:translateY(0); }
   }
 
+  ::-webkit-scrollbar{width:10px;height:10px}
+  ::-webkit-scrollbar-track{background:transparent}
+  ::-webkit-scrollbar-thumb{background:var(--line);border-radius:999px}
+
   @media (max-width:560px){
-    .wrap{padding:12px}
-    .card{padding:14px}
+    .wrap{padding:14px}
+    .card{padding:16px}
     .item{align-items:flex-start}
     .item .actions{width:100%}
     .slot{flex:1 1 44%}
     .calendar-grid { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+    .pomo-time{font-size:3rem}
+    .pomo-ring-wrap{width:180px;height:180px}
   }
 </style>
 </head>
@@ -298,23 +516,37 @@
 
   <header class="top">
     <div class="brand">
+      <button id="menuToggle" class="btn ghost" aria-label="Ouvrir le menu" style="font-size: 1.3rem; padding: 0.2rem 0.6rem;">☰</button>
       <div class="logo" aria-hidden="true">J+</div>
       <div>
         <h1>Méthode des J</h1>
         <p id="todayLabel">—</p>
       </div>
     </div>
-    <div class="toolbar">
-      <button id="themeBtn" class="btn ghost small">🌓 Auto</button>
-      <button id="openEventModalBtn" class="btn small primary">+ Événement spécial</button>
-      <button id="notifBtn" class="btn">🔔 Activer les rappels</button>
-      <button id="installBtn" class="btn ghost small hide">📲 Installer l'app</button>
-      <button id="exportBtn" class="btn ghost small" title="Télécharger mes données">⬇ Exporter</button>
-      <button id="importBtn" class="btn ghost small" title="Charger un fichier exporté">⬆ Importer</button>
-      <span id="userEmail" class="small muted user-email"></span>
-      <button id="logoutBtn" class="btn ghost small">Déconnexion</button>
-    </div>
   </header>
+
+  <!-- ============ MENU LATÉRAL ============ -->
+  <div id="sideMenuOverlay" class="side-menu-overlay hide"></div>
+  <nav id="sideMenu" class="side-menu">
+    <div class="side-menu-header">
+      <div style="font-weight: bold; font-size: 1.1rem;">Menu</div>
+      <button id="closeMenuBtn" class="btn ghost small">✕</button>
+    </div>
+    <div class="side-menu-content">
+      <span id="userEmail" class="small muted user-email" style="display:block; padding: 0 8px; margin-bottom: 4px; font-weight: 600;"></span>
+      <hr class="menu-divider">
+      <button id="themeBtn" class="btn ghost menu-btn">🌓 Auto</button>
+      <button id="openEventModalBtn" class="btn primary menu-btn">+ Événement spécial</button>
+      <button id="openPomoBtn" class="btn menu-btn">🍅 Pomodoro</button>
+      <button id="openMethodInfoBtn" class="btn ghost menu-btn">📖 Explication Méthode J</button>
+      <button id="notifBtn" class="btn menu-btn">🔔 Activer les rappels</button>
+      <button id="exportBtn" class="btn ghost menu-btn" title="Télécharger mes données">⬇ Exporter</button>
+      <button id="importBtn" class="btn ghost menu-btn" title="Charger un fichier exporté">⬆ Importer</button>
+      <button id="installBtn" class="btn ghost menu-btn hide">📲 Installer l'app</button>
+      <hr class="menu-divider">
+      <button id="logoutBtn" class="btn ghost menu-btn danger" style="color: var(--danger);">Déconnexion</button>
+    </div>
+  </nav>
 
   <p id="iosHint" class="small muted hide" style="margin:-8px 0 16px">
     📱 Sur iPhone/iPad : ouvre ce site dans <strong>Safari</strong>, appuie sur <strong>Partager</strong> puis
@@ -345,6 +577,24 @@
         <label for="courseStart">Date de début (J0)</label>
         <input id="courseStart" name="courseStart" type="date" required>
       </div>
+      <div>
+        <label for="courseExclude">Exclure un jour de la semaine (optionnel)</label>
+        <select id="courseExclude" name="courseExclude">
+          <option value="">Aucun</option>
+          <option value="1">Lundi</option>
+          <option value="2">Mardi</option>
+          <option value="3">Mercredi</option>
+          <option value="4">Jeudi</option>
+          <option value="5">Vendredi</option>
+          <option value="6">Samedi</option>
+          <option value="0">Dimanche</option>
+        </select>
+        <span class="small muted">Une révision prévue ce jour-là sera décalée au lendemain.</span>
+      </div>
+      <div>
+        <label for="courseDuration">Durée estimée par révision (minutes)</label>
+        <input id="courseDuration" name="courseDuration" type="number" min="1" max="600" step="1" placeholder="15">
+      </div>
       <div class="form-actions">
         <button type="submit" class="btn primary">Ajouter le cours</button>
         <button type="reset" class="btn ghost">Effacer</button>
@@ -354,12 +604,18 @@
 
   <!-- ============ Stats & Progression ============ -->
   <section class="card" aria-label="Statistiques">
+    <div class="section-head">
+      <h2>📊 Vue d'ensemble</h2>
+      <span class="small muted">Mise à jour en continu</span>
+    </div>
     <div class="stats">
       <div class="stat"><b id="statDue">0</b><span>À réviser aujourd'hui</span></div>
       <div class="stat"><b id="statOver">0</b><span>En retard</span></div>
       <div class="stat"><b id="statDone">0</b><span>Révisions validées</span></div>
       <div class="stat"><b id="statRate">0%</b><span>Complétion globale</span></div>
       <div class="stat"><b id="statWeek">0%</b><span>Succès (7 derniers jours)</span></div>
+      <div class="stat stat-accent"><b id="statStreak">0</b><span>🔥 Jours de suite</span></div>
+      <div class="stat stat-accent"><b id="statTimeSpent">0 min</b><span>⏱ Temps total révisé</span></div>
     </div>
     <div class="progress-bar-wrap">
       <div id="progressBar" class="progress-bar-fill"></div>
@@ -381,6 +637,24 @@
       <h2 id="hCalendar">📅 Calendrier en temps réel (14 prochains jours)</h2>
     </div>
     <div id="realtimeCalendar" class="calendar-grid"></div>
+  </section>
+
+  <!-- ============ Activité (heatmap façon GitHub) ============ -->
+  <section class="card" aria-labelledby="hActivity">
+    <div class="section-head">
+      <h2 id="hActivity">🔥 Activité de révision</h2>
+      <span id="streakLabel" class="small muted"></span>
+    </div>
+    <div id="activityHeatmap" class="heatmap"></div>
+    <div class="heatmap-legend small muted">
+      <span>Moins</span>
+      <span class="heatmap-cell lvl-0"></span>
+      <span class="heatmap-cell lvl-1"></span>
+      <span class="heatmap-cell lvl-2"></span>
+      <span class="heatmap-cell lvl-3"></span>
+      <span class="heatmap-cell lvl-4"></span>
+      <span>Plus</span>
+    </div>
   </section>
 
   <!-- ============ Toutes mes révisions ============ -->
@@ -438,12 +712,177 @@
   </div>
 </div>
 
+<!-- Modal Pomodoro -->
+<div id="pomoModal" class="modal-overlay hide" aria-hidden="true">
+  <div class="modal-card pomo-card" id="pomoCard">
+    <div class="section-head" style="margin-bottom:8px">
+      <h2>🍅 Pomodoro</h2>
+      <div style="display:flex;gap:6px">
+        <button id="openPomoHistoryBtn" class="btn ghost small" title="Historique">🕘</button>
+        <button id="closePomoModal" class="btn ghost small">✕</button>
+      </div>
+    </div>
+    <div class="pomo-title-field">
+      <label for="pomoTitle" class="sr-only">Titre de la session</label>
+      <input id="pomoTitle" type="text" placeholder="Titre de la session (ex : Réviser Droit constit)" maxlength="80">
+    </div>
+    <div class="pomo-mode" id="pomoModeLabel">Travail</div>
+    <div class="pomo-ring-wrap work" id="pomoRingWrap">
+      <svg viewBox="0 0 120 120">
+        <circle class="pomo-ring-bg" cx="60" cy="60" r="52"></circle>
+        <circle class="pomo-ring-progress" id="pomoRingProgress" cx="60" cy="60" r="52"></circle>
+      </svg>
+      <div class="pomo-time work" id="pomoTime">25:00</div>
+    </div>
+    <div class="pomo-cycles" id="pomoCycles">0 session(s) terminée(s)</div>
+    <div class="pomo-controls">
+      <button id="pomoStartPause" class="btn primary">▶ Démarrer</button>
+      <button id="pomoStop" class="btn danger">⏹ Stop</button>
+      <button id="pomoReset" class="btn ghost">↺ Réinitialiser</button>
+      <button id="pomoSkip" class="btn ghost">⏭ Passer</button>
+    </div>
+    <div class="pomo-settings">
+      <div><label for="pomoWork">Travail (min)</label><input id="pomoWork" type="number" min="1" max="180" step="1"></div>
+      <div><label for="pomoShort">Pause courte (min)</label><input id="pomoShort" type="number" min="1" max="60" step="1"></div>
+      <div><label for="pomoLong">Pause longue (min)</label><input id="pomoLong" type="number" min="1" max="90" step="1"></div>
+      <div><label for="pomoCyclesBefore">Sessions avant pause longue</label><input id="pomoCyclesBefore" type="number" min="1" max="12" step="1"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Mini-widget Pomodoro flottant (visible quand le minuteur tourne, pour accéder aux cours) -->
+<button id="pomoMiniWidget" class="pomo-mini hide" type="button" title="Rouvrir le minuteur Pomodoro" aria-label="Rouvrir le minuteur Pomodoro">
+  <span class="pomo-mini-emoji">🍅</span>
+  <span class="pomo-mini-time" id="pomoMiniTime">25:00</span>
+</button>
+
+<!-- Modale d'alerte Pomodoro (pause démarrée / travail repris) -->
+<div id="pomoAlertModal" class="modal-overlay hide" aria-hidden="true">
+  <div class="modal-card pomo-alert-card" id="pomoAlertCard">
+    <div class="pomo-alert-emoji" id="pomoAlertEmoji">🔔</div>
+    <h2 id="pomoAlertTitle">Titre</h2>
+    <p class="muted" id="pomoAlertMessage">Message</p>
+    <div class="pomo-controls" style="margin-top:18px">
+      <button id="pomoAlertLater" class="btn ghost">Plus tard</button>
+      <button id="pomoAlertStart" class="btn primary">Démarrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modale Historique Pomodoro -->
+<div id="pomoHistoryModal" class="modal-overlay hide" aria-hidden="true">
+  <div class="modal-card" style="max-width:420px;text-align:left">
+    <div class="section-head" style="margin-bottom:8px">
+      <h2>🕘 Historique Pomodoro</h2>
+      <button id="closePomoHistoryModal" class="btn ghost small">✕</button>
+    </div>
+    <div id="pomoHistoryList" class="pomo-history-list"></div>
+    <div class="form-actions" style="margin-top:14px">
+      <button id="clearPomoHistoryBtn" class="btn danger small">Effacer l'historique</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Explication Méthode J -->
+<div id="methodInfoModal" class="modal-overlay hide" aria-hidden="true">
+  <div class="modal-card info-modal-card">
+    <div class="section-head" style="margin-bottom:8px">
+      <h2>📖 Explication de la Méthode des J</h2>
+      <button id="closeMethodInfoModal" class="btn ghost small">✕</button>
+    </div>
+
+    <h3>🧠 Le principe</h3>
+    <p>La méthode des J consiste à retravailler un cours plusieurs fois, à des moments précis exprimés en nombre de jours écoulés depuis la première fois où on l'a vu (ce jour de référence est appelé J0). J1 veut dire « le lendemain », J7 « une semaine plus tard », etc. Chaque relecture vient raviver le souvenir avant qu'il ne s'efface trop.</p>
+
+    <h3>📉 Pourquoi ça marche : la courbe de l'oubli</h3>
+    <p>Dès 1885, le psychologue Hermann Ebbinghaus a montré qu'une information tout juste apprise s'estompe très vite si on ne la retravaille pas, selon une courbe proche d'une décroissance exponentielle. Plus on attend avant de revoir un cours, plus on en a déjà perdu.</p>
+
+    <h3>⏳ L'effet d'espacement</h3>
+    <p>De très nombreuses études convergent : à volume de travail égal, mieux vaut répartir ses révisions dans le temps plutôt que tout revoir d'un bloc juste avant un contrôle (le fameux « bachotage »). Des séances courtes et régulières ancrent bien mieux les connaissances en mémoire à long terme.</p>
+
+    <h3>📈 Des intervalles de plus en plus grands</h3>
+    <p>L'astuce de la méthode des J est d'espacer de <em>plus en plus</em> les révisions au fil du temps — un peu comme les rappels de vaccin, eux aussi de plus en plus espacés. Une fois qu'un cours commence à bien s'ancrer, on peut attendre plus longtemps avant d'y revenir, ce qui libère du temps pour apprendre de nouvelles choses.</p>
+
+    <h3>🗓 Les versions les plus courantes</h3>
+    <ul>
+      <li><b>Version classique</b> (celle utilisée par cette appli) : J0 · J1 · J3 · J7 · J14 · J30.</li>
+      <li><b>Variante « week-end »</b> : J0 · J2 · J5 · J14 — pensée pour éviter que les révisions tombent toujours le même jour de la semaine que le cours, et pour alléger la première semaine.</li>
+      <li><b>Version allégée</b> : J0 · J3 · J10 · J30 — moins de séances, à réserver aux cours plus simples ou secondaires.</li>
+    </ul>
+
+    <h3>⚠️ Les pièges à éviter</h3>
+    <ul>
+      <li>Le bachotage donne une <b>fausse impression d'efficacité</b> à court terme : l'oubli continue de faire son travail en coulisses, même si on a l'impression d'avoir tout retenu.</li>
+      <li>Rater une échéance n'est pas grave : mieux vaut reprendre le planning là où il en est que tout recommencer à zéro.</li>
+      <li>Le <b>moment</b> de la révision compte, mais sa <b>qualité</b> aussi : se re-tester activement (plutôt que relire passivement ses notes) reste le geste le plus efficace à chaque piqûre de rappel.</li>
+      <li>Adapte l'intensité de tes révisions à l'importance réelle de chaque cours (coefficient, difficulté) plutôt que de traiter toutes les matières à l'identique.</li>
+    </ul>
+
+    <p class="info-source">Contenu reformulé à partir de l'article « Tout savoir sur la Méthode des J » — <a href="https://noubliejamais.fr/blog/tout-savoir-sur-la-methode-des-j/" target="_blank" rel="noopener">lire l'article complet sur noubliejamais.fr ↗</a></p>
+  </div>
+</div>
+
 <input type="file" id="importFile" accept="application/json,.json" class="hide">
 <div id="toasts" aria-live="polite"></div>
 
 <script type="module">
-import { getUser, login, signup, logout, handleAuthCallback, onAuthChange } from "https://esm.sh/@netlify/identity";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 "use strict";
+
+/* ==========================================================================
+   AUTHENTIFICATION — Supabase
+   ⚠️ Remplace les deux valeurs ci-dessous par celles de TON projet :
+   Dashboard Supabase → Project Settings → API → Project URL / anon public key
+   ========================================================================== */
+var SUPABASE_URL = "https://omnvpdvarfdczchocgro.supabase.co";
+var SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9tbnZwZHZhcmZkY3pjaG9jZ3JvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODkwNjI1NjYsImV4cCI6MjEwNDYzODU2Nn0.-sC8t-4IJLgLe8ElaEYxjFEKBsR4Pr-MWHrDw4J41v0";
+var supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+function translateAuthError(msg){
+  var m = String(msg || "");
+  if (/Invalid login credentials/i.test(m)) return "Email ou mot de passe incorrect.";
+  if (/User already registered/i.test(m)) return "Un compte existe déjà avec cet email.";
+  if (/Password should be at least/i.test(m)) return "Le mot de passe doit contenir au moins 6 caractères.";
+  if (/Email not confirmed/i.test(m)) return "Merci de confirmer ton email avant de te connecter (vérifie ta boîte mail).";
+  if (/Unable to validate email address/i.test(m)) return "Adresse email invalide.";
+  if (/rate limit/i.test(m)) return "Trop de tentatives, réessaie dans quelques minutes.";
+  return m || "Authentification impossible.";
+}
+
+async function getUser(){
+  var res = await supabase.auth.getSession();
+  return res.data && res.data.session ? res.data.session.user : null;
+}
+
+async function login(email, password){
+  var res = await supabase.auth.signInWithPassword({ email: email, password: password });
+  if (res.error) throw res.error;
+  return res.data.user;
+}
+
+async function signup(email, password){
+  var res = await supabase.auth.signUp({ email: email, password: password });
+  if (res.error) throw res.error;
+  var user = res.data.user;
+  if (user) user.emailVerified = !!res.data.session;
+  return user;
+}
+
+function logout(){
+  return supabase.auth.signOut();
+}
+
+async function handleAuthCallback(){
+  // Supabase gère nativement les liens de confirmation / magic link (detectSessionInUrl).
+  return null;
+}
+
+function onAuthChange(cb){
+  supabase.auth.onAuthStateChange(function(event, session){
+    if (event === "SIGNED_OUT") cb("logout", null);
+    else if (session && session.user) cb("login", session.user);
+  });
+}
 
 /* ==========================================================================
    MÉTHODE DES J — Application multi-utilisateur sécurisée
@@ -456,6 +895,7 @@ var META_CACHE_NAME = "methode-j-meta-v1";
 var swRegistration = null;
 var deferredInstallPrompt = null;
 var OFFSETS = [1, 3, 7, 14, 30];
+var WEEKDAY_NAMES = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"];
 
 var state = { courses: [], events: [] };
 var ui = { filter: "all", subject: "all", theme: "auto" };
@@ -524,16 +964,49 @@ function applyTheme(t){
 function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
 function plural(n, sing, plur){ return n + " " + (Math.abs(n) > 1 ? (plur || sing + "s") : sing); }
 
-function computeSchedule(startISO, offsets){
+/* Durée estimée par révision, stockée localement par appareil (pas de colonne dédiée en base) */
+function loadCourseDurations(){
+  try { return JSON.parse(localStorage.getItem("courseDurations") || "{}") || {}; } catch (e) { return {}; }
+}
+function getCourseDuration(id){
+  var map = loadCourseDurations();
+  var v = parseInt(map[id], 10);
+  return (!isNaN(v) && v > 0) ? v : 15;
+}
+function setCourseDuration(id, minutes){
+  var map = loadCourseDurations();
+  var v = parseInt(minutes, 10);
+  map[id] = (!isNaN(v) && v > 0) ? Math.min(600, v) : 15;
+  try { localStorage.setItem("courseDurations", JSON.stringify(map)); } catch (e) {}
+}
+
+function skipExcludedWeekday(iso, excludeWeekday){
+  if (excludeWeekday === null || excludeWeekday === undefined || excludeWeekday === "") return iso;
+  var wd = Number(excludeWeekday);
+  if (isNaN(wd) || wd < 0 || wd > 6) return iso;
+  var guard = 0;
+  while (iso && parseISO(iso).getDay() === wd && guard < 7){
+    iso = addDays(iso, 1);
+    guard++;
+  }
+  return iso;
+}
+
+function computeSchedule(startISO, offsets, excludeWeekday){
   var list = (offsets && offsets.length ? offsets : OFFSETS).slice().sort(function(a,b){ return a - b; });
   var out = [{ offset: 0, date: startISO, done: false, doneAt: null }];
   for (var i = 0; i < list.length; i++){
-    out.push({ offset: list[i], date: addDays(startISO, list[i]), done: false, doneAt: null });
+    out.push({ offset: list[i], date: skipExcludedWeekday(addDays(startISO, list[i]), excludeWeekday), done: false, doneAt: null });
   }
   return out;
 }
 
-function makeCourse(name, subject, link, startISO){
+function makeCourse(name, subject, link, startISO, excludeWeekday, durationMin){
+  var ew = (excludeWeekday === "" || excludeWeekday === undefined || excludeWeekday === null) ? null : Number(excludeWeekday);
+  if (ew !== null && (isNaN(ew) || ew < 0 || ew > 6)) ew = null;
+  var dur = parseInt(durationMin, 10);
+  if (isNaN(dur) || dur <= 0) dur = 15;
+  dur = Math.min(600, dur);
   return {
     id: uid(),
     name: String(name || "").trim(),
@@ -542,13 +1015,16 @@ function makeCourse(name, subject, link, startISO){
     notes: "",
     start: startISO,
     createdAt: new Date().toISOString(),
-    schedule: computeSchedule(startISO)
+    excludeWeekday: ew,
+    durationMin: dur,
+    schedule: computeSchedule(startISO, null, ew)
   };
 }
 
-function addCourse(name, subject, link, startISO){
+function addCourse(name, subject, link, startISO, excludeWeekday, durationMin){
   if (!String(name || "").trim() || !parseISO(startISO)) return null;
-  var c = makeCourse(name, subject, link, startISO);
+  var c = makeCourse(name, subject, link, startISO, excludeWeekday, durationMin);
+  setCourseDuration(c.id, c.durationMin);
   state.courses.push(c);
   dbUpsertCourse(c);
   return c;
@@ -646,7 +1122,76 @@ function computeStats(){
   var rate = list.length > 0 ? Math.round((done / list.length) * 100) : 0;
   var weekRate = weekTotal > 0 ? Math.round((weekDone / weekTotal) * 100) : 0;
 
-  return { due: due, overdue: over, done: done, courses: state.courses.length, rate: rate, weekRate: weekRate };
+  return {
+    due: due, overdue: over, done: done, courses: state.courses.length, rate: rate, weekRate: weekRate,
+    streak: computeStreak(), totalMinutes: computeTotalMinutes()
+  };
+}
+
+/* Minutes totales révisées = durée estimée par cours × nombre de révisions validées (J0 inclus) */
+function computeTotalMinutes(){
+  var total = 0;
+  for (var i = 0; i < state.courses.length; i++){
+    var c = state.courses[i];
+    var dur = (c.durationMin && c.durationMin > 0) ? c.durationMin : 15;
+    for (var j = 0; j < c.schedule.length; j++){
+      if (c.schedule[j].done) total += dur;
+    }
+  }
+  return total;
+}
+
+function formatMinutes(total){
+  if (total < 60) return total + " min";
+  var h = Math.floor(total / 60), m = total % 60;
+  return h + "h" + (m ? pad2(m) : "");
+}
+
+/* Regroupe toutes les révisions validées par jour (basé sur doneAt), pour la heatmap et le streak */
+function activityByDay(){
+  var map = {};
+  for (var i = 0; i < state.courses.length; i++){
+    var c = state.courses[i];
+    for (var j = 0; j < c.schedule.length; j++){
+      var r = c.schedule[j];
+      if (!r.done) continue;
+      var day = r.doneAt ? String(r.doneAt).slice(0, 10) : r.date;
+      map[day] = (map[day] || 0) + 1;
+    }
+  }
+  return map;
+}
+
+/* Nombre de jours consécutifs (jusqu'à aujourd'hui) sans révision manquée */
+function computeStreak(){
+  var t = todayISO();
+  var reviewsByDate = {};
+  for (var i = 0; i < state.courses.length; i++){
+    var c = state.courses[i];
+    for (var j = 0; j < c.schedule.length; j++){
+      var r = c.schedule[j];
+      if (r.offset === 0) continue;
+      if (!reviewsByDate[r.date]) reviewsByDate[r.date] = [];
+      reviewsByDate[r.date].push(r);
+    }
+  }
+  var cursor = t;
+  // Si des révisions du jour restent à faire, on part d'hier pour ne pas casser la série en cours.
+  var todays = reviewsByDate[t] || [];
+  var todayIncomplete = todays.some(function(r){ return !r.done; });
+  if (todayIncomplete) cursor = addDays(t, -1);
+
+  var streak = 0;
+  for (var guard = 0; guard < 365; guard++){
+    var revs = reviewsByDate[cursor];
+    if (revs && revs.length){
+      var allDone = revs.every(function(r){ return r.done; });
+      if (!allDone) break;
+      streak++;
+    }
+    cursor = addDays(cursor, -1);
+  }
+  return streak;
 }
 
 function subjectsUsed(){
@@ -670,8 +1215,10 @@ function rowToCourse(row){
     subject: String(row.subject || "Sans matière"),
     link: String(row.link || ""),
     notes: String(row.notes || ""),
-    start: row.startDate,
-    createdAt: row.createdAt || new Date().toISOString(),
+    start: row.start_date,
+    createdAt: row.created_at || new Date().toISOString(),
+    excludeWeekday: (row.exclude_weekday === null || row.exclude_weekday === undefined) ? null : Number(row.exclude_weekday),
+    durationMin: getCourseDuration(row.id),
     schedule: Array.isArray(row.schedule)
       ? row.schedule.filter(function(r){ return r && parseISO(r.date); })
           .map(function(r){ return { offset: Number(r.offset) || 0, date: r.date, done: !!r.done, doneAt: r.doneAt || null }; })
@@ -680,7 +1227,18 @@ function rowToCourse(row){
 }
 
 function courseToRow(c){
-  return { id: c.id, name: c.name, subject: c.subject, link: c.link, notes: c.notes, startDate: c.start, createdAt: c.createdAt, schedule: c.schedule };
+  return {
+    id: c.id,
+    user_id: currentUser ? currentUser.id : null,
+    name: c.name,
+    subject: c.subject,
+    link: c.link,
+    notes: c.notes,
+    start_date: c.start,
+    created_at: c.createdAt,
+    exclude_weekday: (c.excludeWeekday === null || c.excludeWeekday === undefined) ? null : c.excludeWeekday,
+    schedule: c.schedule
+  };
 }
 
 function setSyncStatus(msg){
@@ -688,43 +1246,56 @@ function setSyncStatus(msg){
   if (s) s.textContent = msg;
 }
 
-function apiRequest(url, options){
-  return fetch(url, Object.assign({ credentials: "same-origin", headers: { "Content-Type": "application/json" } }, options || {})).then(function(res){
-    if (res.status === 401) { showAuth(); throw new Error("Session expirée"); }
-    if (!res.ok) throw new Error("HTTP " + res.status);
-    return res.status === 204 ? null : res.json();
+function loadUserData(){
+  if (!currentUser) return Promise.resolve(defaultState());
+  setSyncStatus("🔄 Synchronisation de votre espace…");
+  return Promise.all([
+    supabase.from("courses").select("*").eq("user_id", currentUser.id).order("created_at", { ascending: true }),
+    supabase.from("events").select("*").eq("user_id", currentUser.id)
+  ]).then(function(results){
+    var coursesRes = results[0], eventsRes = results[1];
+    if (coursesRes.error) throw coursesRes.error;
+    if (eventsRes.error) throw eventsRes.error;
+    setSyncStatus("✅ Données synchronisées.");
+    return {
+      courses: (coursesRes.data || []).map(rowToCourse),
+      events: (eventsRes.data || []).map(function(e){ return { id: e.id, name: e.name, date: e.event_date }; })
+    };
+  }).catch(function(e){
+    console.error("Erreur de chargement:", e);
+    setSyncStatus("⚠️ Synchronisation momentanément indisponible.");
+    toast("Impossible de charger vos révisions.");
+    return defaultState();
   });
 }
 
-function loadUserData(){
-  setSyncStatus("🔄 Synchronisation de votre espace…");
-  return apiRequest("/api/data").then(function(data){
-      setSyncStatus("✅ Données synchronisées.");
-      return { courses: (data.courses || []).map(rowToCourse), events: (data.events || []).map(function(e){ return { id:e.id, name:e.name, date:e.eventDate }; }) };
-    })
-    .catch(function(e){
-      console.error("Erreur de chargement:", e);
-      setSyncStatus("⚠️ Synchronisation momentanément indisponible.");
-      toast("Impossible de charger vos révisions.");
-      return defaultState();
-    });
-}
-
 function dbUpsertCourse(course){
-  return apiRequest("/api/data?resource=course", { method:"PUT", body:JSON.stringify(courseToRow(course)) })
-    .then(function(){ setSyncStatus("✅ Données synchronisées."); return true; })
-    .catch(function(e){ console.error("Erreur sauvegarde:", e); toast("Échec de synchronisation."); return false; });
+  if (!currentUser) return Promise.resolve(false);
+  return supabase.from("courses").upsert(courseToRow(course)).then(function(res){
+    if (res.error) throw res.error;
+    setSyncStatus("✅ Données synchronisées.");
+    return true;
+  }).catch(function(e){ console.error("Erreur sauvegarde:", e); toast("Échec de synchronisation."); return false; });
 }
 
 function dbDeleteCourse(id){
-  return apiRequest("/api/data?resource=course&id=" + encodeURIComponent(id), { method:"DELETE" })
-    .then(function(){ return true; }).catch(function(e){ console.error("Erreur suppression:", e); toast("Échec de la suppression."); return false; });
+  if (!currentUser) return Promise.resolve(false);
+  return supabase.from("courses").delete().eq("id", id).then(function(res){
+    if (res.error) throw res.error;
+    return true;
+  }).catch(function(e){ console.error("Erreur suppression:", e); toast("Échec de la suppression."); return false; });
 }
 function dbSaveEvent(event){
-  return apiRequest("/api/data?resource=event", { method:"POST", body:JSON.stringify(event) }).catch(function(){ toast("Échec de synchronisation de l’événement."); });
+  if (!currentUser) return Promise.resolve(false);
+  return supabase.from("events").insert({ id: event.id, user_id: currentUser.id, name: event.name, event_date: event.date })
+    .then(function(res){ if (res.error) throw res.error; return true; })
+    .catch(function(){ toast("Échec de synchronisation de l’événement."); return false; });
 }
 function dbDeleteEvent(id){
-  return apiRequest("/api/data?resource=event&id=" + encodeURIComponent(id), { method:"DELETE" }).catch(function(){ toast("Échec de suppression de l’événement."); });
+  if (!currentUser) return Promise.resolve(false);
+  return supabase.from("events").delete().eq("id", id)
+    .then(function(res){ if (res.error) throw res.error; return true; })
+    .catch(function(){ toast("Échec de suppression de l’événement."); return false; });
 }
 
 /* ==========================================================================
@@ -830,6 +1401,354 @@ function checkDailyNotifications(){
 }
 
 /* ==========================================================================
+   5bis. POMODORO — minuteur de concentration (réglages sauvegardés sur l'appareil)
+   ========================================================================== */
+var POMO_DEFAULTS = { work: 25, short: 5, long: 15, cyclesBefore: 4 };
+var pomo = {
+  settings: Object.assign({}, POMO_DEFAULTS),
+  mode: "work",
+  remaining: POMO_DEFAULTS.work * 60,
+  running: false,
+  started: false,
+  cyclesCompleted: 0,
+  timerId: null,
+  history: [],
+  title: ""
+};
+
+var POMO_HISTORY_LIMIT = 200;
+
+function rowToPomoEntry(row){
+  return { mode: row.mode, minutes: Number(row.minutes), title: row.title || "", endedAt: row.ended_at };
+}
+
+function dbLoadPomoHistory(){
+  if (!currentUser) return Promise.resolve([]);
+  return supabase.from("pomodoro_history")
+    .select("*")
+    .eq("user_id", currentUser.id)
+    .order("ended_at", { ascending: false })
+    .limit(POMO_HISTORY_LIMIT)
+    .then(function(res){
+      if (res.error) throw res.error;
+      return (res.data || []).map(rowToPomoEntry);
+    })
+    .catch(function(e){
+      console.error("Erreur de chargement de l'historique Pomodoro:", e);
+      toast("Impossible de charger l'historique Pomodoro.");
+      return [];
+    });
+}
+
+function dbInsertPomoHistory(entry){
+  if (!currentUser) return Promise.resolve(false);
+  return supabase.from("pomodoro_history").insert({
+    user_id: currentUser.id,
+    mode: entry.mode,
+    minutes: entry.minutes,
+    title: entry.title || null,
+    ended_at: entry.endedAt
+  }).then(function(res){
+    if (res.error) throw res.error;
+    return true;
+  }).catch(function(e){
+    console.error("Erreur de sauvegarde de l'historique Pomodoro:", e);
+    toast("Échec de synchronisation de l'historique Pomodoro.");
+    return false;
+  });
+}
+
+function dbClearPomoHistory(){
+  if (!currentUser) return Promise.resolve(false);
+  return supabase.from("pomodoro_history").delete().eq("user_id", currentUser.id)
+    .then(function(res){
+      if (res.error) throw res.error;
+      return true;
+    })
+    .catch(function(e){
+      console.error("Erreur de suppression de l'historique Pomodoro:", e);
+      toast("Échec de la suppression de l'historique.");
+      return false;
+    });
+}
+
+function addPomoHistoryEntry(mode, minutes, title){
+  var entry = { mode: mode, minutes: minutes, title: (title || "").trim(), endedAt: new Date().toISOString() };
+  pomo.history.unshift(entry);
+  if (pomo.history.length > POMO_HISTORY_LIMIT) pomo.history.length = POMO_HISTORY_LIMIT;
+  renderPomoHistory();
+  dbInsertPomoHistory(entry);
+}
+
+function formatPomoHistoryWhen(iso){
+  try {
+    var d = new Date(iso);
+    return d.toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit" }) + " à " +
+      d.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
+  } catch (e) { return ""; }
+}
+
+function pomoHistoryEmoji(mode){
+  if (mode === "short-break") return "☕";
+  if (mode === "long-break") return "🛋️";
+  return "🍅";
+}
+
+function renderPomoHistory(){
+  if (!hasDOM()) return;
+  var box = el("pomoHistoryList");
+  if (!box) return;
+  if (!pomo.history.length){
+    box.innerHTML = '<div class="pomo-history-empty">Aucune session terminée pour l’instant. Lance un Pomodoro pour commencer !</div>';
+    return;
+  }
+  var html = "";
+  for (var i = 0; i < pomo.history.length; i++){
+    var h = pomo.history[i];
+    html += '<div class="pomo-history-item">' +
+      '<div class="pomo-history-type">' + pomoHistoryEmoji(h.mode) + ' ' + esc(pomoModeLabel(h.mode)) +
+        (h.title ? ' — ' + esc(h.title) : '') +
+        ' <span class="pomo-history-badge ' + esc(h.mode) + '">' + esc(String(h.minutes)) + ' min</span></div>' +
+      '<div class="pomo-history-when">' + esc(formatPomoHistoryWhen(h.endedAt)) + '</div>' +
+    '</div>';
+  }
+  box.innerHTML = html;
+}
+
+function clearPomoHistory(){
+  pomo.history = [];
+  renderPomoHistory();
+  dbClearPomoHistory().then(function(ok){
+    toast(ok ? "Historique Pomodoro effacé." : "Historique local effacé (échec de synchronisation).");
+  });
+}
+
+function clampInt(v, min, max, fallback){
+  var n = parseInt(v, 10);
+  if (isNaN(n)) return fallback;
+  return Math.min(max, Math.max(min, n));
+}
+
+function loadPomoSettings(){
+  try {
+    var raw = localStorage.getItem("pomoSettings");
+    if (raw){
+      var parsed = JSON.parse(raw);
+      pomo.settings = {
+        work: clampInt(parsed.work, 1, 180, POMO_DEFAULTS.work),
+        short: clampInt(parsed.short, 1, 60, POMO_DEFAULTS.short),
+        long: clampInt(parsed.long, 1, 90, POMO_DEFAULTS.long),
+        cyclesBefore: clampInt(parsed.cyclesBefore, 1, 12, POMO_DEFAULTS.cyclesBefore)
+      };
+    }
+  } catch (e) {}
+  pomo.remaining = pomoModeDuration(pomo.mode);
+}
+
+function savePomoSettings(){
+  try { localStorage.setItem("pomoSettings", JSON.stringify(pomo.settings)); } catch (e) {}
+}
+
+function pomoModeDuration(mode){
+  if (mode === "short-break") return pomo.settings.short * 60;
+  if (mode === "long-break") return pomo.settings.long * 60;
+  return pomo.settings.work * 60;
+}
+
+function pomoModeLabel(mode){
+  if (mode === "short-break") return "Pause courte";
+  if (mode === "long-break") return "Pause longue";
+  return "Travail";
+}
+
+function formatPomoTime(totalSeconds){
+  var s = Math.max(0, Math.round(totalSeconds));
+  var m = Math.floor(s / 60);
+  return pad2(m) + ":" + pad2(s % 60);
+}
+
+var POMO_RING_CIRCUMFERENCE = 2 * Math.PI * 52;
+
+function renderPomoDisplay(){
+  if (!hasDOM()) return;
+  var timeEl = el("pomoTime"), modeEl = el("pomoModeLabel"), cyclesEl = el("pomoCycles"), btn = el("pomoStartPause");
+  if (timeEl){
+    timeEl.textContent = formatPomoTime(pomo.remaining);
+    timeEl.className = "pomo-time " + pomo.mode;
+  }
+  if (modeEl) modeEl.textContent = pomoModeLabel(pomo.mode);
+  if (cyclesEl) cyclesEl.textContent = plural(pomo.cyclesCompleted, "session terminée", "sessions terminées");
+  if (btn) btn.textContent = pomo.running ? "⏸ Pause" : "▶ Démarrer";
+  var w = el("pomoWork"), sh = el("pomoShort"), lo = el("pomoLong"), cb = el("pomoCyclesBefore");
+  if (w && document.activeElement !== w) w.value = pomo.settings.work;
+  if (sh && document.activeElement !== sh) sh.value = pomo.settings.short;
+  if (lo && document.activeElement !== lo) lo.value = pomo.settings.long;
+  if (cb && document.activeElement !== cb) cb.value = pomo.settings.cyclesBefore;
+
+  // Anneau de progression + halo animé pendant la session
+  var ringWrap = el("pomoRingWrap"), ring = el("pomoRingProgress"), card = el("pomoCard");
+  var total = pomoModeDuration(pomo.mode);
+  var frac = total > 0 ? Math.max(0, Math.min(1, pomo.remaining / total)) : 0;
+  if (ring){
+    ring.style.strokeDasharray = String(POMO_RING_CIRCUMFERENCE);
+    ring.style.strokeDashoffset = String(POMO_RING_CIRCUMFERENCE * (1 - frac));
+  }
+  if (ringWrap) ringWrap.className = "pomo-ring-wrap " + pomo.mode;
+  if (card) card.classList.toggle("pomo-running", !!pomo.running);
+
+  renderPomoMini();
+}
+
+function renderPomoMini(){
+  if (!hasDOM()) return;
+  var mini = el("pomoMiniWidget"), miniTime = el("pomoMiniTime");
+  if (!mini) return;
+  if (miniTime) miniTime.textContent = formatPomoTime(pomo.remaining);
+  mini.className = "pomo-mini " + pomo.mode + (pomo.running ? " pomo-mini-running" : "");
+  var pomoModal = el("pomoModal");
+  var modalOpen = pomoModal && !pomoModal.classList.contains("hide");
+  if (pomo.started && !modalOpen) mini.classList.remove("hide");
+  else mini.classList.add("hide");
+}
+
+function pomoBeep(){
+  try {
+    var Ctx = window.AudioContext || window.webkitAudioContext;
+    if (!Ctx) return;
+    var ctx = new Ctx();
+    var notes = [880, 1108.73]; // petit carillon à deux notes (La5, Do#6)
+    notes.forEach(function(freq, idx){
+      var start = ctx.currentTime + idx * 0.16;
+      var o = ctx.createOscillator(), g = ctx.createGain();
+      o.type = "sine"; o.frequency.value = freq;
+      g.gain.setValueAtTime(0.0001, start);
+      g.gain.exponentialRampToValueAtTime(0.22, start + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, start + 0.5);
+      o.connect(g); g.connect(ctx.destination);
+      o.start(start); o.stop(start + 0.55);
+    });
+    setTimeout(function(){ try { ctx.close(); } catch(e){} }, 900);
+  } catch (e) {}
+}
+
+function pomoVibrate(){
+  try { if (navigator.vibrate) navigator.vibrate([120, 60, 120]); } catch (e) {}
+}
+
+function pomoStopInterval(){
+  if (pomo.timerId){ clearInterval(pomo.timerId); pomo.timerId = null; }
+}
+
+function pomoTick(){
+  pomo.remaining -= 1;
+  if (pomo.remaining <= 0){ pomoAdvanceMode(true); return; }
+  renderPomoDisplay();
+}
+
+function pomoAdvanceMode(natural){
+  pomoStopInterval();
+  var wasWork = pomo.mode === "work";
+  var finishedMode = pomo.mode;
+  var finishedMinutes = pomoModeDuration(finishedMode) / 60;
+  if (wasWork) pomo.cyclesCompleted += 1;
+
+  var nextMode = wasWork
+    ? ((pomo.cyclesCompleted % pomo.settings.cyclesBefore === 0) ? "long-break" : "short-break")
+    : "work";
+
+  pomo.mode = nextMode;
+  pomo.remaining = pomoModeDuration(nextMode);
+  pomo.running = false;
+  renderPomoDisplay();
+
+  if (natural){
+    addPomoHistoryEntry(finishedMode, finishedMinutes, pomo.title);
+    pomoBeep();
+    pomoVibrate();
+    var title = wasWork ? "🍅 Session terminée !" : "🔔 Pause terminée !";
+    var body = wasWork
+      ? (nextMode === "long-break" ? "Belle série ! Prends une pause longue de " + pomo.settings.long + " min." : "Prends une petite pause de " + pomo.settings.short + " min.")
+      : "Retour au travail, courage !";
+    var emoji = wasWork ? (nextMode === "long-break" ? "🛋️" : "☕") : "💪";
+    showNotif(title, body);
+    showPomoAlert(title, body, emoji);
+  }
+}
+
+function showPomoAlert(title, message, emoji){
+  if (!hasDOM()) return;
+  var modal = el("pomoAlertModal");
+  if (!modal) return;
+  var titleEl = el("pomoAlertTitle"), msgEl = el("pomoAlertMessage"), emojiEl = el("pomoAlertEmoji");
+  if (titleEl) titleEl.textContent = title;
+  if (msgEl) msgEl.textContent = message;
+  if (emojiEl) emojiEl.textContent = emoji || "🔔";
+  modal.classList.remove("hide");
+}
+
+function hidePomoAlert(){
+  var modal = el("pomoAlertModal");
+  if (modal) modal.classList.add("hide");
+}
+
+function startPomo(){
+  if (pomo.running) return;
+  if (pomo.remaining <= 0) pomo.remaining = pomoModeDuration(pomo.mode);
+  pomo.running = true;
+  pomo.started = true;
+  pomoStopInterval();
+  pomo.timerId = setInterval(pomoTick, 1000);
+  renderPomoDisplay();
+}
+
+function pausePomo(){
+  pomo.running = false;
+  pomoStopInterval();
+  renderPomoDisplay();
+}
+
+function resetPomo(){
+  pomo.running = false;
+  pomo.started = false;
+  pomoStopInterval();
+  pomo.mode = "work";
+  pomo.cyclesCompleted = 0;
+  pomo.remaining = pomoModeDuration("work");
+  pomo.title = "";
+  var titleInput = el("pomoTitle");
+  if (titleInput) titleInput.value = "";
+  renderPomoDisplay();
+}
+
+function stopPomo(){
+  var totalSeconds = pomoModeDuration(pomo.mode);
+  var elapsedSeconds = totalSeconds - pomo.remaining;
+  pomoStopInterval();
+  if (elapsedSeconds > 0){
+    var elapsedMinutes = Math.max(1, Math.round(elapsedSeconds / 60));
+    addPomoHistoryEntry(pomo.mode, elapsedMinutes, pomo.title);
+  }
+  resetPomo();
+  toast("Pomodoro arrêté.");
+}
+
+function skipPomo(){
+  pomoAdvanceMode(false);
+}
+
+function updatePomoSettingFromInputs(){
+  pomo.settings = {
+    work: clampInt(el("pomoWork") ? el("pomoWork").value : pomo.settings.work, 1, 180, pomo.settings.work),
+    short: clampInt(el("pomoShort") ? el("pomoShort").value : pomo.settings.short, 1, 60, pomo.settings.short),
+    long: clampInt(el("pomoLong") ? el("pomoLong").value : pomo.settings.long, 1, 90, pomo.settings.long),
+    cyclesBefore: clampInt(el("pomoCyclesBefore") ? el("pomoCyclesBefore").value : pomo.settings.cyclesBefore, 1, 12, pomo.settings.cyclesBefore)
+  };
+  savePomoSettings();
+  if (!pomo.running) pomo.remaining = pomoModeDuration(pomo.mode);
+  renderPomoDisplay();
+}
+
+/* ==========================================================================
    5. INTERFACE & RENDU
    ========================================================================== */
 function el(id){ return typeof document !== "undefined" && document.getElementById ? document.getElementById(id) : null; }
@@ -867,6 +1786,8 @@ function setAuthMode(mode){
 function showAuth(message){
   currentUser = null;
   state = defaultState();
+  pomo.history = [];
+  renderPomoHistory();
   el("appShell").classList.add("hide");
   el("authScreen").classList.remove("hide");
   if (message) el("authMessage").textContent = message;
@@ -897,8 +1818,9 @@ async function handleAuthSubmit(ev){
     message.style.color = "var(--danger)";
     await enterApp(user);
   } catch (error) {
+    console.error("Erreur d'authentification:", error);
     message.style.color = "var(--danger)";
-    message.textContent = error && error.status === 401 ? "Email ou mot de passe incorrect." : (error && error.message ? error.message : "Authentification impossible.");
+    message.textContent = translateAuthError(error && error.message);
   } finally { submit.disabled = false; }
 }
 
@@ -908,6 +1830,8 @@ async function enterApp(user){
   state = fresh;
   render();
   checkDailyNotifications();
+  pomo.history = await dbLoadPomoHistory();
+  renderPomoHistory();
 }
 
 function render(){
@@ -917,6 +1841,7 @@ function render(){
   renderStats();
   renderToday();
   renderRealtimeCalendar();
+  renderActivityHeatmap();
   renderAll();
   renderNotifStatus();
 }
@@ -951,9 +1876,39 @@ function renderStats(){
   set("statCourses", s.courses);
   set("statRate", s.rate + "%");
   set("statWeek", s.weekRate + "%");
+  set("statStreak", s.streak);
+  set("statTimeSpent", formatMinutes(s.totalMinutes));
   
   var pb = el("progressBar");
   if (pb) pb.style.width = s.rate + "%";
+}
+
+function renderActivityHeatmap(){
+  var box = el("activityHeatmap");
+  if (!box) return;
+  var counts = activityByDay();
+  var days = 84; // 12 semaines
+  var t = todayISO();
+  var maxCount = 1;
+  var cells = [];
+  for (var i = days - 1; i >= 0; i--){
+    var day = addDays(t, -i);
+    var n = counts[day] || 0;
+    if (n > maxCount) maxCount = n;
+    cells.push({ day: day, n: n });
+  }
+  var html = cells.map(function(c){
+    var lvl = c.n <= 0 ? 0 : Math.min(4, Math.ceil((c.n / maxCount) * 4));
+    var title = formatDate(c.day) + " — " + plural(c.n, "révision");
+    return '<span class="heatmap-cell lvl-' + lvl + '" title="' + esc(title) + '"></span>';
+  }).join("");
+  box.innerHTML = html;
+
+  var lab = el("streakLabel");
+  if (lab){
+    var streak = computeStreak();
+    lab.textContent = streak > 1 ? plural(streak, "jour de suite", "jours de suite") + " 🔥" : "12 dernières semaines";
+  }
 }
 
 function reviewItemHTML(course, review, showDate){
@@ -1111,12 +2066,13 @@ function renderAll(){
     if (!slotsHTML) slotsHTML = '<span class="small muted">Aucune révision dans ce filtre.</span>';
 
     var linkHtml = c.link ? '<a href="' + esc(c.link) + '" target="_blank" rel="noopener" class="resource-link">🔗 Lien ressource</a>' : '';
+    var excludeHtml = (c.excludeWeekday !== null && c.excludeWeekday !== undefined) ? ' <span class="tag">🚫 ' + esc(WEEKDAY_NAMES[c.excludeWeekday]) + '</span>' : '';
 
     html += '' +
       '<article class="course">' +
         '<div class="course-head">' +
           '<div>' +
-            '<div class="title"><strong>' + esc(c.name) + '</strong> <span class="tag subject">' + esc(c.subject) + '</span> ' + linkHtml + '</div>' +
+            '<div class="title"><strong>' + esc(c.name) + '</strong> <span class="tag subject">' + esc(c.subject) + '</span>' + excludeHtml + ' ' + linkHtml + '</div>' +
             '<div class="sub small muted">J0 : ' + formatDate(c.start) + ' · ' + doneCount + '/' + c.schedule.length + ' validées</div>' +
           '</div>' +
           '<div class="actions">' +
@@ -1167,14 +2123,17 @@ function renderNotifStatus(){
    ========================================================================== */
 function onFormSubmit(ev){
   ev.preventDefault();
-  var name = el("courseName"), subj = el("courseSubject"), link = el("courseLink"), start = el("courseStart");
-  var c = addCourse(name ? name.value : "", subj ? subj.value : "", link ? link.value : "", start ? start.value : "");
+  var name = el("courseName"), subj = el("courseSubject"), link = el("courseLink"), start = el("courseStart"), exclude = el("courseExclude"), duration = el("courseDuration");
+  var c = addCourse(name ? name.value : "", subj ? subj.value : "", link ? link.value : "", start ? start.value : "", exclude ? exclude.value : "", duration ? duration.value : "");
   if (!c){ toast("Vérifie le nom du cours et la date (J0)."); return; }
   var due = dueOn(todayISO()).length;
-  toast("« " + c.name + " » ajouté — 5 révisions planifiées." + (due ? " " + plural(due, "révision") + " aujourd'hui !" : ""));
+  var excludeMsg = (c.excludeWeekday !== null && c.excludeWeekday !== undefined) ? " (" + WEEKDAY_NAMES[c.excludeWeekday] + " exclu)" : "";
+  toast("« " + c.name + " » ajouté — 5 révisions planifiées" + excludeMsg + "." + (due ? " " + plural(due, "révision") + " aujourd'hui !" : ""));
   if (name) name.value = "";
   if (subj) subj.value = "";
   if (link) link.value = "";
+  if (exclude) exclude.value = "";
+  if (duration) duration.value = "";
   render();
   checkDailyNotifications();
 }
@@ -1261,6 +2220,7 @@ function importData(file){
           notes: String(c.notes || ""),
           start: c.start,
           createdAt: c.createdAt || new Date().toISOString(),
+          excludeWeekday: (c.excludeWeekday === null || c.excludeWeekday === undefined || isNaN(Number(c.excludeWeekday))) ? null : Number(c.excludeWeekday),
           schedule: c.schedule.filter(function(r){ return r && parseISO(r.date); })
             .map(function(r){ return { offset: Number(r.offset) || 0, date: r.date, done: !!r.done, doneAt: r.doneAt || null }; })
         };
@@ -1269,19 +2229,24 @@ function importData(file){
         dbUpsertCourse(cleanC);
       }
       
+      var importedEvents = 0;
       if (events.length > 0){
         if (!Array.isArray(state.events)) state.events = [];
         for (var e = 0; e < events.length; e++){
           if (events[e] && events[e].name && events[e].date){
-            state.events.push({ id: uid(), name: events[e].name, date: events[e].date });
+            var cleanE = { id: uid(), name: String(events[e].name), date: events[e].date };
+            state.events.push(cleanE);
+            dbSaveEvent(cleanE);
+            importedEvents++;
           }
         }
-        saveLocalEvents();
       }
 
       render();
-      toast(imported.length + " cours importé(s).");
-    } catch (e) { toast("Import impossible : fichier invalide."); }
+      var msg = imported.length + " cours importé(s)";
+      if (importedEvents > 0) msg += " · " + importedEvents + " événement(s)";
+      toast(msg + ".");
+    } catch (e) { console.error("Erreur d'import:", e); toast("Import impossible : fichier invalide."); }
   };
   reader.readAsText(file);
 }
@@ -1302,6 +2267,36 @@ function bindEvents(){
       if (b) b.classList.add("hide");
       toast("Application installée !");
     });
+  }
+
+  // --- MENU LATÉRAL INTERACTIF ---
+  var menuToggle = el("menuToggle");
+  var closeMenuBtn = el("closeMenuBtn");
+  var sideMenu = el("sideMenu");
+  var sideMenuOverlay = el("sideMenuOverlay");
+
+  function toggleMenu(show) {
+    if (show) {
+      sideMenuOverlay.classList.remove("hide");
+      setTimeout(function(){ 
+        sideMenu.classList.add("open"); 
+        sideMenuOverlay.classList.add("show");
+      }, 10);
+    } else {
+      sideMenu.classList.remove("open");
+      sideMenuOverlay.classList.remove("show");
+      setTimeout(function(){ sideMenuOverlay.classList.add("hide"); }, 300);
+    }
+  }
+
+  if (menuToggle) menuToggle.addEventListener("click", function(){ toggleMenu(true); });
+  if (closeMenuBtn) closeMenuBtn.addEventListener("click", function(){ toggleMenu(false); });
+  if (sideMenuOverlay) sideMenuOverlay.addEventListener("click", function(){ toggleMenu(false); });
+
+  // Refermer le menu si on clique sur un bouton intérieur
+  var menuButtons = document.querySelectorAll(".menu-btn");
+  for (var i = 0; i < menuButtons.length; i++) {
+    menuButtons[i].addEventListener("click", function(){ toggleMenu(false); });
   }
 
   var themeBtn = el("themeBtn");
@@ -1358,6 +2353,95 @@ function bindEvents(){
     });
   }
 
+  var openPomoBtn = el("openPomoBtn"), closePomoModal = el("closePomoModal"), pomoModal = el("pomoModal");
+  if (openPomoBtn && pomoModal){
+    openPomoBtn.addEventListener("click", function(){
+      pomoModal.classList.remove("hide");
+      renderPomoDisplay();
+    });
+  }
+  if (closePomoModal && pomoModal){
+    closePomoModal.addEventListener("click", function(){
+      pomoModal.classList.add("hide");
+      renderPomoMini();
+    });
+  }
+  var pomoStartPauseBtn = el("pomoStartPause");
+  if (pomoStartPauseBtn){
+    pomoStartPauseBtn.addEventListener("click", function(){
+      if (pomo.running){
+        pausePomo();
+      } else {
+        startPomo();
+        // On minimise automatiquement la modale pour laisser accès aux cours à réviser
+        if (pomoModal) pomoModal.classList.add("hide");
+        renderPomoMini();
+      }
+    });
+  }
+  var pomoResetBtn = el("pomoReset");
+  if (pomoResetBtn) pomoResetBtn.addEventListener("click", resetPomo);
+  var pomoStopBtn = el("pomoStop");
+  if (pomoStopBtn) pomoStopBtn.addEventListener("click", stopPomo);
+  var pomoSkipBtn = el("pomoSkip");
+  if (pomoSkipBtn) pomoSkipBtn.addEventListener("click", skipPomo);
+  var pomoTitleInput = el("pomoTitle");
+  if (pomoTitleInput) pomoTitleInput.addEventListener("input", function(){ pomo.title = pomoTitleInput.value; });
+  ["pomoWork", "pomoShort", "pomoLong", "pomoCyclesBefore"].forEach(function(id){
+    var input = el(id);
+    if (input) input.addEventListener("change", updatePomoSettingFromInputs);
+  });
+
+  // Mini-widget flottant : le rouvrir ramène sur la modale Pomodoro
+  var pomoMiniWidget = el("pomoMiniWidget");
+  if (pomoMiniWidget && pomoModal){
+    pomoMiniWidget.addEventListener("click", function(){
+      pomoModal.classList.remove("hide");
+      renderPomoDisplay();
+    });
+  }
+
+  // Modale d'alerte (pause / reprise du travail)
+  var pomoAlertModal = el("pomoAlertModal"), pomoAlertLater = el("pomoAlertLater"), pomoAlertStart = el("pomoAlertStart");
+  if (pomoAlertLater && pomoAlertModal){
+    pomoAlertLater.addEventListener("click", function(){ hidePomoAlert(); });
+  }
+  if (pomoAlertStart && pomoAlertModal){
+    pomoAlertStart.addEventListener("click", function(){
+      hidePomoAlert();
+      startPomo();
+      if (pomoModal) pomoModal.classList.add("hide");
+      renderPomoMini();
+    });
+  }
+
+  // Historique Pomodoro
+  var openPomoHistoryBtn = el("openPomoHistoryBtn"), closePomoHistoryModal = el("closePomoHistoryModal"),
+      pomoHistoryModal = el("pomoHistoryModal"), clearPomoHistoryBtn = el("clearPomoHistoryBtn");
+  if (openPomoHistoryBtn && pomoHistoryModal){
+    openPomoHistoryBtn.addEventListener("click", function(){
+      renderPomoHistory();
+      pomoHistoryModal.classList.remove("hide");
+    });
+  }
+  if (closePomoHistoryModal && pomoHistoryModal){
+    closePomoHistoryModal.addEventListener("click", function(){ pomoHistoryModal.classList.add("hide"); });
+  }
+  if (clearPomoHistoryBtn){
+    clearPomoHistoryBtn.addEventListener("click", function(){
+      if (typeof confirm === "function" && !confirm("Effacer tout l'historique Pomodoro ?")) return;
+      clearPomoHistory();
+    });
+  }
+
+  var openMethodInfoBtn = el("openMethodInfoBtn"), closeMethodInfoModal = el("closeMethodInfoModal"), methodInfoModal = el("methodInfoModal");
+  if (openMethodInfoBtn && methodInfoModal){
+    openMethodInfoBtn.addEventListener("click", function(){ methodInfoModal.classList.remove("hide"); });
+  }
+  if (closeMethodInfoModal && methodInfoModal){
+    closeMethodInfoModal.addEventListener("click", function(){ methodInfoModal.classList.add("hide"); });
+  }
+
   // Sauvegarde des notes à la volée (input / change)
   document.body.addEventListener("input", function(ev){
     var target = ev.target;
@@ -1387,11 +2471,15 @@ function bindEvents(){
       if (t.id === "importBtn"){ var f = el("importFile"); if (f) f.click(); return; }
       if (t.id === "clearBtn"){
         if (typeof confirm === "function" && !confirm("Supprimer TOUS les cours ? Action irréversible.")) return;
-        var idsToDelete = state.courses.map(function(c){ return c.id; });
         state.courses = [];
         state.events = [];
         render();
-        apiRequest("/api/data?resource=all", { method:"DELETE" }).catch(function(){ toast("Échec de la suppression."); });
+        if (currentUser){
+          Promise.all([
+            supabase.from("courses").delete().eq("user_id", currentUser.id),
+            supabase.from("events").delete().eq("user_id", currentUser.id)
+          ]).catch(function(){ toast("Échec de la suppression."); });
+        }
         toast("Tout a été supprimé."); return;
       }
       if (t.id === "resetDoneBtn"){
@@ -1423,6 +2511,9 @@ async function init(){
     var savedTheme = "auto";
     try { savedTheme = localStorage.getItem("theme") || "auto"; } catch(e){}
     applyTheme(savedTheme);
+    loadPomoSettings();
+    renderPomoDisplay();
+    renderPomoHistory();
 
     var start = el("courseStart");
     if (start && !start.value) start.value = todayISO();
