@@ -411,6 +411,54 @@
   .pomo-settings label{font-size:.72rem;color:var(--muted);display:block;margin-bottom:4px}
   .pomo-settings input{width:100%}
 
+  /* ============ Mini-widget Pomodoro flottant ============ */
+  .pomo-mini{
+    position:fixed; right:18px; bottom:18px; z-index:1010;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:0;
+    width:64px; height:64px; border-radius:50%; border:none; padding:0;
+    background:var(--card); color:var(--ink);
+    box-shadow:var(--shadow-lg); border:2px solid var(--brand);
+    cursor:pointer; transition:transform .18s ease, box-shadow .18s ease;
+  }
+  .pomo-mini:hover{ transform:translateY(-2px) scale(1.04); }
+  .pomo-mini:active{ transform:translateY(0) scale(.98); }
+  .pomo-mini.short-break{ border-color:var(--ok); }
+  .pomo-mini.long-break{ border-color:var(--warn); }
+  .pomo-mini.pomo-mini-running{ animation:pomoMiniPulse 1.8s ease-in-out infinite; }
+  @keyframes pomoMiniPulse{
+    0%,100%{ box-shadow:var(--shadow-lg), 0 0 0 0 color-mix(in srgb, var(--brand) 35%, transparent); }
+    50%{ box-shadow:var(--shadow-lg), 0 0 0 8px transparent; }
+  }
+  .pomo-mini-emoji{ font-size:1.05rem; line-height:1; }
+  .pomo-mini-time{ font-size:.66rem; font-weight:800; font-variant-numeric:tabular-nums; font-family:var(--font-display); margin-top:1px; }
+  @media (max-width:560px){
+    .pomo-mini{ width:56px; height:56px; right:14px; bottom:14px; }
+    .pomo-mini-emoji{ font-size:.95rem; }
+    .pomo-mini-time{ font-size:.6rem; }
+  }
+
+  /* ============ Modale d'alerte Pomodoro (pause / fin) ============ */
+  .pomo-alert-card{ max-width:380px; text-align:center; }
+  .pomo-alert-emoji{ font-size:2.6rem; margin-bottom:6px; }
+  .pomo-alert-card h2{ font-size:1.15rem; margin-bottom:6px; }
+  .pomo-alert-card p{ margin:0; }
+
+  /* ============ Historique Pomodoro ============ */
+  .pomo-history-list{ display:flex; flex-direction:column; gap:8px; max-height:340px; overflow-y:auto; }
+  .pomo-history-empty{ color:var(--muted); font-size:.9rem; text-align:center; padding:18px 0; }
+  .pomo-history-item{
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    padding:10px 12px; border:1px solid var(--line); border-radius:var(--radius-sm); background:var(--card-soft);
+  }
+  .pomo-history-item .pomo-history-type{ display:flex; align-items:center; gap:8px; font-weight:700; font-size:.88rem; }
+  .pomo-history-item .pomo-history-when{ font-size:.78rem; color:var(--muted); }
+  .pomo-history-badge{
+    font-size:.72rem; font-weight:800; padding:.2rem .55rem; border-radius:999px;
+    background:var(--brand-soft); color:var(--brand);
+  }
+  .pomo-history-badge.short-break, .pomo-history-badge.long-break{ background:var(--ok-bg); color:var(--ok); }
+  .pomo-history-badge.long-break{ background:var(--warn-bg); color:var(--warn); }
+
   /* ============ Modale Explication ============ */
   .info-modal-card{max-width:640px;max-height:82vh;overflow-y:auto;text-align:left}
   .info-modal-card h3{margin:20px 0 6px;font-size:1.02rem;font-weight:800}
@@ -666,7 +714,10 @@
   <div class="modal-card pomo-card" id="pomoCard">
     <div class="section-head" style="margin-bottom:8px">
       <h2>🍅 Pomodoro</h2>
-      <button id="closePomoModal" class="btn ghost small">✕</button>
+      <div style="display:flex;gap:6px">
+        <button id="openPomoHistoryBtn" class="btn ghost small" title="Historique">🕘</button>
+        <button id="closePomoModal" class="btn ghost small">✕</button>
+      </div>
     </div>
     <div class="pomo-mode" id="pomoModeLabel">Travail</div>
     <div class="pomo-ring-wrap work" id="pomoRingWrap">
@@ -687,6 +738,39 @@
       <div><label for="pomoShort">Pause courte (min)</label><input id="pomoShort" type="number" min="1" max="60" step="1"></div>
       <div><label for="pomoLong">Pause longue (min)</label><input id="pomoLong" type="number" min="1" max="90" step="1"></div>
       <div><label for="pomoCyclesBefore">Sessions avant pause longue</label><input id="pomoCyclesBefore" type="number" min="1" max="12" step="1"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Mini-widget Pomodoro flottant (visible quand le minuteur tourne, pour accéder aux cours) -->
+<button id="pomoMiniWidget" class="pomo-mini hide" type="button" title="Rouvrir le minuteur Pomodoro" aria-label="Rouvrir le minuteur Pomodoro">
+  <span class="pomo-mini-emoji">🍅</span>
+  <span class="pomo-mini-time" id="pomoMiniTime">25:00</span>
+</button>
+
+<!-- Modale d'alerte Pomodoro (pause démarrée / travail repris) -->
+<div id="pomoAlertModal" class="modal-overlay hide" aria-hidden="true">
+  <div class="modal-card pomo-alert-card" id="pomoAlertCard">
+    <div class="pomo-alert-emoji" id="pomoAlertEmoji">🔔</div>
+    <h2 id="pomoAlertTitle">Titre</h2>
+    <p class="muted" id="pomoAlertMessage">Message</p>
+    <div class="pomo-controls" style="margin-top:18px">
+      <button id="pomoAlertLater" class="btn ghost">Plus tard</button>
+      <button id="pomoAlertStart" class="btn primary">Démarrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modale Historique Pomodoro -->
+<div id="pomoHistoryModal" class="modal-overlay hide" aria-hidden="true">
+  <div class="modal-card" style="max-width:420px;text-align:left">
+    <div class="section-head" style="margin-bottom:8px">
+      <h2>🕘 Historique Pomodoro</h2>
+      <button id="closePomoHistoryModal" class="btn ghost small">✕</button>
+    </div>
+    <div id="pomoHistoryList" class="pomo-history-list"></div>
+    <div class="form-actions" style="margin-top:14px">
+      <button id="clearPomoHistoryBtn" class="btn danger small">Effacer l'historique</button>
     </div>
   </div>
 </div>
@@ -1317,9 +1401,116 @@ var pomo = {
   mode: "work",
   remaining: POMO_DEFAULTS.work * 60,
   running: false,
+  started: false,
   cyclesCompleted: 0,
-  timerId: null
+  timerId: null,
+  history: []
 };
+
+var POMO_HISTORY_LIMIT = 200;
+
+function rowToPomoEntry(row){
+  return { mode: row.mode, minutes: Number(row.minutes), endedAt: row.ended_at };
+}
+
+function dbLoadPomoHistory(){
+  if (!currentUser) return Promise.resolve([]);
+  return supabase.from("pomodoro_history")
+    .select("*")
+    .eq("user_id", currentUser.id)
+    .order("ended_at", { ascending: false })
+    .limit(POMO_HISTORY_LIMIT)
+    .then(function(res){
+      if (res.error) throw res.error;
+      return (res.data || []).map(rowToPomoEntry);
+    })
+    .catch(function(e){
+      console.error("Erreur de chargement de l'historique Pomodoro:", e);
+      toast("Impossible de charger l'historique Pomodoro.");
+      return [];
+    });
+}
+
+function dbInsertPomoHistory(entry){
+  if (!currentUser) return Promise.resolve(false);
+  return supabase.from("pomodoro_history").insert({
+    user_id: currentUser.id,
+    mode: entry.mode,
+    minutes: entry.minutes,
+    ended_at: entry.endedAt
+  }).then(function(res){
+    if (res.error) throw res.error;
+    return true;
+  }).catch(function(e){
+    console.error("Erreur de sauvegarde de l'historique Pomodoro:", e);
+    toast("Échec de synchronisation de l'historique Pomodoro.");
+    return false;
+  });
+}
+
+function dbClearPomoHistory(){
+  if (!currentUser) return Promise.resolve(false);
+  return supabase.from("pomodoro_history").delete().eq("user_id", currentUser.id)
+    .then(function(res){
+      if (res.error) throw res.error;
+      return true;
+    })
+    .catch(function(e){
+      console.error("Erreur de suppression de l'historique Pomodoro:", e);
+      toast("Échec de la suppression de l'historique.");
+      return false;
+    });
+}
+
+function addPomoHistoryEntry(mode, minutes){
+  var entry = { mode: mode, minutes: minutes, endedAt: new Date().toISOString() };
+  pomo.history.unshift(entry);
+  if (pomo.history.length > POMO_HISTORY_LIMIT) pomo.history.length = POMO_HISTORY_LIMIT;
+  renderPomoHistory();
+  dbInsertPomoHistory(entry);
+}
+
+function formatPomoHistoryWhen(iso){
+  try {
+    var d = new Date(iso);
+    return d.toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit" }) + " à " +
+      d.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
+  } catch (e) { return ""; }
+}
+
+function pomoHistoryEmoji(mode){
+  if (mode === "short-break") return "☕";
+  if (mode === "long-break") return "🛋️";
+  return "🍅";
+}
+
+function renderPomoHistory(){
+  if (!hasDOM()) return;
+  var box = el("pomoHistoryList");
+  if (!box) return;
+  if (!pomo.history.length){
+    box.innerHTML = '<div class="pomo-history-empty">Aucune session terminée pour l’instant. Lance un Pomodoro pour commencer !</div>';
+    return;
+  }
+  var html = "";
+  for (var i = 0; i < pomo.history.length; i++){
+    var h = pomo.history[i];
+    html += '<div class="pomo-history-item">' +
+      '<div class="pomo-history-type">' + pomoHistoryEmoji(h.mode) + ' ' + esc(pomoModeLabel(h.mode)) +
+        ' <span class="pomo-history-badge ' + esc(h.mode) + '">' + esc(String(h.minutes)) + ' min</span></div>' +
+      '<div class="pomo-history-when">' + esc(formatPomoHistoryWhen(h.endedAt)) + '</div>' +
+    '</div>';
+  }
+  box.innerHTML = html;
+}
+
+function clearPomoHistory(){
+  pomo.history = [];
+  renderPomoHistory();
+  dbClearPomoHistory().then(function(ok){
+    toast(ok ? "Historique Pomodoro effacé." : "Historique local effacé (échec de synchronisation).");
+  });
+}
 
 function clampInt(v, min, max, fallback){
   var n = parseInt(v, 10);
@@ -1393,6 +1584,20 @@ function renderPomoDisplay(){
   }
   if (ringWrap) ringWrap.className = "pomo-ring-wrap " + pomo.mode;
   if (card) card.classList.toggle("pomo-running", !!pomo.running);
+
+  renderPomoMini();
+}
+
+function renderPomoMini(){
+  if (!hasDOM()) return;
+  var mini = el("pomoMiniWidget"), miniTime = el("pomoMiniTime");
+  if (!mini) return;
+  if (miniTime) miniTime.textContent = formatPomoTime(pomo.remaining);
+  mini.className = "pomo-mini " + pomo.mode + (pomo.running ? " pomo-mini-running" : "");
+  var pomoModal = el("pomoModal");
+  var modalOpen = pomoModal && !pomoModal.classList.contains("hide");
+  if (pomo.started && !modalOpen) mini.classList.remove("hide");
+  else mini.classList.add("hide");
 }
 
 function pomoBeep(){
@@ -1432,6 +1637,8 @@ function pomoTick(){
 function pomoAdvanceMode(natural){
   pomoStopInterval();
   var wasWork = pomo.mode === "work";
+  var finishedMode = pomo.mode;
+  var finishedMinutes = pomoModeDuration(finishedMode) / 60;
   if (wasWork) pomo.cyclesCompleted += 1;
 
   var nextMode = wasWork
@@ -1444,21 +1651,40 @@ function pomoAdvanceMode(natural){
   renderPomoDisplay();
 
   if (natural){
+    addPomoHistoryEntry(finishedMode, finishedMinutes);
     pomoBeep();
     pomoVibrate();
     var title = wasWork ? "🍅 Session terminée !" : "🔔 Pause terminée !";
     var body = wasWork
-      ? (nextMode === "long-break" ? "Belle série ! Prends une pause longue." : "Prends une petite pause.")
+      ? (nextMode === "long-break" ? "Belle série ! Prends une pause longue de " + pomo.settings.long + " min." : "Prends une petite pause de " + pomo.settings.short + " min.")
       : "Retour au travail, courage !";
+    var emoji = wasWork ? (nextMode === "long-break" ? "🛋️" : "☕") : "💪";
     showNotif(title, body);
-    toast(title + " " + body);
+    showPomoAlert(title, body, emoji);
   }
+}
+
+function showPomoAlert(title, message, emoji){
+  if (!hasDOM()) return;
+  var modal = el("pomoAlertModal");
+  if (!modal) return;
+  var titleEl = el("pomoAlertTitle"), msgEl = el("pomoAlertMessage"), emojiEl = el("pomoAlertEmoji");
+  if (titleEl) titleEl.textContent = title;
+  if (msgEl) msgEl.textContent = message;
+  if (emojiEl) emojiEl.textContent = emoji || "🔔";
+  modal.classList.remove("hide");
+}
+
+function hidePomoAlert(){
+  var modal = el("pomoAlertModal");
+  if (modal) modal.classList.add("hide");
 }
 
 function startPomo(){
   if (pomo.running) return;
   if (pomo.remaining <= 0) pomo.remaining = pomoModeDuration(pomo.mode);
   pomo.running = true;
+  pomo.started = true;
   pomoStopInterval();
   pomo.timerId = setInterval(pomoTick, 1000);
   renderPomoDisplay();
@@ -1472,6 +1698,7 @@ function pausePomo(){
 
 function resetPomo(){
   pomo.running = false;
+  pomo.started = false;
   pomoStopInterval();
   pomo.mode = "work";
   pomo.cyclesCompleted = 0;
@@ -1533,6 +1760,8 @@ function setAuthMode(mode){
 function showAuth(message){
   currentUser = null;
   state = defaultState();
+  pomo.history = [];
+  renderPomoHistory();
   el("appShell").classList.add("hide");
   el("authScreen").classList.remove("hide");
   if (message) el("authMessage").textContent = message;
@@ -1575,6 +1804,8 @@ async function enterApp(user){
   state = fresh;
   render();
   checkDailyNotifications();
+  pomo.history = await dbLoadPomoHistory();
+  renderPomoHistory();
 }
 
 function render(){
@@ -2099,16 +2330,28 @@ function bindEvents(){
   var openPomoBtn = el("openPomoBtn"), closePomoModal = el("closePomoModal"), pomoModal = el("pomoModal");
   if (openPomoBtn && pomoModal){
     openPomoBtn.addEventListener("click", function(){
-      renderPomoDisplay();
       pomoModal.classList.remove("hide");
+      renderPomoDisplay();
     });
   }
   if (closePomoModal && pomoModal){
-    closePomoModal.addEventListener("click", function(){ pomoModal.classList.add("hide"); });
+    closePomoModal.addEventListener("click", function(){
+      pomoModal.classList.add("hide");
+      renderPomoMini();
+    });
   }
   var pomoStartPauseBtn = el("pomoStartPause");
   if (pomoStartPauseBtn){
-    pomoStartPauseBtn.addEventListener("click", function(){ pomo.running ? pausePomo() : startPomo(); });
+    pomoStartPauseBtn.addEventListener("click", function(){
+      if (pomo.running){
+        pausePomo();
+      } else {
+        startPomo();
+        // On minimise automatiquement la modale pour laisser accès aux cours à réviser
+        if (pomoModal) pomoModal.classList.add("hide");
+        renderPomoMini();
+      }
+    });
   }
   var pomoResetBtn = el("pomoReset");
   if (pomoResetBtn) pomoResetBtn.addEventListener("click", resetPomo);
@@ -2118,6 +2361,48 @@ function bindEvents(){
     var input = el(id);
     if (input) input.addEventListener("change", updatePomoSettingFromInputs);
   });
+
+  // Mini-widget flottant : le rouvrir ramène sur la modale Pomodoro
+  var pomoMiniWidget = el("pomoMiniWidget");
+  if (pomoMiniWidget && pomoModal){
+    pomoMiniWidget.addEventListener("click", function(){
+      pomoModal.classList.remove("hide");
+      renderPomoDisplay();
+    });
+  }
+
+  // Modale d'alerte (pause / reprise du travail)
+  var pomoAlertModal = el("pomoAlertModal"), pomoAlertLater = el("pomoAlertLater"), pomoAlertStart = el("pomoAlertStart");
+  if (pomoAlertLater && pomoAlertModal){
+    pomoAlertLater.addEventListener("click", function(){ hidePomoAlert(); });
+  }
+  if (pomoAlertStart && pomoAlertModal){
+    pomoAlertStart.addEventListener("click", function(){
+      hidePomoAlert();
+      startPomo();
+      if (pomoModal) pomoModal.classList.add("hide");
+      renderPomoMini();
+    });
+  }
+
+  // Historique Pomodoro
+  var openPomoHistoryBtn = el("openPomoHistoryBtn"), closePomoHistoryModal = el("closePomoHistoryModal"),
+      pomoHistoryModal = el("pomoHistoryModal"), clearPomoHistoryBtn = el("clearPomoHistoryBtn");
+  if (openPomoHistoryBtn && pomoHistoryModal){
+    openPomoHistoryBtn.addEventListener("click", function(){
+      renderPomoHistory();
+      pomoHistoryModal.classList.remove("hide");
+    });
+  }
+  if (closePomoHistoryModal && pomoHistoryModal){
+    closePomoHistoryModal.addEventListener("click", function(){ pomoHistoryModal.classList.add("hide"); });
+  }
+  if (clearPomoHistoryBtn){
+    clearPomoHistoryBtn.addEventListener("click", function(){
+      if (typeof confirm === "function" && !confirm("Effacer tout l'historique Pomodoro ?")) return;
+      clearPomoHistory();
+    });
+  }
 
   var openMethodInfoBtn = el("openMethodInfoBtn"), closeMethodInfoModal = el("closeMethodInfoModal"), methodInfoModal = el("methodInfoModal");
   if (openMethodInfoBtn && methodInfoModal){
@@ -2198,6 +2483,7 @@ async function init(){
     applyTheme(savedTheme);
     loadPomoSettings();
     renderPomoDisplay();
+    renderPomoHistory();
 
     var start = el("courseStart");
     if (start && !start.value) start.value = todayISO();
