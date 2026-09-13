@@ -300,6 +300,24 @@
   .heatmap-cell.pomo-lvl-3{background:color-mix(in srgb, var(--brand) 75%, var(--card-soft));border-color:transparent}
   .heatmap-cell.pomo-lvl-4{background:var(--brand);border-color:transparent}
 
+  /* ============ Accordéon (menu déroulant) — case Activité ============ */
+  .accordion{padding:0;overflow:hidden}
+  .accordion > .accordion-summary{
+    cursor:pointer;list-style:none;padding:22px;margin:0;
+    display:flex;align-items:center;justify-content:space-between;gap:10px;
+  }
+  .accordion > .accordion-summary::-webkit-details-marker{display:none}
+  .accordion > .accordion-summary::marker{content:""}
+  .accordion > .accordion-summary:hover{background:var(--card-soft)}
+  .accordion-chevron{
+    flex:none;color:var(--muted);font-size:1.1rem;line-height:1;
+    transition:transform .2s ease;
+  }
+  .accordion[open] .accordion-chevron{transform:rotate(180deg)}
+  .accordion-body{padding:0 22px 22px}
+  .activity-block + .activity-block{margin-top:20px;padding-top:18px;border-top:1px solid var(--line)}
+  .activity-block h3{font-size:.95rem;font-weight:800;letter-spacing:-.01em}
+
   /* ============ Calendrier en temps réel & Événements ============ */
   .calendar-grid {
     display: grid;
@@ -696,41 +714,48 @@
     <div id="realtimeCalendar" class="calendar-grid"></div>
   </section>
 
-  <!-- ============ Activité (heatmap façon GitHub) ============ -->
-  <section class="card" aria-labelledby="hActivity">
-    <div class="section-head">
-      <h2 id="hActivity">🔥 Activité de révision</h2>
-      <span id="streakLabel" class="small muted"></span>
-    </div>
-    <div id="activityHeatmap" class="heatmap"></div>
-    <div class="heatmap-legend small muted">
-      <span>Moins</span>
-      <span class="heatmap-cell lvl-0"></span>
-      <span class="heatmap-cell lvl-1"></span>
-      <span class="heatmap-cell lvl-2"></span>
-      <span class="heatmap-cell lvl-3"></span>
-      <span class="heatmap-cell lvl-4"></span>
-      <span>Plus</span>
-    </div>
-  </section>
+  <!-- ============ Activité (heatmaps façon GitHub) — révisions & Pomodoro, dans un menu déroulant ============ -->
+  <details class="card accordion" id="activityAccordion">
+    <summary class="accordion-summary" aria-labelledby="hActivity">
+      <h2 id="hActivity">🔥 Activité (révisions & Pomodoro)</h2>
+      <span class="accordion-chevron" aria-hidden="true">▾</span>
+    </summary>
+    <div class="accordion-body">
+      <div class="activity-block">
+        <div class="section-head" style="margin-bottom:8px">
+          <h3>📚 Révisions</h3>
+          <span id="streakLabel" class="small muted"></span>
+        </div>
+        <div id="activityHeatmap" class="heatmap"></div>
+        <div class="heatmap-legend small muted">
+          <span>Moins</span>
+          <span class="heatmap-cell lvl-0"></span>
+          <span class="heatmap-cell lvl-1"></span>
+          <span class="heatmap-cell lvl-2"></span>
+          <span class="heatmap-cell lvl-3"></span>
+          <span class="heatmap-cell lvl-4"></span>
+          <span>Plus</span>
+        </div>
+      </div>
 
-  <!-- ============ Activité Pomodoro (heatmap façon GitHub, temps cumulé) ============ -->
-  <section class="card" aria-labelledby="hPomoActivity">
-    <div class="section-head">
-      <h2 id="hPomoActivity">⏱️ Temps de concentration (Pomodoro)</h2>
-      <span id="pomoHeatmapLabel" class="small muted"></span>
+      <div class="activity-block">
+        <div class="section-head" style="margin-bottom:8px">
+          <h3>⏱️ Temps de concentration (Pomodoro)</h3>
+          <span id="pomoHeatmapLabel" class="small muted"></span>
+        </div>
+        <div id="pomoHeatmap" class="heatmap"></div>
+        <div class="heatmap-legend small muted">
+          <span>Moins</span>
+          <span class="heatmap-cell pomo-lvl-0"></span>
+          <span class="heatmap-cell pomo-lvl-1"></span>
+          <span class="heatmap-cell pomo-lvl-2"></span>
+          <span class="heatmap-cell pomo-lvl-3"></span>
+          <span class="heatmap-cell pomo-lvl-4"></span>
+          <span>Plus</span>
+        </div>
+      </div>
     </div>
-    <div id="pomoHeatmap" class="heatmap"></div>
-    <div class="heatmap-legend small muted">
-      <span>Moins</span>
-      <span class="heatmap-cell pomo-lvl-0"></span>
-      <span class="heatmap-cell pomo-lvl-1"></span>
-      <span class="heatmap-cell pomo-lvl-2"></span>
-      <span class="heatmap-cell pomo-lvl-3"></span>
-      <span class="heatmap-cell pomo-lvl-4"></span>
-      <span>Plus</span>
-    </div>
-  </section>
+  </details>
 
   <!-- ============ Toutes mes révisions ============ -->
   <section class="card" aria-labelledby="hAll">
