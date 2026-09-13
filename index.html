@@ -406,10 +406,13 @@
     0%,100%{ transform:scale(1); }
     50%{ transform:scale(1.035); }
   }
-  .pomo-controls{display:flex;gap:8px;justify-content:center;margin-bottom:20px}
+  .pomo-controls{display:flex;gap:8px;justify-content:center;margin-bottom:20px;flex-wrap:wrap}
   .pomo-settings{display:grid;grid-template-columns:1fr 1fr;gap:12px;text-align:left;border-top:1px solid var(--line);padding-top:16px}
   .pomo-settings label{font-size:.72rem;color:var(--muted);display:block;margin-bottom:4px}
   .pomo-settings input{width:100%}
+  .pomo-title-field{margin-bottom:14px}
+  .pomo-title-field input{width:100%;text-align:center;font-weight:600}
+  .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 
   /* ============ Mini-widget Pomodoro flottant ============ */
   .pomo-mini{
@@ -495,6 +498,23 @@
 </style>
 </head>
 <body>
+<div id="bootErrorBanner" style="display:none;position:fixed;inset:0;z-index:9999;background:#1c0d14;color:#ffe4e9;font:600 15px/1.5 system-ui,sans-serif;padding:24px;text-align:center;">
+  <div style="max-width:480px;margin:15vh auto 0;">
+    ⚠️ L'application n'a pas pu se charger.<br><br>
+    Le plus souvent, ça arrive quand la page est ouverte directement en double-cliquant sur le fichier (adresse commençant par <code>file://</code>) au lieu d'être ouverte via son adresse web (<code>http://</code> ou <code>https://</code>), ou quand la connexion internet est coupée : la page a besoin du réseau pour charger la partie « comptes et sauvegarde ».<br><br>
+    Ouvre plutôt l'adresse en ligne du site (ou lance un petit serveur local si tu testes le fichier), puis recharge la page.
+  </div>
+</div>
+<script>
+  // Garde-fou : si le module principal (comptes/sauvegarde) n'a pas démarré après
+  // quelques secondes, on affiche un message clair plutôt qu'une page muette.
+  setTimeout(function(){
+    if (!window.__appBooted) {
+      var b = document.getElementById("bootErrorBanner");
+      if (b) b.style.display = "block";
+    }
+  }, 6000);
+</script>
 <main id="authScreen" class="auth-screen">
   <section class="card auth-card" aria-labelledby="authTitle">
     <div class="brand"><div class="logo" aria-hidden="true">J+</div><h1>Méthode des J</h1></div>
@@ -719,6 +739,10 @@
         <button id="closePomoModal" class="btn ghost small">✕</button>
       </div>
     </div>
+    <div class="pomo-title-field">
+      <label for="pomoTitle" class="sr-only">Titre de la session</label>
+      <input id="pomoTitle" type="text" placeholder="Titre de la session (ex : Réviser Droit constit)" maxlength="80">
+    </div>
     <div class="pomo-mode" id="pomoModeLabel">Travail</div>
     <div class="pomo-ring-wrap work" id="pomoRingWrap">
       <svg viewBox="0 0 120 120">
@@ -730,6 +754,7 @@
     <div class="pomo-cycles" id="pomoCycles">0 session(s) terminée(s)</div>
     <div class="pomo-controls">
       <button id="pomoStartPause" class="btn primary">▶ Démarrer</button>
+      <button id="pomoStop" class="btn danger">⏹ Stop</button>
       <button id="pomoReset" class="btn ghost">↺ Réinitialiser</button>
       <button id="pomoSkip" class="btn ghost">⏭ Passer</button>
     </div>
@@ -1400,17 +1425,19 @@ var pomo = {
   settings: Object.assign({}, POMO_DEFAULTS),
   mode: "work",
   remaining: POMO_DEFAULTS.work * 60,
+  endAt: null,
   running: false,
   started: false,
   cyclesCompleted: 0,
   timerId: null,
-  history: []
+  history: [],
+  title: ""
 };
 
 var POMO_HISTORY_LIMIT = 200;
 
 function rowToPomoEntry(row){
-  return { mode: row.mode, minutes: Number(row.minutes), endedAt: row.ended_at };
+  return { mode: row.mode, minutes: Number(row.minutes), title: row.title || "", endedAt: row.ended_at };
 }
 
 function dbLoadPomoHistory(){
@@ -1437,6 +1464,7 @@ function dbInsertPomoHistory(entry){
     user_id: currentUser.id,
     mode: entry.mode,
     minutes: entry.minutes,
+    title: entry.title || null,
     ended_at: entry.endedAt
   }).then(function(res){
     if (res.error) throw res.error;
@@ -1462,8 +1490,8 @@ function dbClearPomoHistory(){
     });
 }
 
-function addPomoHistoryEntry(mode, minutes){
-  var entry = { mode: mode, minutes: minutes, endedAt: new Date().toISOString() };
+function addPomoHistoryEntry(mode, minutes, title){
+  var entry = { mode: mode, minutes: minutes, title: (title || "").trim(), endedAt: new Date().toISOString() };
   pomo.history.unshift(entry);
   if (pomo.history.length > POMO_HISTORY_LIMIT) pomo.history.length = POMO_HISTORY_LIMIT;
   renderPomoHistory();
@@ -1497,6 +1525,7 @@ function renderPomoHistory(){
     var h = pomo.history[i];
     html += '<div class="pomo-history-item">' +
       '<div class="pomo-history-type">' + pomoHistoryEmoji(h.mode) + ' ' + esc(pomoModeLabel(h.mode)) +
+        (h.title ? ' — ' + esc(h.title) : '') +
         ' <span class="pomo-history-badge ' + esc(h.mode) + '">' + esc(String(h.minutes)) + ' min</span></div>' +
       '<div class="pomo-history-when">' + esc(formatPomoHistoryWhen(h.endedAt)) + '</div>' +
     '</div>';
@@ -1600,6 +1629,7 @@ function renderPomoMini(){
   else mini.classList.add("hide");
 }
 
+// Petit carillon franc utilisé au retour au travail (fin de pause)
 function pomoBeep(){
   try {
     var Ctx = window.AudioContext || window.webkitAudioContext;
@@ -1620,6 +1650,33 @@ function pomoBeep(){
   } catch (e) {}
 }
 
+// Musique douce jouée à l'entrée en pause : un petit arpège chaud et enveloppé,
+// bien plus enveloppant que le carillon utilisé pour reprendre le travail.
+function pomoSoftChime(){
+  try {
+    var Ctx = window.AudioContext || window.webkitAudioContext;
+    if (!Ctx) return;
+    var ctx = new Ctx();
+    var master = ctx.createGain();
+    master.gain.value = 0.18;
+    master.connect(ctx.destination);
+    // Arpège apaisant (accord Do majorX ajouté : Do5, Mi5, Sol5, Ré6) avec attaque douce et longue traîne
+    var notes = [523.25, 659.25, 783.99, 1046.5];
+    notes.forEach(function(freq, idx){
+      var start = ctx.currentTime + idx * 0.22;
+      var dur = 1.6;
+      var o = ctx.createOscillator(), g = ctx.createGain();
+      o.type = "sine"; o.frequency.value = freq;
+      g.gain.setValueAtTime(0.0001, start);
+      g.gain.linearRampToValueAtTime(0.5, start + 0.35);
+      g.gain.exponentialRampToValueAtTime(0.0001, start + dur);
+      o.connect(g); g.connect(master);
+      o.start(start); o.stop(start + dur + 0.05);
+    });
+    setTimeout(function(){ try { ctx.close(); } catch(e){} }, 2600);
+  } catch (e) {}
+}
+
 function pomoVibrate(){
   try { if (navigator.vibrate) navigator.vibrate([120, 60, 120]); } catch (e) {}
 }
@@ -1628,9 +1685,21 @@ function pomoStopInterval(){
   if (pomo.timerId){ clearInterval(pomo.timerId); pomo.timerId = null; }
 }
 
+// Recalcule le temps restant à partir de l'horodatage de fin (endAt) plutôt que
+// de décrémenter seconde par seconde : ça évite toute dérive quand l'onglet est
+// en arrière-plan, l'écran verrouillé ou le minuteur ralenti par le navigateur,
+// et ça permet de bien rattraper (et faire sonner) la fin de session même après
+// une longue mise en veille.
+function pomoSyncRemaining(){
+  if (!pomo.running || !pomo.endAt) return pomo.remaining;
+  return Math.round((pomo.endAt - Date.now()) / 1000);
+}
+
 function pomoTick(){
-  pomo.remaining -= 1;
-  if (pomo.remaining <= 0){ pomoAdvanceMode(true); return; }
+  if (!pomo.running) return;
+  var remaining = pomoSyncRemaining();
+  if (remaining <= 0){ pomoAdvanceMode(true); return; }
+  pomo.remaining = remaining;
   renderPomoDisplay();
 }
 
@@ -1647,12 +1716,14 @@ function pomoAdvanceMode(natural){
 
   pomo.mode = nextMode;
   pomo.remaining = pomoModeDuration(nextMode);
+  pomo.endAt = null;
   pomo.running = false;
   renderPomoDisplay();
 
   if (natural){
-    addPomoHistoryEntry(finishedMode, finishedMinutes);
-    pomoBeep();
+    addPomoHistoryEntry(finishedMode, finishedMinutes, pomo.title);
+    var enteringBreak = nextMode === "short-break" || nextMode === "long-break";
+    if (enteringBreak) pomoSoftChime(); else pomoBeep();
     pomoVibrate();
     var title = wasWork ? "🍅 Session terminée !" : "🔔 Pause terminée !";
     var body = wasWork
@@ -1685,13 +1756,16 @@ function startPomo(){
   if (pomo.remaining <= 0) pomo.remaining = pomoModeDuration(pomo.mode);
   pomo.running = true;
   pomo.started = true;
+  pomo.endAt = Date.now() + pomo.remaining * 1000;
   pomoStopInterval();
   pomo.timerId = setInterval(pomoTick, 1000);
   renderPomoDisplay();
 }
 
 function pausePomo(){
+  if (pomo.running) pomo.remaining = Math.max(0, pomoSyncRemaining());
   pomo.running = false;
+  pomo.endAt = null;
   pomoStopInterval();
   renderPomoDisplay();
 }
@@ -1699,11 +1773,39 @@ function pausePomo(){
 function resetPomo(){
   pomo.running = false;
   pomo.started = false;
+  pomo.endAt = null;
   pomoStopInterval();
   pomo.mode = "work";
   pomo.cyclesCompleted = 0;
   pomo.remaining = pomoModeDuration("work");
+  pomo.title = "";
+  var titleInput = el("pomoTitle");
+  if (titleInput) titleInput.value = "";
   renderPomoDisplay();
+}
+
+function stopPomo(){
+  var totalSeconds = pomoModeDuration(pomo.mode);
+  var currentRemaining = pomo.running ? Math.max(0, pomoSyncRemaining()) : pomo.remaining;
+  var elapsedSeconds = totalSeconds - currentRemaining;
+  pomoStopInterval();
+  if (elapsedSeconds > 0){
+    var elapsedMinutes = Math.max(1, Math.round(elapsedSeconds / 60));
+    addPomoHistoryEntry(pomo.mode, elapsedMinutes, pomo.title);
+  }
+  resetPomo();
+  toast("Pomodoro arrêté.");
+}
+
+// Recale l'affichage (et déclenche la sonnerie si besoin) dès que l'onglet
+// redevient visible ou que l'appareil se réveille : répare le cas où le
+// rappel de fin de session/pause ne se déclenchait pas quand le téléphone
+// était verrouillé ou l'onglet en arrière-plan.
+function pomoCatchUp(){
+  if (!pomo.running) return;
+  var remaining = pomoSyncRemaining();
+  if (remaining <= 0) pomoAdvanceMode(true);
+  else { pomo.remaining = remaining; renderPomoDisplay(); }
 }
 
 function skipPomo(){
@@ -2355,8 +2457,12 @@ function bindEvents(){
   }
   var pomoResetBtn = el("pomoReset");
   if (pomoResetBtn) pomoResetBtn.addEventListener("click", resetPomo);
+  var pomoStopBtn = el("pomoStop");
+  if (pomoStopBtn) pomoStopBtn.addEventListener("click", stopPomo);
   var pomoSkipBtn = el("pomoSkip");
   if (pomoSkipBtn) pomoSkipBtn.addEventListener("click", skipPomo);
+  var pomoTitleInput = el("pomoTitle");
+  if (pomoTitleInput) pomoTitleInput.addEventListener("input", function(){ pomo.title = pomoTitleInput.value; });
   ["pomoWork", "pomoShort", "pomoLong", "pomoCyclesBefore"].forEach(function(id){
     var input = el(id);
     if (input) input.addEventListener("change", updatePomoSettingFromInputs);
@@ -2467,12 +2573,25 @@ function bindEvents(){
   
   var file = el("importFile");
   if (file) file.addEventListener("change", function(e){ importData(e.target.files && e.target.files[0]); e.target.value = ""; });
+
+  // Rattrape le minuteur Pomodoro (et déclenche le rappel manqué) dès que
+  // l'onglet redevient visible ou que l'appareil se réveille.
+  if (typeof document !== "undefined"){
+    document.addEventListener("visibilitychange", function(){
+      if (document.visibilityState === "visible") pomoCatchUp();
+    });
+  }
+  if (typeof window !== "undefined"){
+    window.addEventListener("focus", pomoCatchUp);
+    window.addEventListener("pageshow", pomoCatchUp);
+  }
 }
 
 /* ==========================================================================
    7. Démarrage
    ========================================================================== */
 async function init(){
+  window.__appBooted = true;
   registerServiceWorker().then(function(reg){
     if (reg && notifPermission() === "granted") registerPeriodicSync(reg);
   });
