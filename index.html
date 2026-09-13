@@ -186,6 +186,8 @@
   .stat b{display:block;font-size:1.7rem;font-family:var(--font-display);font-weight:800;
     background:linear-gradient(135deg,var(--brand),var(--brand2));-webkit-background-clip:text;background-clip:text;color:transparent}
   .stat span{font-size:.8rem;color:var(--muted);font-weight:600}
+  .stat.stat-accent{background:var(--brand-soft);border-color:transparent}
+  .stat.stat-accent b{background:linear-gradient(135deg,var(--ok),var(--brand2));-webkit-background-clip:text;background-clip:text;color:transparent}
 
   .progress-bar-wrap{margin-top:16px;background:var(--card-soft);border-radius:999px;height:11px;overflow:hidden;border:1px solid var(--line)}
   .progress-bar-fill{background:linear-gradient(90deg,var(--brand),var(--brand2));height:100%;width:0%;transition:width .5s cubic-bezier(.4,0,.2,1);border-radius:999px}
@@ -265,6 +267,31 @@
     min-height: 54px;
     font-size: 0.85rem;
   }
+
+  /* ============ Heatmap d'activité ============ */
+  .heatmap{
+    display:grid;
+    grid-template-rows:repeat(7,1fr);
+    grid-auto-flow:column;
+    grid-auto-columns:16px;
+    gap:4px;
+    overflow-x:auto;
+    padding-bottom:6px;
+  }
+  .heatmap-cell{
+    width:16px;height:16px;border-radius:5px;
+    background:var(--card-soft);border:1px solid var(--line);
+    transition:transform .12s ease;
+    display:inline-block;
+  }
+  .heatmap-cell:hover{transform:scale(1.25)}
+  .heatmap-cell.lvl-0{background:var(--card-soft)}
+  .heatmap-cell.lvl-1{background:color-mix(in srgb, var(--ok) 25%, var(--card-soft));border-color:transparent}
+  .heatmap-cell.lvl-2{background:color-mix(in srgb, var(--ok) 50%, var(--card-soft));border-color:transparent}
+  .heatmap-cell.lvl-3{background:color-mix(in srgb, var(--ok) 75%, var(--card-soft));border-color:transparent}
+  .heatmap-cell.lvl-4{background:var(--ok);border-color:transparent}
+  .heatmap-legend{display:flex;align-items:center;gap:4px;margin-top:4px}
+  .heatmap-legend .heatmap-cell{width:12px;height:12px}
 
   /* ============ Calendrier en temps réel & Événements ============ */
   .calendar-grid {
@@ -347,13 +374,38 @@
   .user-email{max-width:190px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
   /* ============ Pomodoro ============ */
-  .pomo-card{max-width:340px;text-align:center}
-  .pomo-mode{font-weight:800;font-size:.85rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
-  .pomo-time{font-size:3.6rem;font-weight:800;font-variant-numeric:tabular-nums;margin:6px 0 4px;transition:color .3s ease;font-family:var(--font-display)}
+  .pomo-card{max-width:340px;text-align:center;position:relative;overflow:hidden;transition:box-shadow .4s ease}
+  .pomo-mode{font-weight:800;font-size:.85rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;position:relative;z-index:2}
+  .pomo-ring-wrap{position:relative;width:220px;height:220px;margin:4px auto 6px;display:grid;place-items:center}
+  .pomo-ring-wrap svg{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg)}
+  .pomo-ring-bg{fill:none;stroke:var(--line);stroke-width:8}
+  .pomo-ring-progress{
+    fill:none;stroke-width:8;stroke-linecap:round;
+    stroke:var(--brand);
+    transition:stroke-dashoffset .35s linear, stroke .3s ease;
+    filter:drop-shadow(0 0 6px color-mix(in srgb, var(--brand) 55%, transparent));
+  }
+  .pomo-time{font-size:3.6rem;font-weight:800;font-variant-numeric:tabular-nums;margin:6px 0 4px;transition:color .3s ease;font-family:var(--font-display);position:relative;z-index:2}
   .pomo-time.work{color:var(--brand)}
   .pomo-time.short-break{color:var(--ok)}
   .pomo-time.long-break{color:var(--warn)}
-  .pomo-cycles{color:var(--muted);font-size:.85rem;margin-bottom:18px;font-weight:600}
+  .pomo-ring-wrap.short-break .pomo-ring-progress{stroke:var(--ok);filter:drop-shadow(0 0 6px color-mix(in srgb, var(--ok) 55%, transparent))}
+  .pomo-ring-wrap.long-break .pomo-ring-progress{stroke:var(--warn);filter:drop-shadow(0 0 6px color-mix(in srgb, var(--warn) 55%, transparent))}
+  .pomo-cycles{color:var(--muted);font-size:.85rem;margin-bottom:18px;font-weight:600;position:relative;z-index:2}
+
+  /* Halo tournant + pulsation quand le minuteur tourne */
+  .pomo-card.pomo-running::before{
+    content:"";position:absolute;inset:-60%;z-index:0;
+    background:conic-gradient(from 0deg, var(--brand), var(--brand2), var(--ok), var(--brand));
+    opacity:.16;animation:pomoSpin 6s linear infinite;
+  }
+  [data-theme="dark"] .pomo-card.pomo-running::before{ opacity:.28; }
+  .pomo-card.pomo-running .pomo-ring-wrap{animation:pomoPulse 1.6s ease-in-out infinite}
+  @keyframes pomoSpin{ from{ transform:rotate(0deg);} to{ transform:rotate(360deg);} }
+  @keyframes pomoPulse{
+    0%,100%{ transform:scale(1); }
+    50%{ transform:scale(1.035); }
+  }
   .pomo-controls{display:flex;gap:8px;justify-content:center;margin-bottom:20px}
   .pomo-settings{display:grid;grid-template-columns:1fr 1fr;gap:12px;text-align:left;border-top:1px solid var(--line);padding-top:16px}
   .pomo-settings label{font-size:.72rem;color:var(--muted);display:block;margin-bottom:4px}
@@ -390,6 +442,7 @@
     .slot{flex:1 1 44%}
     .calendar-grid { grid-template-columns: repeat(1, minmax(0, 1fr)); }
     .pomo-time{font-size:3rem}
+    .pomo-ring-wrap{width:180px;height:180px}
   }
 </style>
 </head>
@@ -487,6 +540,10 @@
         </select>
         <span class="small muted">Une révision prévue ce jour-là sera décalée au lendemain.</span>
       </div>
+      <div>
+        <label for="courseDuration">Durée estimée par révision (minutes)</label>
+        <input id="courseDuration" name="courseDuration" type="number" min="1" max="600" step="1" placeholder="15">
+      </div>
       <div class="form-actions">
         <button type="submit" class="btn primary">Ajouter le cours</button>
         <button type="reset" class="btn ghost">Effacer</button>
@@ -496,12 +553,18 @@
 
   <!-- ============ Stats & Progression ============ -->
   <section class="card" aria-label="Statistiques">
+    <div class="section-head">
+      <h2>📊 Vue d'ensemble</h2>
+      <span class="small muted">Mise à jour en continu</span>
+    </div>
     <div class="stats">
       <div class="stat"><b id="statDue">0</b><span>À réviser aujourd'hui</span></div>
       <div class="stat"><b id="statOver">0</b><span>En retard</span></div>
       <div class="stat"><b id="statDone">0</b><span>Révisions validées</span></div>
       <div class="stat"><b id="statRate">0%</b><span>Complétion globale</span></div>
       <div class="stat"><b id="statWeek">0%</b><span>Succès (7 derniers jours)</span></div>
+      <div class="stat stat-accent"><b id="statStreak">0</b><span>🔥 Jours de suite</span></div>
+      <div class="stat stat-accent"><b id="statTimeSpent">0 min</b><span>⏱ Temps total révisé</span></div>
     </div>
     <div class="progress-bar-wrap">
       <div id="progressBar" class="progress-bar-fill"></div>
@@ -523,6 +586,24 @@
       <h2 id="hCalendar">📅 Calendrier en temps réel (14 prochains jours)</h2>
     </div>
     <div id="realtimeCalendar" class="calendar-grid"></div>
+  </section>
+
+  <!-- ============ Activité (heatmap façon GitHub) ============ -->
+  <section class="card" aria-labelledby="hActivity">
+    <div class="section-head">
+      <h2 id="hActivity">🔥 Activité de révision</h2>
+      <span id="streakLabel" class="small muted"></span>
+    </div>
+    <div id="activityHeatmap" class="heatmap"></div>
+    <div class="heatmap-legend small muted">
+      <span>Moins</span>
+      <span class="heatmap-cell lvl-0"></span>
+      <span class="heatmap-cell lvl-1"></span>
+      <span class="heatmap-cell lvl-2"></span>
+      <span class="heatmap-cell lvl-3"></span>
+      <span class="heatmap-cell lvl-4"></span>
+      <span>Plus</span>
+    </div>
   </section>
 
   <!-- ============ Toutes mes révisions ============ -->
@@ -582,13 +663,19 @@
 
 <!-- Modal Pomodoro -->
 <div id="pomoModal" class="modal-overlay hide" aria-hidden="true">
-  <div class="modal-card pomo-card">
+  <div class="modal-card pomo-card" id="pomoCard">
     <div class="section-head" style="margin-bottom:8px">
       <h2>🍅 Pomodoro</h2>
       <button id="closePomoModal" class="btn ghost small">✕</button>
     </div>
     <div class="pomo-mode" id="pomoModeLabel">Travail</div>
-    <div class="pomo-time work" id="pomoTime">25:00</div>
+    <div class="pomo-ring-wrap work" id="pomoRingWrap">
+      <svg viewBox="0 0 120 120">
+        <circle class="pomo-ring-bg" cx="60" cy="60" r="52"></circle>
+        <circle class="pomo-ring-progress" id="pomoRingProgress" cx="60" cy="60" r="52"></circle>
+      </svg>
+      <div class="pomo-time work" id="pomoTime">25:00</div>
+    </div>
     <div class="pomo-cycles" id="pomoCycles">0 session(s) terminée(s)</div>
     <div class="pomo-controls">
       <button id="pomoStartPause" class="btn primary">▶ Démarrer</button>
@@ -785,6 +872,22 @@ function applyTheme(t){
 function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
 function plural(n, sing, plur){ return n + " " + (Math.abs(n) > 1 ? (plur || sing + "s") : sing); }
 
+/* Durée estimée par révision, stockée localement par appareil (pas de colonne dédiée en base) */
+function loadCourseDurations(){
+  try { return JSON.parse(localStorage.getItem("courseDurations") || "{}") || {}; } catch (e) { return {}; }
+}
+function getCourseDuration(id){
+  var map = loadCourseDurations();
+  var v = parseInt(map[id], 10);
+  return (!isNaN(v) && v > 0) ? v : 15;
+}
+function setCourseDuration(id, minutes){
+  var map = loadCourseDurations();
+  var v = parseInt(minutes, 10);
+  map[id] = (!isNaN(v) && v > 0) ? Math.min(600, v) : 15;
+  try { localStorage.setItem("courseDurations", JSON.stringify(map)); } catch (e) {}
+}
+
 function skipExcludedWeekday(iso, excludeWeekday){
   if (excludeWeekday === null || excludeWeekday === undefined || excludeWeekday === "") return iso;
   var wd = Number(excludeWeekday);
@@ -806,9 +909,12 @@ function computeSchedule(startISO, offsets, excludeWeekday){
   return out;
 }
 
-function makeCourse(name, subject, link, startISO, excludeWeekday){
+function makeCourse(name, subject, link, startISO, excludeWeekday, durationMin){
   var ew = (excludeWeekday === "" || excludeWeekday === undefined || excludeWeekday === null) ? null : Number(excludeWeekday);
   if (ew !== null && (isNaN(ew) || ew < 0 || ew > 6)) ew = null;
+  var dur = parseInt(durationMin, 10);
+  if (isNaN(dur) || dur <= 0) dur = 15;
+  dur = Math.min(600, dur);
   return {
     id: uid(),
     name: String(name || "").trim(),
@@ -818,13 +924,15 @@ function makeCourse(name, subject, link, startISO, excludeWeekday){
     start: startISO,
     createdAt: new Date().toISOString(),
     excludeWeekday: ew,
+    durationMin: dur,
     schedule: computeSchedule(startISO, null, ew)
   };
 }
 
-function addCourse(name, subject, link, startISO, excludeWeekday){
+function addCourse(name, subject, link, startISO, excludeWeekday, durationMin){
   if (!String(name || "").trim() || !parseISO(startISO)) return null;
-  var c = makeCourse(name, subject, link, startISO, excludeWeekday);
+  var c = makeCourse(name, subject, link, startISO, excludeWeekday, durationMin);
+  setCourseDuration(c.id, c.durationMin);
   state.courses.push(c);
   dbUpsertCourse(c);
   return c;
@@ -922,7 +1030,76 @@ function computeStats(){
   var rate = list.length > 0 ? Math.round((done / list.length) * 100) : 0;
   var weekRate = weekTotal > 0 ? Math.round((weekDone / weekTotal) * 100) : 0;
 
-  return { due: due, overdue: over, done: done, courses: state.courses.length, rate: rate, weekRate: weekRate };
+  return {
+    due: due, overdue: over, done: done, courses: state.courses.length, rate: rate, weekRate: weekRate,
+    streak: computeStreak(), totalMinutes: computeTotalMinutes()
+  };
+}
+
+/* Minutes totales révisées = durée estimée par cours × nombre de révisions validées (J0 inclus) */
+function computeTotalMinutes(){
+  var total = 0;
+  for (var i = 0; i < state.courses.length; i++){
+    var c = state.courses[i];
+    var dur = (c.durationMin && c.durationMin > 0) ? c.durationMin : 15;
+    for (var j = 0; j < c.schedule.length; j++){
+      if (c.schedule[j].done) total += dur;
+    }
+  }
+  return total;
+}
+
+function formatMinutes(total){
+  if (total < 60) return total + " min";
+  var h = Math.floor(total / 60), m = total % 60;
+  return h + "h" + (m ? pad2(m) : "");
+}
+
+/* Regroupe toutes les révisions validées par jour (basé sur doneAt), pour la heatmap et le streak */
+function activityByDay(){
+  var map = {};
+  for (var i = 0; i < state.courses.length; i++){
+    var c = state.courses[i];
+    for (var j = 0; j < c.schedule.length; j++){
+      var r = c.schedule[j];
+      if (!r.done) continue;
+      var day = r.doneAt ? String(r.doneAt).slice(0, 10) : r.date;
+      map[day] = (map[day] || 0) + 1;
+    }
+  }
+  return map;
+}
+
+/* Nombre de jours consécutifs (jusqu'à aujourd'hui) sans révision manquée */
+function computeStreak(){
+  var t = todayISO();
+  var reviewsByDate = {};
+  for (var i = 0; i < state.courses.length; i++){
+    var c = state.courses[i];
+    for (var j = 0; j < c.schedule.length; j++){
+      var r = c.schedule[j];
+      if (r.offset === 0) continue;
+      if (!reviewsByDate[r.date]) reviewsByDate[r.date] = [];
+      reviewsByDate[r.date].push(r);
+    }
+  }
+  var cursor = t;
+  // Si des révisions du jour restent à faire, on part d'hier pour ne pas casser la série en cours.
+  var todays = reviewsByDate[t] || [];
+  var todayIncomplete = todays.some(function(r){ return !r.done; });
+  if (todayIncomplete) cursor = addDays(t, -1);
+
+  var streak = 0;
+  for (var guard = 0; guard < 365; guard++){
+    var revs = reviewsByDate[cursor];
+    if (revs && revs.length){
+      var allDone = revs.every(function(r){ return r.done; });
+      if (!allDone) break;
+      streak++;
+    }
+    cursor = addDays(cursor, -1);
+  }
+  return streak;
 }
 
 function subjectsUsed(){
@@ -949,6 +1126,7 @@ function rowToCourse(row){
     start: row.start_date,
     createdAt: row.created_at || new Date().toISOString(),
     excludeWeekday: (row.exclude_weekday === null || row.exclude_weekday === undefined) ? null : Number(row.exclude_weekday),
+    durationMin: getCourseDuration(row.id),
     schedule: Array.isArray(row.schedule)
       ? row.schedule.filter(function(r){ return r && parseISO(r.date); })
           .map(function(r){ return { offset: Number(r.offset) || 0, date: r.date, done: !!r.done, doneAt: r.doneAt || null }; })
@@ -1187,6 +1365,8 @@ function formatPomoTime(totalSeconds){
   return pad2(m) + ":" + pad2(s % 60);
 }
 
+var POMO_RING_CIRCUMFERENCE = 2 * Math.PI * 52;
+
 function renderPomoDisplay(){
   if (!hasDOM()) return;
   var timeEl = el("pomoTime"), modeEl = el("pomoModeLabel"), cyclesEl = el("pomoCycles"), btn = el("pomoStartPause");
@@ -1202,6 +1382,17 @@ function renderPomoDisplay(){
   if (sh && document.activeElement !== sh) sh.value = pomo.settings.short;
   if (lo && document.activeElement !== lo) lo.value = pomo.settings.long;
   if (cb && document.activeElement !== cb) cb.value = pomo.settings.cyclesBefore;
+
+  // Anneau de progression + halo animé pendant la session
+  var ringWrap = el("pomoRingWrap"), ring = el("pomoRingProgress"), card = el("pomoCard");
+  var total = pomoModeDuration(pomo.mode);
+  var frac = total > 0 ? Math.max(0, Math.min(1, pomo.remaining / total)) : 0;
+  if (ring){
+    ring.style.strokeDasharray = String(POMO_RING_CIRCUMFERENCE);
+    ring.style.strokeDashoffset = String(POMO_RING_CIRCUMFERENCE * (1 - frac));
+  }
+  if (ringWrap) ringWrap.className = "pomo-ring-wrap " + pomo.mode;
+  if (card) card.classList.toggle("pomo-running", !!pomo.running);
 }
 
 function pomoBeep(){
@@ -1209,15 +1400,23 @@ function pomoBeep(){
     var Ctx = window.AudioContext || window.webkitAudioContext;
     if (!Ctx) return;
     var ctx = new Ctx();
-    var o = ctx.createOscillator(), g = ctx.createGain();
-    o.type = "sine"; o.frequency.value = 880;
-    g.gain.setValueAtTime(0.001, ctx.currentTime);
-    g.gain.exponentialRampToValueAtTime(0.2, ctx.currentTime + 0.02);
-    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);
-    o.connect(g); g.connect(ctx.destination);
-    o.start(); o.stop(ctx.currentTime + 0.55);
-    o.onended = function(){ try { ctx.close(); } catch(e){} };
+    var notes = [880, 1108.73]; // petit carillon à deux notes (La5, Do#6)
+    notes.forEach(function(freq, idx){
+      var start = ctx.currentTime + idx * 0.16;
+      var o = ctx.createOscillator(), g = ctx.createGain();
+      o.type = "sine"; o.frequency.value = freq;
+      g.gain.setValueAtTime(0.0001, start);
+      g.gain.exponentialRampToValueAtTime(0.22, start + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, start + 0.5);
+      o.connect(g); g.connect(ctx.destination);
+      o.start(start); o.stop(start + 0.55);
+    });
+    setTimeout(function(){ try { ctx.close(); } catch(e){} }, 900);
   } catch (e) {}
+}
+
+function pomoVibrate(){
+  try { if (navigator.vibrate) navigator.vibrate([120, 60, 120]); } catch (e) {}
 }
 
 function pomoStopInterval(){
@@ -1246,6 +1445,7 @@ function pomoAdvanceMode(natural){
 
   if (natural){
     pomoBeep();
+    pomoVibrate();
     var title = wasWork ? "🍅 Session terminée !" : "🔔 Pause terminée !";
     var body = wasWork
       ? (nextMode === "long-break" ? "Belle série ! Prends une pause longue." : "Prends une petite pause.")
@@ -1384,6 +1584,7 @@ function render(){
   renderStats();
   renderToday();
   renderRealtimeCalendar();
+  renderActivityHeatmap();
   renderAll();
   renderNotifStatus();
 }
@@ -1418,9 +1619,39 @@ function renderStats(){
   set("statCourses", s.courses);
   set("statRate", s.rate + "%");
   set("statWeek", s.weekRate + "%");
+  set("statStreak", s.streak);
+  set("statTimeSpent", formatMinutes(s.totalMinutes));
   
   var pb = el("progressBar");
   if (pb) pb.style.width = s.rate + "%";
+}
+
+function renderActivityHeatmap(){
+  var box = el("activityHeatmap");
+  if (!box) return;
+  var counts = activityByDay();
+  var days = 84; // 12 semaines
+  var t = todayISO();
+  var maxCount = 1;
+  var cells = [];
+  for (var i = days - 1; i >= 0; i--){
+    var day = addDays(t, -i);
+    var n = counts[day] || 0;
+    if (n > maxCount) maxCount = n;
+    cells.push({ day: day, n: n });
+  }
+  var html = cells.map(function(c){
+    var lvl = c.n <= 0 ? 0 : Math.min(4, Math.ceil((c.n / maxCount) * 4));
+    var title = formatDate(c.day) + " — " + plural(c.n, "révision");
+    return '<span class="heatmap-cell lvl-' + lvl + '" title="' + esc(title) + '"></span>';
+  }).join("");
+  box.innerHTML = html;
+
+  var lab = el("streakLabel");
+  if (lab){
+    var streak = computeStreak();
+    lab.textContent = streak > 1 ? plural(streak, "jour de suite", "jours de suite") + " 🔥" : "12 dernières semaines";
+  }
 }
 
 function reviewItemHTML(course, review, showDate){
@@ -1635,8 +1866,8 @@ function renderNotifStatus(){
    ========================================================================== */
 function onFormSubmit(ev){
   ev.preventDefault();
-  var name = el("courseName"), subj = el("courseSubject"), link = el("courseLink"), start = el("courseStart"), exclude = el("courseExclude");
-  var c = addCourse(name ? name.value : "", subj ? subj.value : "", link ? link.value : "", start ? start.value : "", exclude ? exclude.value : "");
+  var name = el("courseName"), subj = el("courseSubject"), link = el("courseLink"), start = el("courseStart"), exclude = el("courseExclude"), duration = el("courseDuration");
+  var c = addCourse(name ? name.value : "", subj ? subj.value : "", link ? link.value : "", start ? start.value : "", exclude ? exclude.value : "", duration ? duration.value : "");
   if (!c){ toast("Vérifie le nom du cours et la date (J0)."); return; }
   var due = dueOn(todayISO()).length;
   var excludeMsg = (c.excludeWeekday !== null && c.excludeWeekday !== undefined) ? " (" + WEEKDAY_NAMES[c.excludeWeekday] + " exclu)" : "";
@@ -1645,6 +1876,7 @@ function onFormSubmit(ev){
   if (subj) subj.value = "";
   if (link) link.value = "";
   if (exclude) exclude.value = "";
+  if (duration) duration.value = "";
   render();
   checkDailyNotifications();
 }
