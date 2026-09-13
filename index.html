@@ -395,7 +395,7 @@
 
   /* Halo tournant + pulsation quand le minuteur tourne */
   .pomo-card.pomo-running::before{
-    content:"";position:absolute;inset:-60%;z-index:0;
+    content:"";position:absolute;inset:-60%;z-index:0;pointer-events:none;
     background:conic-gradient(from 0deg, var(--brand), var(--brand2), var(--ok), var(--brand));
     opacity:.16;animation:pomoSpin 6s linear infinite;
   }
