@@ -512,15 +512,34 @@
   .flash-face.back .flash-text{color:var(--brand);font-weight:600}
   .flash-hint{text-align:center;color:var(--muted);font-size:.78rem;margin:-6px 0 14px}
   .flash-review-controls{display:flex;gap:8px;justify-content:center;margin-bottom:4px;flex-wrap:wrap}
+  .flash-mastery-badge{font-size:.72rem;font-weight:700;color:var(--muted)}
+  .flash-grade-controls{display:flex;gap:10px;justify-content:center;margin-bottom:14px}
+  .flash-grade-btn{flex:1;max-width:200px;font-weight:800}
 
   .flash-list{display:flex;flex-direction:column;gap:8px;max-height:280px;overflow-y:auto;margin-bottom:14px}
   .flash-list-item{border:1px solid var(--line);border-radius:var(--radius-sm);padding:10px 12px;background:var(--card-soft)}
   .flash-list-item .flash-q{font-weight:700;font-size:.88rem}
   .flash-list-item .flash-a{color:var(--muted);font-size:.82rem;margin-top:2px}
+  .flash-list-item .flash-meta{color:var(--muted);font-size:.72rem;margin-top:6px;font-weight:600}
   .flash-list-item .actions{display:flex;gap:6px;margin-top:8px}
   .flash-form{display:grid;gap:10px;border-top:1px solid var(--line);padding-top:14px}
 
   .course-flash-btn{position:relative}
+
+  /* ============ Récap du jour ============ */
+  .recap-modal-card{max-width:360px;text-align:center}
+  .recap-body{text-align:left}
+  .recap-date{text-align:center;color:var(--muted);font-weight:700;font-size:.86rem;margin:0 0 6px;text-transform:capitalize}
+  .recap-stats{display:flex;flex-direction:column}
+  .recap-stat{display:flex;align-items:center;gap:12px;font-size:.95rem;padding:12px 4px;border-bottom:1px solid var(--line)}
+  .recap-stat:last-child{border-bottom:none}
+  .recap-stat b{font-family:var(--font-display);font-size:1.15rem}
+  .recap-icon{font-size:1.4rem;line-height:1;width:1.6em;text-align:center;flex-shrink:0}
+  .recap-line{display:flex;align-items:center;gap:10px;font-size:1rem;padding:12px 4px;border-bottom:1px solid var(--line)}
+  .recap-line:last-child{border-bottom:none}
+  .recap-line b{font-family:var(--font-display);font-size:1.15rem}
+  .recap-empty{color:var(--muted);text-align:center;padding:14px 4px;font-weight:600}
+  .recap-msg{text-align:center;color:var(--brand);font-weight:700;font-size:.9rem;margin:14px 0 2px}
 
   /* ============ Modale Explication ============ */
   .info-modal-card{max-width:640px;max-height:82vh;overflow-y:auto;text-align:left}
@@ -616,6 +635,7 @@
       <button id="themeBtn" class="btn ghost menu-btn">🌓 Auto</button>
       <button id="openEventModalBtn" class="btn primary menu-btn">+ Événement spécial</button>
       <button id="openPomoBtn" class="btn menu-btn">🍅 Pomodoro</button>
+      <button id="openDailyRecapBtn" class="btn ghost menu-btn">📅 Récap du jour</button>
       <button id="openMethodInfoBtn" class="btn ghost menu-btn">📖 Explication Méthode J</button>
       <button id="notifBtn" class="btn menu-btn">🔔 Activer les rappels</button>
       <button id="exportBtn" class="btn ghost menu-btn" title="Télécharger mes données">⬇ Exporter</button>
@@ -903,6 +923,7 @@
       <div id="flashReviewBody">
         <div class="flash-progress">
           <span id="flashProgressLabel">1 / 1</span>
+          <span id="flashMasteryBadge" class="flash-mastery-badge"></span>
         </div>
         <div class="flash-stage" id="flashStage">
           <div class="flash-card" id="flashCard">
@@ -916,7 +937,11 @@
             </div>
           </div>
         </div>
-        <p class="flash-hint">Touche la carte pour la retourner · glisse ← → (ou boutons) pour naviguer</p>
+        <p class="flash-hint" id="flashHint">Touche la carte pour la retourner · glisse ← → (ou boutons) pour naviguer</p>
+        <div class="flash-grade-controls hide" id="flashGradeControls">
+          <button type="button" id="flashGradeNo" class="btn danger flash-grade-btn">❌ Je savais pas</button>
+          <button type="button" id="flashGradeYes" class="btn primary flash-grade-btn">✅ Je savais</button>
+        </div>
         <div class="flash-review-controls">
           <button type="button" id="flashPrev" class="btn ghost small">← Précédente</button>
           <button type="button" id="flashFlip" class="btn small">↺ Retourner</button>
@@ -928,6 +953,7 @@
 
     <div id="flashManageView" class="hide">
       <div class="flash-import-row">
+        <button type="button" id="flashExportBtn" class="btn ghost small">⬇️ Exporter</button>
         <button type="button" id="flashImportBtn" class="btn ghost small">⬆️ Importer depuis un fichier</button>
         <input type="file" id="flashImportFile" accept=".csv,.tsv,.txt,.json,text/csv,text/plain,application/json" class="hide">
       </div>
@@ -949,6 +975,17 @@
         </div>
       </form>
     </div>
+  </div>
+</div>
+
+<!-- Modale Récap du jour -->
+<div id="dailyRecapModal" class="modal-overlay hide" aria-hidden="true">
+  <div class="modal-card recap-modal-card">
+    <div class="section-head" style="margin-bottom:8px">
+      <h2>📅 Récap du jour</h2>
+      <button id="closeDailyRecapModal" class="btn ghost small">✕</button>
+    </div>
+    <div id="dailyRecapBody" class="recap-body"></div>
   </div>
 </div>
 
@@ -1166,7 +1203,12 @@ function dbLoadFlashcards(){
       var map = {};
       (res.data || []).forEach(function(row){
         if (!map[row.course_id]) map[row.course_id] = [];
-        map[row.course_id].push({ id: row.id, q: String(row.question || ""), a: String(row.answer || "") });
+        map[row.course_id].push({
+          id: row.id, q: String(row.question || ""), a: String(row.answer || ""),
+          level: Number(row.level) || 0,
+          due: row.due_at || new Date().toISOString(),
+          lastReviewed: row.last_reviewed || null
+        });
       });
       return map;
     })
@@ -1184,7 +1226,10 @@ function dbLoadFlashcards(){
 function dbUpsertFlashcard(courseId, card){
   if (!currentUser) return Promise.resolve(false);
   return supabase.from("flashcards").upsert({
-    id: card.id, user_id: currentUser.id, course_id: courseId, question: card.q, answer: card.a
+    id: card.id, user_id: currentUser.id, course_id: courseId, question: card.q, answer: card.a,
+    level: card.level || 0,
+    due_at: card.due || new Date().toISOString(),
+    last_reviewed: card.lastReviewed || null
   }).then(function(res){
     if (res.error) throw res.error;
     return true;
@@ -1229,7 +1274,7 @@ function addFlashcard(courseId, question, answer){
   if (!courseId || !q || !a) return null;
   if (!state.flashcards) state.flashcards = {};
   if (!state.flashcards[courseId]) state.flashcards[courseId] = [];
-  var card = { id: uid(), q: q, a: a };
+  var card = { id: uid(), q: q, a: a, level: 0, due: new Date().toISOString(), lastReviewed: null };
   state.flashcards[courseId].push(card);
   dbUpsertFlashcard(courseId, card);
   return card;
@@ -1243,6 +1288,20 @@ function updateFlashcard(courseId, cardId, question, answer){
   card.a = String(answer || "").trim();
   dbUpsertFlashcard(courseId, card);
   return card;
+}
+var FLASH_INTERVALS_DAYS = [0, 1, 3, 7, 14, 30];
+function updateFlashcardProgress(courseId, cardId, known){
+  var list = (state.flashcards && state.flashcards[courseId]) || [];
+  var card = null;
+  for (var i = 0; i < list.length; i++) if (list[i].id === cardId) { card = list[i]; break; }
+  if (!card) return null;
+  var newLevel = known ? Math.min((card.level || 0) + 1, FLASH_INTERVALS_DAYS.length - 1) : 0;
+  var days = FLASH_INTERVALS_DAYS[newLevel];
+  card.level = newLevel;
+  card.due = new Date(Date.now() + days * 86400000).toISOString();
+  card.lastReviewed = new Date().toISOString();
+  dbUpsertFlashcard(courseId, card);
+  return { card: card, days: days };
 }
 function removeFlashcard(courseId, cardId){
   if (!state.flashcards || !state.flashcards[courseId]) return;
@@ -2509,7 +2568,9 @@ function openFlashModal(courseId){
   var course = findCourse(courseId);
   if (!course) return;
   flashState.courseId = courseId;
-  flashState.cards = getFlashcards(courseId).slice();
+  flashState.cards = getFlashcards(courseId).slice().sort(function(a, b){
+    return new Date(a.due || 0) - new Date(b.due || 0);
+  });
   flashState.index = 0;
   flashState.flipped = false;
   var title = el("flashModalTitle");
@@ -2543,6 +2604,16 @@ function refreshFlashCardsFromStore(){
   if (flashState.index >= flashState.cards.length) flashState.index = Math.max(0, flashState.cards.length - 1);
 }
 
+function flashDueLabel(card){
+  if (!card.lastReviewed) return "Pas encore travaillée";
+  var level = card.level || 0;
+  if (level <= 0) return "À revoir";
+  var due = new Date(card.due);
+  var days = Math.round((due - new Date()) / 86400000);
+  var when = days <= 0 ? "aujourd'hui" : "dans " + days + " j";
+  return "Niveau " + level + "/5 · " + when;
+}
+
 function renderFlashReview(){
   var empty = el("flashReviewEmpty"), body = el("flashReviewBody");
   if (!flashState.cards.length){
@@ -2562,15 +2633,21 @@ function renderFlashReview(){
   var progress = el("flashProgressLabel");
   if (progress) progress.textContent = (flashState.index + 1) + " / " + flashState.cards.length;
 
+  var badge = el("flashMasteryBadge");
+  if (badge) badge.textContent = flashDueLabel(card);
+
   var cardEl = el("flashCard");
   if (cardEl) cardEl.classList.toggle("flipped", flashState.flipped);
+
+  var gradeControls = el("flashGradeControls"), hint = el("flashHint");
+  if (gradeControls) gradeControls.classList.toggle("hide", !flashState.flipped);
+  if (hint) hint.classList.toggle("hide", flashState.flipped);
 }
 
 function flashFlip(){
   if (!flashState.cards.length) return;
   flashState.flipped = !flashState.flipped;
-  var cardEl = el("flashCard");
-  if (cardEl) cardEl.classList.toggle("flipped", flashState.flipped);
+  renderFlashReview();
 }
 
 function flashGo(delta){
@@ -2607,6 +2684,7 @@ function renderFlashList(){
     html += '<div class="flash-list-item">' +
       '<div class="flash-q">Q. ' + esc(c.q) + '</div>' +
       '<div class="flash-a">R. ' + esc(c.a) + '</div>' +
+      '<div class="flash-meta">' + esc(flashDueLabel(c)) + '</div>' +
       '<div class="actions">' +
         '<button type="button" class="btn small" data-flash-edit="' + c.id + '">✎ Modifier</button>' +
         '<button type="button" class="btn small danger" data-flash-delete="' + c.id + '">🗑 Supprimer</button>' +
@@ -2659,6 +2737,124 @@ function onFlashFormSubmit(ev){
   refreshFlashCardsFromStore();
   renderFlashList();
   renderFlashReview();
+}
+
+function flashGrade(known){
+  if (!flashState.cards.length) return;
+  var card = flashState.cards[flashState.index];
+  if (!card) return;
+  var result = updateFlashcardProgress(flashState.courseId, card.id, known);
+  refreshFlashCardsFromStore();
+  if (flashState.cards.length) flashState.index = (flashState.index + 1) % flashState.cards.length;
+  flashState.flipped = false;
+  renderFlashReview();
+  if (result){
+    toast(known
+      ? "👍 Bien joué ! On la reverra dans " + plural(result.days, "jour")
+      : "On la reverra bientôt pour la retravailler 💪");
+  }
+}
+
+function exportFlashcards(){
+  if (!flashState.courseId) return;
+  var course = findCourse(flashState.courseId);
+  var cards = getFlashcards(flashState.courseId);
+  if (!cards.length){ toast("Aucune carte à exporter pour ce cours."); return; }
+  try {
+    var payload = cards.map(function(c){ return { q: c.q, a: c.a }; });
+    var blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    var safeName = String(course ? course.name : "flashcards")
+      .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-zA-Z0-9]+/g, "-").replace(/(^-|-$)/g, "").toLowerCase() || "flashcards";
+    a.href = url;
+    a.download = "flashcards-" + safeName + ".json";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
+    toast(cards.length + " carte(s) exportée(s) 📤");
+  } catch (e) { toast("Export impossible sur ce navigateur."); }
+}
+
+/* ==========================================================================
+   5quater. RÉCAP DU JOUR — Pomodoro, révisions et flashcards travaillées aujourd'hui
+   ========================================================================== */
+function isDateToday(iso){
+  if (!iso) return false;
+  try { return String(iso).slice(0, 10) === todayISO(); } catch (e) { return false; }
+}
+
+function computeDailyRecap(){
+  var pomodoroCount = 0, pomodoroMinutes = 0;
+  (pomo.history || []).forEach(function(h){
+    if (h.mode === "work" && isDateToday(h.endedAt)){
+      pomodoroCount++;
+      pomodoroMinutes += Number(h.minutes) || 0;
+    }
+  });
+
+  var revisionsCount = 0;
+  var coursesTouched = {};
+  (state.courses || []).forEach(function(c){
+    (c.schedule || []).forEach(function(r){
+      if (r.done && isDateToday(r.doneAt)){
+        revisionsCount++;
+        coursesTouched[c.id] = true;
+      }
+    });
+  });
+
+  var flashcardsCount = 0;
+  if (state.flashcards){
+    Object.keys(state.flashcards).forEach(function(courseId){
+      (state.flashcards[courseId] || []).forEach(function(card){
+        if (isDateToday(card.lastReviewed)) flashcardsCount++;
+      });
+    });
+  }
+
+  return {
+    pomodoroCount: pomodoroCount,
+    pomodoroMinutes: pomodoroMinutes,
+    revisionsCount: revisionsCount,
+    coursesTouchedCount: Object.keys(coursesTouched).length,
+    flashcardsCount: flashcardsCount
+  };
+}
+
+function renderDailyRecap(){
+  var box = el("dailyRecapBody");
+  if (!box) return;
+  var r = computeDailyRecap();
+  var total = r.pomodoroCount + r.revisionsCount + r.flashcardsCount;
+  var dateLabel = "";
+  try {
+    dateLabel = new Date().toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" });
+    dateLabel = dateLabel.charAt(0).toUpperCase() + dateLabel.slice(1);
+  } catch (e) { dateLabel = "Aujourd'hui"; }
+
+  var msg = total === 0
+    ? "Pas encore de session aujourd'hui — à toi de jouer ! 💪"
+    : (total >= 15 ? "Journée de révision au top, bravo ! 🌟" : "Belle progression aujourd'hui ! 👏");
+
+  box.innerHTML =
+    '<p class="recap-date">' + esc(dateLabel) + '</p>' +
+    '<div class="recap-stats">' +
+      '<div class="recap-stat"><span class="recap-icon">🍅</span><div>' +
+        '<b>' + r.pomodoroCount + '</b> ' + (r.pomodoroCount > 1 ? "Pomodoro" : "Pomodoro") +
+        (r.pomodoroMinutes ? ' <span class="muted">(' + r.pomodoroMinutes + ' min)</span>' : '') +
+      '</div></div>' +
+      '<div class="recap-stat"><span class="recap-icon">📘</span><div>' +
+        '<b>' + r.revisionsCount + '</b> révision' + (r.revisionsCount > 1 ? "s" : "") + ' validée' + (r.revisionsCount > 1 ? "s" : "") +
+        (r.coursesTouchedCount ? ' <span class="muted">(' + r.coursesTouchedCount + ' cours)</span>' : '') +
+      '</div></div>' +
+      '<div class="recap-stat"><span class="recap-icon">🗂</span><div>' +
+        '<b>' + r.flashcardsCount + '</b> flashcard' + (r.flashcardsCount > 1 ? "s" : "") + ' travaillée' + (r.flashcardsCount > 1 ? "s" : "") +
+      '</div></div>' +
+    '</div>' +
+    '<p class="recap-msg">' + esc(msg) + '</p>';
 }
 
 function stripCsvQuotes(s){
@@ -3193,6 +3389,11 @@ function bindEvents(){
   if (flashNextBtn) flashNextBtn.addEventListener("click", function(){ flashGo(1); });
   if (flashFlipBtn) flashFlipBtn.addEventListener("click", flashFlip);
   if (flashShuffleBtn) flashShuffleBtn.addEventListener("click", flashShuffle);
+  var flashGradeYesBtn = el("flashGradeYes"), flashGradeNoBtn = el("flashGradeNo");
+  if (flashGradeYesBtn) flashGradeYesBtn.addEventListener("click", function(){ flashGrade(true); });
+  if (flashGradeNoBtn) flashGradeNoBtn.addEventListener("click", function(){ flashGrade(false); });
+  var flashExportBtn = el("flashExportBtn");
+  if (flashExportBtn) flashExportBtn.addEventListener("click", exportFlashcards);
   var flashFormEl = el("flashForm");
   if (flashFormEl) flashFormEl.addEventListener("submit", onFlashFormSubmit);
   var flashCancelEditBtn = el("flashCancelEdit");
@@ -3248,6 +3449,17 @@ function bindEvents(){
   }
   if (closeMethodInfoModal && methodInfoModal){
     closeMethodInfoModal.addEventListener("click", function(){ methodInfoModal.classList.add("hide"); });
+  }
+
+  var openDailyRecapBtn = el("openDailyRecapBtn"), closeDailyRecapModal = el("closeDailyRecapModal"), dailyRecapModal = el("dailyRecapModal");
+  if (openDailyRecapBtn && dailyRecapModal){
+    openDailyRecapBtn.addEventListener("click", function(){
+      renderDailyRecap();
+      dailyRecapModal.classList.remove("hide");
+    });
+  }
+  if (closeDailyRecapModal && dailyRecapModal){
+    closeDailyRecapModal.addEventListener("click", function(){ dailyRecapModal.classList.add("hide"); });
   }
 
   // Sauvegarde des notes à la volée (input / change)
