@@ -511,6 +511,22 @@
   /* ============ Flashcards ============ */
   .flash-modal-card{max-width:480px;text-align:left}
 
+  /* ============ Assistant IA ============ */
+  .ai-modal-card{max-width:560px;text-align:left;max-height:88vh;display:flex;flex-direction:column}
+  .ai-settings{border:1px solid var(--line);border-radius:var(--radius-sm);background:var(--card-soft)}
+  .ai-settings summary{cursor:pointer;list-style:none;padding:10px 14px;font-size:.85rem;font-weight:700}
+  .ai-settings summary::-webkit-details-marker{display:none}
+  .ai-settings summary::marker{content:""}
+  .ai-settings-body{padding:0 14px 14px;display:grid;gap:4px}
+  .ai-conversation{flex:1;overflow-y:auto;max-height:260px;display:flex;flex-direction:column;gap:10px;margin:6px 0 12px;padding-right:2px}
+  .ai-msg{padding:10px 12px;border-radius:var(--radius-sm);font-size:.88rem;line-height:1.5;max-width:88%;white-space:pre-wrap}
+  .ai-msg.user{align-self:flex-end;background:linear-gradient(135deg,var(--brand),color-mix(in srgb, var(--brand) 70%, var(--brand2)));color:var(--brand-ink)}
+  .ai-msg.assistant{align-self:flex-start;background:var(--card-soft);border:1px solid var(--line)}
+  .ai-msg.error{align-self:flex-start;background:var(--danger-bg);color:var(--danger);border:1px solid color-mix(in srgb, var(--danger) 35%, var(--line))}
+  .ai-msg.loading{align-self:flex-start;color:var(--muted);font-style:italic}
+  .ai-form{display:grid;gap:8px}
+  .ai-form textarea{resize:vertical;min-height:52px;font:inherit}
+
   /* ============ Sprint avant contrôle ============ */
   .sprint-modal-card{max-width:580px;text-align:left;max-height:85vh;overflow-y:auto}
   .sprint-summary{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:16px;font-size:.85rem;color:var(--muted)}
@@ -674,6 +690,7 @@
         <span>h</span>
       </div>
       <button id="openSprintBtn" class="btn primary menu-btn">🚀 Sprint avant contrôle</button>
+      <button id="openAiBtn" class="btn menu-btn">🤖 Assistant IA (Gemini)</button>
       <button id="openEventModalBtn" class="btn menu-btn">+ Événement spécial</button>
       <button id="openPomoBtn" class="btn menu-btn">🍅 Pomodoro</button>
       <button id="openDailyRecapBtn" class="btn ghost menu-btn">📅 Récap du jour</button>
@@ -1027,6 +1044,48 @@
       <button id="closeDailyRecapModal" class="btn ghost small">✕</button>
     </div>
     <div id="dailyRecapBody" class="recap-body"></div>
+  </div>
+</div>
+
+<!-- Modal Assistant IA -->
+<div id="aiModal" class="modal-overlay hide" aria-hidden="true">
+  <div class="modal-card ai-modal-card">
+    <div class="section-head" style="margin-bottom:6px">
+      <h2>🤖 Assistant IA</h2>
+      <button id="closeAiModal" class="btn ghost small">✕</button>
+    </div>
+
+    <details id="aiSettingsDetails" class="ai-settings">
+      <summary>⚙️ Clé API gratuite (Google Gemini)</summary>
+      <div class="ai-settings-body">
+        <label for="aiApiKeyInput">Clé API Gemini</label>
+        <input type="password" id="aiApiKeyInput" placeholder="AIza...">
+        <label for="aiModelInput" style="margin-top:8px">Modèle</label>
+        <input type="text" id="aiModelInput" placeholder="gemini-2.5-flash">
+        <p class="small muted" style="margin:8px 0 0">
+          <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">Obtenir une clé gratuite →</a> ·
+          <a href="https://ai.google.dev/gemini-api/docs/models" target="_blank" rel="noopener">Liste des modèles →</a>
+        </p>
+        <p class="small muted" style="margin:6px 0 0">
+          ⚠️ La clé est stockée uniquement sur cet appareil et envoyée directement à Google depuis ton navigateur.
+        </p>
+      </div>
+    </details>
+
+    <div style="margin:14px 0 10px">
+      <label for="aiCourseSelect">Cours concerné</label>
+      <select id="aiCourseSelect"></select>
+    </div>
+
+    <div id="aiConversation" class="ai-conversation"></div>
+
+    <form id="aiForm" class="ai-form">
+      <textarea id="aiQuestionInput" rows="2" placeholder="Pose ta question sur ce cours…" required></textarea>
+      <div class="form-actions">
+        <button type="submit" class="btn primary" id="aiSendBtn">Envoyer</button>
+        <button type="button" class="btn ghost" id="aiClearBtn">Effacer la conversation</button>
+      </div>
+    </form>
   </div>
 </div>
 
@@ -2626,6 +2685,7 @@ function renderAll(){
           '</div>' +
           '<div class="actions">' +
             '<button class="btn small course-flash-btn" data-action="flashcards" data-id="' + c.id + '">🗂 Flashcards' + (flashCount ? ' · ' + flashCount : '') + '</button>' +
+            '<button class="btn small" data-action="ask-ai" data-id="' + c.id + '">🤖 IA</button>' +
             '<button class="btn small danger" data-action="delete" data-id="' + c.id + '">Supprimer</button>' +
           '</div>' +
         '</div>' +
@@ -3297,6 +3357,187 @@ function onSprintFormSubmit(ev){
 }
 
 /* ==========================================================================
+   5quinquies. ASSISTANT IA — questions de cours via Google Gemini (clé API stockée localement)
+   ========================================================================== */
+var AI_API_BASE = "https://generativelanguage.googleapis.com/v1beta/models/";
+var AI_DEFAULT_MODEL = "gemini-2.5-flash";
+
+function loadAiSettings(){
+  var key = "", model = AI_DEFAULT_MODEL;
+  try {
+    key = localStorage.getItem("aiApiKey") || "";
+    model = localStorage.getItem("aiModel") || AI_DEFAULT_MODEL;
+  } catch(e){}
+  return { key: key, model: model };
+}
+function saveAiSettings(key, model){
+  try {
+    localStorage.setItem("aiApiKey", key || "");
+    localStorage.setItem("aiModel", model || AI_DEFAULT_MODEL);
+  } catch(e){}
+}
+
+var aiState = { courseId: null, messages: [] };
+
+function buildAiSystemPrompt(course){
+  var base = "Tu es un assistant pédagogique qui aide un élève ou étudiant à réviser ses cours. " +
+    "Réponds toujours en français, de façon claire, structurée et concise, adaptée à une session de révision. " +
+    "Si tu n'es pas sûr d'un fait précis, dis-le plutôt que d'inventer.";
+  if (course){
+    base += "\n\nContexte du cours concerné :\n- Nom : " + course.name + "\n- Matière : " + course.subject;
+    if (course.notes && course.notes.trim()){
+      base += "\n- Notes personnelles de l'élève sur ce cours :\n" + course.notes.trim().slice(0, 3000);
+    }
+    base += "\n\nAppuie-toi sur ces informations si elles sont utiles, mais tu peux aussi répondre avec tes connaissances générales sur le sujet.";
+  }
+  return base;
+}
+
+function populateAiCourseSelect(){
+  var sel = el("aiCourseSelect");
+  if (!sel) return;
+  var previous = sel.value;
+  var options = '<option value="">Question générale (sans cours précis)</option>';
+  options += state.courses.map(function(c){
+    return '<option value="' + c.id + '">' + esc(c.name) + ' (' + esc(c.subject) + ')</option>';
+  }).join("");
+  sel.innerHTML = options;
+  if (previous && findCourse(previous)) sel.value = previous;
+}
+
+function openAiModal(courseId){
+  populateAiCourseSelect();
+  var sel = el("aiCourseSelect");
+  var validId = courseId && findCourse(courseId) ? courseId : "";
+  if (sel) sel.value = validId;
+  aiState.courseId = validId;
+
+  var settings = loadAiSettings();
+  var keyInput = el("aiApiKeyInput"), modelInput = el("aiModelInput");
+  if (keyInput) keyInput.value = settings.key;
+  if (modelInput) modelInput.value = settings.model;
+  var details = el("aiSettingsDetails");
+  if (details) details.open = !settings.key;
+
+  renderAiConversation();
+  var modal = el("aiModal");
+  if (modal) modal.classList.remove("hide");
+}
+
+function closeAiModal(){
+  var modal = el("aiModal");
+  if (modal) modal.classList.add("hide");
+}
+
+function renderAiConversation(){
+  var box = el("aiConversation");
+  if (!box) return;
+  if (!aiState.messages.length){
+    box.innerHTML = '<div class="flash-empty">Pose ta première question ci-dessous 👇</div>';
+    return;
+  }
+  box.innerHTML = aiState.messages.map(function(m){
+    return '<div class="ai-msg ' + esc(m.role) + '">' + esc(m.content) + '</div>';
+  }).join("");
+  box.scrollTop = box.scrollHeight;
+}
+
+/* Gemini attend un format différent d'OpenAI/Groq : le "system" est séparé dans
+   system_instruction, et les tours "assistant" doivent être notés role "model". */
+function callGeminiAI(messages, apiKey, model){
+  var systemText = "";
+  var contents = [];
+  messages.forEach(function(m){
+    if (m.role === "system"){
+      systemText = systemText ? (systemText + "\n\n" + m.content) : m.content;
+      return;
+    }
+    contents.push({ role: m.role === "assistant" ? "model" : "user", parts: [{ text: m.content }] });
+  });
+
+  var url = AI_API_BASE + encodeURIComponent(model || AI_DEFAULT_MODEL) + ":generateContent";
+  var body = { contents: contents };
+  if (systemText) body.system_instruction = { parts: [{ text: systemText }] };
+
+  return fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "x-goog-api-key": apiKey },
+    body: JSON.stringify(body)
+  }).then(function(res){
+    return res.json().catch(function(){ return {}; }).then(function(data){
+      if (!res.ok) throw new Error((data && data.error && data.error.message) || ("Erreur HTTP " + res.status));
+      var candidate = data && data.candidates && data.candidates[0];
+      var text = candidate && candidate.content && candidate.content.parts
+        ? candidate.content.parts.map(function(p){ return p.text || ""; }).join("")
+        : "";
+      if (!text){
+        if (candidate && candidate.finishReason === "SAFETY"){
+          throw new Error("Réponse bloquée par les filtres de sécurité de Gemini. Reformule ta question.");
+        }
+        throw new Error("Réponse vide de l'IA.");
+      }
+      return text;
+    });
+  });
+}
+
+function onAiFormSubmit(ev){
+  ev.preventDefault();
+  var keyInput = el("aiApiKeyInput"), modelInput = el("aiModelInput");
+  var apiKey = keyInput ? keyInput.value.trim() : "";
+  var model = (modelInput && modelInput.value.trim()) || AI_DEFAULT_MODEL;
+  saveAiSettings(apiKey, model);
+
+  if (!apiKey){
+    var details = el("aiSettingsDetails");
+    if (details) details.open = true;
+    toast("Ajoute d'abord ta clé API Gemini (gratuite) ci-dessus.");
+    return;
+  }
+
+  var input = el("aiQuestionInput");
+  var question = input ? input.value.trim() : "";
+  if (!question) return;
+
+  var sel = el("aiCourseSelect");
+  aiState.courseId = sel ? sel.value : "";
+  var course = aiState.courseId ? findCourse(aiState.courseId) : null;
+
+  aiState.messages.push({ role: "user", content: question });
+  if (input) input.value = "";
+
+  var sendBtn = el("aiSendBtn");
+  if (sendBtn){ sendBtn.disabled = true; sendBtn.textContent = "…"; }
+  aiState.messages.push({ role: "loading", content: "L'IA réfléchit…" });
+  renderAiConversation();
+
+  var payload = [{ role: "system", content: buildAiSystemPrompt(course) }]
+    .concat(aiState.messages
+      .filter(function(m){ return m.role === "user" || m.role === "assistant"; })
+      .map(function(m){ return { role: m.role, content: m.content }; }));
+
+  callGeminiAI(payload, apiKey, model)
+    .then(function(answer){
+      aiState.messages.pop();
+      aiState.messages.push({ role: "assistant", content: answer });
+    })
+    .catch(function(err){
+      aiState.messages.pop();
+      aiState.messages.push({ role: "error", content: "⚠️ " + (err.message || "Une erreur est survenue.") });
+      console.error("Erreur assistant IA:", err);
+    })
+    .then(function(){
+      if (sendBtn){ sendBtn.disabled = false; sendBtn.textContent = "Envoyer"; }
+      renderAiConversation();
+    });
+}
+
+function clearAiConversation(){
+  aiState.messages = [];
+  renderAiConversation();
+}
+
+/* ==========================================================================
    6. Événements & Interactions utilisateur
    ========================================================================== */
 function onFormSubmit(ev){
@@ -3349,6 +3590,8 @@ function onActionClick(ev){
     render();
   } else if (action === "flashcards"){
     openFlashModal(id);
+  } else if (action === "ask-ai"){
+    openAiModal(id);
   }
 }
 
@@ -3711,6 +3954,20 @@ function bindEvents(){
       else if (e.key === " " || e.key === "Enter"){ e.preventDefault(); flashFlip(); }
     });
   }
+
+  var openAiBtn = el("openAiBtn"), closeAiModalBtn = el("closeAiModal"), aiModal = el("aiModal");
+  if (openAiBtn && aiModal){
+    openAiBtn.addEventListener("click", function(){ openAiModal(null); });
+  }
+  if (closeAiModalBtn && aiModal){
+    closeAiModalBtn.addEventListener("click", closeAiModal);
+  }
+  var aiFormEl = el("aiForm");
+  if (aiFormEl) aiFormEl.addEventListener("submit", onAiFormSubmit);
+  var aiClearBtn = el("aiClearBtn");
+  if (aiClearBtn) aiClearBtn.addEventListener("click", clearAiConversation);
+  var aiCourseSelectEl = el("aiCourseSelect");
+  if (aiCourseSelectEl) aiCourseSelectEl.addEventListener("change", function(){ aiState.courseId = aiCourseSelectEl.value; });
 
   var openSprintBtn = el("openSprintBtn"), closeSprintModalBtn = el("closeSprintModal"), sprintModal = el("sprintModal");
   if (openSprintBtn && sprintModal){
