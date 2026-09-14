@@ -293,6 +293,31 @@
   .heatmap-legend{display:flex;align-items:center;gap:4px;margin-top:4px}
   .heatmap-legend .heatmap-cell{width:12px;height:12px}
 
+  /* Variante de couleur pour la heatmap du temps Pomodoro (même grille, teinte "brand") */
+  .heatmap-cell.pomo-lvl-0{background:var(--card-soft)}
+  .heatmap-cell.pomo-lvl-1{background:color-mix(in srgb, var(--brand) 25%, var(--card-soft));border-color:transparent}
+  .heatmap-cell.pomo-lvl-2{background:color-mix(in srgb, var(--brand) 50%, var(--card-soft));border-color:transparent}
+  .heatmap-cell.pomo-lvl-3{background:color-mix(in srgb, var(--brand) 75%, var(--card-soft));border-color:transparent}
+  .heatmap-cell.pomo-lvl-4{background:var(--brand);border-color:transparent}
+
+  /* ============ Accordéon (menu déroulant) — case Activité ============ */
+  .accordion{padding:0;overflow:hidden}
+  .accordion > .accordion-summary{
+    cursor:pointer;list-style:none;padding:22px;margin:0;
+    display:flex;align-items:center;justify-content:space-between;gap:10px;
+  }
+  .accordion > .accordion-summary::-webkit-details-marker{display:none}
+  .accordion > .accordion-summary::marker{content:""}
+  .accordion > .accordion-summary:hover{background:var(--card-soft)}
+  .accordion-chevron{
+    flex:none;color:var(--muted);font-size:1.1rem;line-height:1;
+    transition:transform .2s ease;
+  }
+  .accordion[open] .accordion-chevron{transform:rotate(180deg)}
+  .accordion-body{padding:0 22px 22px}
+  .activity-block + .activity-block{margin-top:20px;padding-top:18px;border-top:1px solid var(--line)}
+  .activity-block h3{font-size:.95rem;font-weight:800;letter-spacing:-.01em}
+
   /* ============ Calendrier en temps réel & Événements ============ */
   .calendar-grid {
     display: grid;
@@ -462,6 +487,60 @@
   .pomo-history-badge.short-break, .pomo-history-badge.long-break{ background:var(--ok-bg); color:var(--ok); }
   .pomo-history-badge.long-break{ background:var(--warn-bg); color:var(--warn); }
 
+  /* ============ Flashcards ============ */
+  .flash-modal-card{max-width:480px;text-align:left}
+  .flash-tabs{display:flex;gap:8px;margin-bottom:14px}
+  .flash-tabs .chip{flex:1;text-align:center}
+  .flash-empty{border:1.5px dashed var(--line);border-radius:var(--radius-sm);padding:22px 14px;text-align:center;color:var(--muted);font-weight:600;font-size:.9rem}
+  .flash-import-row{display:flex;justify-content:flex-end;margin-bottom:8px}
+  .flash-import-hint{font-size:.74rem;color:var(--muted);margin:0 0 14px;line-height:1.5}
+  .flash-import-hint code{background:var(--card-soft);padding:.05rem .32rem;border-radius:4px;font-size:.72rem}
+
+  .flash-progress{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-size:.8rem;color:var(--muted);font-weight:700}
+  .flash-stage{perspective:1200px;height:200px;margin-bottom:14px;touch-action:pan-y}
+  .flash-card{position:relative;width:100%;height:100%;cursor:pointer;transform-style:preserve-3d;transition:transform .45s cubic-bezier(.4,0,.2,1);touch-action:pan-y}
+  .flash-card.flipped{transform:rotateY(180deg)}
+  .flash-face{
+    position:absolute;inset:0;backface-visibility:hidden;border-radius:var(--radius-sm);
+    border:1px solid var(--line);background:var(--card-soft);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    padding:20px;text-align:center;gap:8px;overflow-y:auto;
+  }
+  .flash-face .flash-label{font-size:.7rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+  .flash-face .flash-text{font-size:1.05rem;font-weight:700;line-height:1.4;white-space:pre-wrap}
+  .flash-face.back{transform:rotateY(180deg);background:var(--brand-soft)}
+  .flash-face.back .flash-text{color:var(--brand);font-weight:600}
+  .flash-hint{text-align:center;color:var(--muted);font-size:.78rem;margin:-6px 0 14px}
+  .flash-review-controls{display:flex;gap:8px;justify-content:center;margin-bottom:4px;flex-wrap:wrap}
+  .flash-mastery-badge{font-size:.72rem;font-weight:700;color:var(--muted)}
+  .flash-grade-controls{display:flex;gap:10px;justify-content:center;margin-bottom:14px}
+  .flash-grade-btn{flex:1;max-width:200px;font-weight:800}
+
+  .flash-list{display:flex;flex-direction:column;gap:8px;max-height:280px;overflow-y:auto;margin-bottom:14px}
+  .flash-list-item{border:1px solid var(--line);border-radius:var(--radius-sm);padding:10px 12px;background:var(--card-soft)}
+  .flash-list-item .flash-q{font-weight:700;font-size:.88rem}
+  .flash-list-item .flash-a{color:var(--muted);font-size:.82rem;margin-top:2px}
+  .flash-list-item .flash-meta{color:var(--muted);font-size:.72rem;margin-top:6px;font-weight:600}
+  .flash-list-item .actions{display:flex;gap:6px;margin-top:8px}
+  .flash-form{display:grid;gap:10px;border-top:1px solid var(--line);padding-top:14px}
+
+  .course-flash-btn{position:relative}
+
+  /* ============ Récap du jour ============ */
+  .recap-modal-card{max-width:360px;text-align:center}
+  .recap-body{text-align:left}
+  .recap-date{text-align:center;color:var(--muted);font-weight:700;font-size:.86rem;margin:0 0 6px;text-transform:capitalize}
+  .recap-stats{display:flex;flex-direction:column}
+  .recap-stat{display:flex;align-items:center;gap:12px;font-size:.95rem;padding:12px 4px;border-bottom:1px solid var(--line)}
+  .recap-stat:last-child{border-bottom:none}
+  .recap-stat b{font-family:var(--font-display);font-size:1.15rem}
+  .recap-icon{font-size:1.4rem;line-height:1;width:1.6em;text-align:center;flex-shrink:0}
+  .recap-line{display:flex;align-items:center;gap:10px;font-size:1rem;padding:12px 4px;border-bottom:1px solid var(--line)}
+  .recap-line:last-child{border-bottom:none}
+  .recap-line b{font-family:var(--font-display);font-size:1.15rem}
+  .recap-empty{color:var(--muted);text-align:center;padding:14px 4px;font-weight:600}
+  .recap-msg{text-align:center;color:var(--brand);font-weight:700;font-size:.9rem;margin:14px 0 2px}
+
   /* ============ Modale Explication ============ */
   .info-modal-card{max-width:640px;max-height:82vh;overflow-y:auto;text-align:left}
   .info-modal-card h3{margin:20px 0 6px;font-size:1.02rem;font-weight:800}
@@ -494,6 +573,7 @@
     .calendar-grid { grid-template-columns: repeat(1, minmax(0, 1fr)); }
     .pomo-time{font-size:3rem}
     .pomo-ring-wrap{width:180px;height:180px}
+    .flash-stage{height:220px}
   }
 </style>
 </head>
@@ -555,6 +635,7 @@
       <button id="themeBtn" class="btn ghost menu-btn">🌓 Auto</button>
       <button id="openEventModalBtn" class="btn primary menu-btn">+ Événement spécial</button>
       <button id="openPomoBtn" class="btn menu-btn">🍅 Pomodoro</button>
+      <button id="openDailyRecapBtn" class="btn ghost menu-btn">📅 Récap du jour</button>
       <button id="openMethodInfoBtn" class="btn ghost menu-btn">📖 Explication Méthode J</button>
       <button id="notifBtn" class="btn menu-btn">🔔 Activer les rappels</button>
       <button id="exportBtn" class="btn ghost menu-btn" title="Télécharger mes données">⬇ Exporter</button>
@@ -656,23 +737,48 @@
     <div id="realtimeCalendar" class="calendar-grid"></div>
   </section>
 
-  <!-- ============ Activité (heatmap façon GitHub) ============ -->
-  <section class="card" aria-labelledby="hActivity">
-    <div class="section-head">
-      <h2 id="hActivity">🔥 Activité de révision</h2>
-      <span id="streakLabel" class="small muted"></span>
+  <!-- ============ Activité (heatmaps façon GitHub) — révisions & Pomodoro, dans un menu déroulant ============ -->
+  <details class="card accordion" id="activityAccordion">
+    <summary class="accordion-summary" aria-labelledby="hActivity">
+      <h2 id="hActivity">🔥 Activité (révisions & Pomodoro)</h2>
+      <span class="accordion-chevron" aria-hidden="true">▾</span>
+    </summary>
+    <div class="accordion-body">
+      <div class="activity-block">
+        <div class="section-head" style="margin-bottom:8px">
+          <h3>📚 Révisions</h3>
+          <span id="streakLabel" class="small muted"></span>
+        </div>
+        <div id="activityHeatmap" class="heatmap"></div>
+        <div class="heatmap-legend small muted">
+          <span>Moins</span>
+          <span class="heatmap-cell lvl-0"></span>
+          <span class="heatmap-cell lvl-1"></span>
+          <span class="heatmap-cell lvl-2"></span>
+          <span class="heatmap-cell lvl-3"></span>
+          <span class="heatmap-cell lvl-4"></span>
+          <span>Plus</span>
+        </div>
+      </div>
+
+      <div class="activity-block">
+        <div class="section-head" style="margin-bottom:8px">
+          <h3>⏱️ Temps de concentration (Pomodoro)</h3>
+          <span id="pomoHeatmapLabel" class="small muted"></span>
+        </div>
+        <div id="pomoHeatmap" class="heatmap"></div>
+        <div class="heatmap-legend small muted">
+          <span>Moins</span>
+          <span class="heatmap-cell pomo-lvl-0"></span>
+          <span class="heatmap-cell pomo-lvl-1"></span>
+          <span class="heatmap-cell pomo-lvl-2"></span>
+          <span class="heatmap-cell pomo-lvl-3"></span>
+          <span class="heatmap-cell pomo-lvl-4"></span>
+          <span>Plus</span>
+        </div>
+      </div>
     </div>
-    <div id="activityHeatmap" class="heatmap"></div>
-    <div class="heatmap-legend small muted">
-      <span>Moins</span>
-      <span class="heatmap-cell lvl-0"></span>
-      <span class="heatmap-cell lvl-1"></span>
-      <span class="heatmap-cell lvl-2"></span>
-      <span class="heatmap-cell lvl-3"></span>
-      <span class="heatmap-cell lvl-4"></span>
-      <span>Plus</span>
-    </div>
-  </section>
+  </details>
 
   <!-- ============ Toutes mes révisions ============ -->
   <section class="card" aria-labelledby="hAll">
@@ -800,6 +906,89 @@
   </div>
 </div>
 
+<!-- Modal Flashcards -->
+<div id="flashModal" class="modal-overlay hide" aria-hidden="true">
+  <div class="modal-card flash-modal-card" id="flashModalCard">
+    <div class="section-head" style="margin-bottom:8px">
+      <h2 id="flashModalTitle">🗂 Flashcards</h2>
+      <button id="closeFlashModal" class="btn ghost small">✕</button>
+    </div>
+    <div class="flash-tabs">
+      <button type="button" class="chip" id="flashTabReview" aria-pressed="true">🔁 Réviser</button>
+      <button type="button" class="chip" id="flashTabManage" aria-pressed="false">✎ Gérer les cartes</button>
+    </div>
+
+    <div id="flashReviewView">
+      <div id="flashReviewEmpty" class="flash-empty hide">Ajoute des cartes question / réponse (onglet « Gérer les cartes ») pour réviser ce cours en mode flashcards.</div>
+      <div id="flashReviewBody">
+        <div class="flash-progress">
+          <span id="flashProgressLabel">1 / 1</span>
+          <span id="flashMasteryBadge" class="flash-mastery-badge"></span>
+        </div>
+        <div class="flash-stage" id="flashStage">
+          <div class="flash-card" id="flashCard">
+            <div class="flash-face front">
+              <span class="flash-label">Question</span>
+              <span class="flash-text" id="flashFrontText"></span>
+            </div>
+            <div class="flash-face back">
+              <span class="flash-label">Réponse</span>
+              <span class="flash-text" id="flashBackText"></span>
+            </div>
+          </div>
+        </div>
+        <p class="flash-hint" id="flashHint">Touche la carte pour la retourner · glisse ← → (ou boutons) pour naviguer</p>
+        <div class="flash-grade-controls hide" id="flashGradeControls">
+          <button type="button" id="flashGradeNo" class="btn danger flash-grade-btn">❌ Je savais pas</button>
+          <button type="button" id="flashGradeYes" class="btn primary flash-grade-btn">✅ Je savais</button>
+        </div>
+        <div class="flash-review-controls">
+          <button type="button" id="flashPrev" class="btn ghost small">← Précédente</button>
+          <button type="button" id="flashFlip" class="btn small">↺ Retourner</button>
+          <button type="button" id="flashShuffle" class="btn ghost small">🔀 Mélanger</button>
+          <button type="button" id="flashNext" class="btn small">Suivante →</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="flashManageView" class="hide">
+      <div class="flash-import-row">
+        <button type="button" id="flashExportBtn" class="btn ghost small">⬇️ Exporter</button>
+        <button type="button" id="flashImportBtn" class="btn ghost small">⬆️ Importer depuis un fichier</button>
+        <input type="file" id="flashImportFile" accept=".csv,.tsv,.txt,.json,text/csv,text/plain,application/json" class="hide">
+      </div>
+      <p class="flash-import-hint">Envoie ton cours et demande à Gemini / Claude ou bien ChatGPT de te générer des flashcards en format JSON que tu pourras importer directement ici !</p>
+      <div id="flashList" class="flash-list"></div>
+      <form id="flashForm" class="flash-form">
+        <div>
+          <label for="flashQuestionInput">Question</label>
+          <input id="flashQuestionInput" type="text" placeholder="Ex. Quelle est la dérivée de x² ?" maxlength="300" required>
+        </div>
+        <div>
+          <label for="flashAnswerInput">Réponse</label>
+          <input id="flashAnswerInput" type="text" placeholder="Ex. 2x" maxlength="500" required>
+        </div>
+        <input type="hidden" id="flashEditingId" value="">
+        <div class="form-actions">
+          <button type="submit" class="btn primary" id="flashSubmitBtn">+ Ajouter la carte</button>
+          <button type="button" class="btn ghost hide" id="flashCancelEdit">Annuler la modification</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modale Récap du jour -->
+<div id="dailyRecapModal" class="modal-overlay hide" aria-hidden="true">
+  <div class="modal-card recap-modal-card">
+    <div class="section-head" style="margin-bottom:8px">
+      <h2>📅 Récap du jour</h2>
+      <button id="closeDailyRecapModal" class="btn ghost small">✕</button>
+    </div>
+    <div id="dailyRecapBody" class="recap-body"></div>
+  </div>
+</div>
+
 <!-- Modal Explication Méthode J -->
 <div id="methodInfoModal" class="modal-overlay hide" aria-hidden="true">
   <div class="modal-card info-modal-card">
@@ -914,8 +1103,9 @@ var deferredInstallPrompt = null;
 var OFFSETS = [1, 3, 7, 14, 30];
 var WEEKDAY_NAMES = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"];
 
-var state = { courses: [], events: [] };
+var state = { courses: [], events: [], flashcards: {} };
 var ui = { filter: "all", subject: "all", theme: "auto" };
+var flashState = { courseId: null, cards: [], index: 0, flipped: false, mode: "review" };
 
 /* ==========================================================================
    1. DATES & THEME
@@ -997,6 +1187,132 @@ function setCourseDuration(id, minutes){
   try { localStorage.setItem("courseDurations", JSON.stringify(map)); } catch (e) {}
 }
 
+/* Flashcards (question / réponse) par cours — synchronisées via la table Supabase "flashcards".
+   state.flashcards = { [courseId]: [{ id, q, a }, ...] }, chargé depuis Supabase à la connexion. */
+function isMissingTableError(e){
+  var msg = String((e && e.message) || "");
+  return /relation .* does not exist/i.test(msg) || /could not find the table/i.test(msg) ||
+    (e && (e.code === "42P01" || e.code === "PGRST205"));
+}
+
+function dbLoadFlashcards(){
+  if (!currentUser) return Promise.resolve({});
+  return supabase.from("flashcards").select("*").eq("user_id", currentUser.id)
+    .then(function(res){
+      if (res.error) throw res.error;
+      var map = {};
+      (res.data || []).forEach(function(row){
+        if (!map[row.course_id]) map[row.course_id] = [];
+        map[row.course_id].push({
+          id: row.id, q: String(row.question || ""), a: String(row.answer || ""),
+          level: Number(row.level) || 0,
+          due: row.due_at || new Date().toISOString(),
+          lastReviewed: row.last_reviewed || null
+        });
+      });
+      return map;
+    })
+    .catch(function(e){
+      if (isMissingTableError(e)){
+        console.warn("Table 'flashcards' introuvable dans Supabase — crée-la pour activer la synchro des flashcards.");
+      } else {
+        console.error("Erreur de chargement des flashcards:", e);
+        toast("Impossible de charger les flashcards.");
+      }
+      return {};
+    });
+}
+
+function dbUpsertFlashcard(courseId, card){
+  if (!currentUser) return Promise.resolve(false);
+  return supabase.from("flashcards").upsert({
+    id: card.id, user_id: currentUser.id, course_id: courseId, question: card.q, answer: card.a,
+    level: card.level || 0,
+    due_at: card.due || new Date().toISOString(),
+    last_reviewed: card.lastReviewed || null
+  }).then(function(res){
+    if (res.error) throw res.error;
+    return true;
+  }).catch(function(e){
+    if (isMissingTableError(e)){
+      console.warn("Table 'flashcards' introuvable dans Supabase — la carte n'est pas synchronisée.");
+    } else {
+      console.error("Erreur de sauvegarde de la flashcard:", e);
+      toast("Échec de synchronisation de la carte.");
+    }
+    return false;
+  });
+}
+
+function dbDeleteFlashcard(id){
+  if (!currentUser) return Promise.resolve(false);
+  return supabase.from("flashcards").delete().eq("id", id).then(function(res){
+    if (res.error) throw res.error;
+    return true;
+  }).catch(function(e){
+    if (!isMissingTableError(e)){ console.error("Erreur de suppression de la flashcard:", e); toast("Échec de suppression de la carte."); }
+    return false;
+  });
+}
+
+function dbDeleteFlashcardsForCourse(courseId){
+  if (!currentUser) return Promise.resolve(false);
+  return supabase.from("flashcards").delete().eq("course_id", courseId).then(function(res){
+    if (res.error) throw res.error;
+    return true;
+  }).catch(function(e){
+    if (!isMissingTableError(e)) console.error("Erreur de suppression des flashcards du cours:", e);
+    return false;
+  });
+}
+
+function getFlashcards(courseId){
+  return (state.flashcards && state.flashcards[courseId]) || [];
+}
+function addFlashcard(courseId, question, answer){
+  var q = String(question || "").trim(), a = String(answer || "").trim();
+  if (!courseId || !q || !a) return null;
+  if (!state.flashcards) state.flashcards = {};
+  if (!state.flashcards[courseId]) state.flashcards[courseId] = [];
+  var card = { id: uid(), q: q, a: a, level: 0, due: new Date().toISOString(), lastReviewed: null };
+  state.flashcards[courseId].push(card);
+  dbUpsertFlashcard(courseId, card);
+  return card;
+}
+function updateFlashcard(courseId, cardId, question, answer){
+  var list = (state.flashcards && state.flashcards[courseId]) || [];
+  var card = null;
+  for (var i = 0; i < list.length; i++) if (list[i].id === cardId) { card = list[i]; break; }
+  if (!card) return null;
+  card.q = String(question || "").trim();
+  card.a = String(answer || "").trim();
+  dbUpsertFlashcard(courseId, card);
+  return card;
+}
+var FLASH_INTERVALS_DAYS = [0, 1, 3, 7, 14, 30];
+function updateFlashcardProgress(courseId, cardId, known){
+  var list = (state.flashcards && state.flashcards[courseId]) || [];
+  var card = null;
+  for (var i = 0; i < list.length; i++) if (list[i].id === cardId) { card = list[i]; break; }
+  if (!card) return null;
+  var newLevel = known ? Math.min((card.level || 0) + 1, FLASH_INTERVALS_DAYS.length - 1) : 0;
+  var days = FLASH_INTERVALS_DAYS[newLevel];
+  card.level = newLevel;
+  card.due = new Date(Date.now() + days * 86400000).toISOString();
+  card.lastReviewed = new Date().toISOString();
+  dbUpsertFlashcard(courseId, card);
+  return { card: card, days: days };
+}
+function removeFlashcard(courseId, cardId){
+  if (!state.flashcards || !state.flashcards[courseId]) return;
+  state.flashcards[courseId] = state.flashcards[courseId].filter(function(c){ return c.id !== cardId; });
+  dbDeleteFlashcard(cardId);
+}
+function removeFlashcardsForCourse(courseId){
+  if (state.flashcards) delete state.flashcards[courseId];
+  dbDeleteFlashcardsForCourse(courseId);
+}
+
 function skipExcludedWeekday(iso, excludeWeekday){
   if (excludeWeekday === null || excludeWeekday === undefined || excludeWeekday === "") return iso;
   var wd = Number(excludeWeekday);
@@ -1049,6 +1365,7 @@ function addCourse(name, subject, link, startISO, excludeWeekday, durationMin){
 
 function removeCourse(id){
   state.courses = state.courses.filter(function(c){ return c.id !== id; });
+  removeFlashcardsForCourse(id);
   dbDeleteCourse(id);
 }
 
@@ -1223,7 +1540,7 @@ function subjectsUsed(){
 /* ==========================================================================
    3. PERSISTANCE SÉCURISÉE
    ========================================================================== */
-function defaultState(){ return { courses: [], events: [] }; }
+function defaultState(){ return { courses: [], events: [], flashcards: {} }; }
 
 function rowToCourse(row){
   return {
@@ -1268,15 +1585,17 @@ function loadUserData(){
   setSyncStatus("🔄 Synchronisation de votre espace…");
   return Promise.all([
     supabase.from("courses").select("*").eq("user_id", currentUser.id).order("created_at", { ascending: true }),
-    supabase.from("events").select("*").eq("user_id", currentUser.id)
+    supabase.from("events").select("*").eq("user_id", currentUser.id),
+    dbLoadFlashcards()
   ]).then(function(results){
-    var coursesRes = results[0], eventsRes = results[1];
+    var coursesRes = results[0], eventsRes = results[1], flashMap = results[2];
     if (coursesRes.error) throw coursesRes.error;
     if (eventsRes.error) throw eventsRes.error;
     setSyncStatus("✅ Données synchronisées.");
     return {
       courses: (coursesRes.data || []).map(rowToCourse),
-      events: (eventsRes.data || []).map(function(e){ return { id: e.id, name: e.name, date: e.event_date }; })
+      events: (eventsRes.data || []).map(function(e){ return { id: e.id, name: e.name, date: e.event_date }; }),
+      flashcards: flashMap || {}
     };
   }).catch(function(e){
     console.error("Erreur de chargement:", e);
@@ -1495,6 +1814,7 @@ function addPomoHistoryEntry(mode, minutes, title){
   pomo.history.unshift(entry);
   if (pomo.history.length > POMO_HISTORY_LIMIT) pomo.history.length = POMO_HISTORY_LIMIT;
   renderPomoHistory();
+  renderPomoHeatmap();
   dbInsertPomoHistory(entry);
 }
 
@@ -1536,9 +1856,23 @@ function renderPomoHistory(){
 function clearPomoHistory(){
   pomo.history = [];
   renderPomoHistory();
+  renderPomoHeatmap();
   dbClearPomoHistory().then(function(ok){
     toast(ok ? "Historique Pomodoro effacé." : "Historique local effacé (échec de synchronisation).");
   });
+}
+
+/* Minutes de travail Pomodoro cumulées par jour (sessions "travail" terminées, basé sur endedAt) */
+function pomoMinutesByDay(){
+  var map = {};
+  for (var i = 0; i < pomo.history.length; i++){
+    var h = pomo.history[i];
+    if (h.mode !== "work") continue;
+    var day = h.endedAt ? String(h.endedAt).slice(0, 10) : null;
+    if (!day) continue;
+    map[day] = (map[day] || 0) + (Number(h.minutes) || 0);
+  }
+  return map;
 }
 
 function clampInt(v, min, max, fallback){
@@ -1864,6 +2198,7 @@ function showAuth(message){
   state = defaultState();
   pomo.history = [];
   renderPomoHistory();
+  renderPomoHeatmap();
   el("appShell").classList.add("hide");
   el("authScreen").classList.remove("hide");
   if (message) el("authMessage").textContent = message;
@@ -1908,6 +2243,7 @@ async function enterApp(user){
   checkDailyNotifications();
   pomo.history = await dbLoadPomoHistory();
   renderPomoHistory();
+  renderPomoHeatmap();
 }
 
 function render(){
@@ -1918,6 +2254,7 @@ function render(){
   renderToday();
   renderRealtimeCalendar();
   renderActivityHeatmap();
+  renderPomoHeatmap();
   renderAll();
   renderNotifStatus();
 }
@@ -1985,6 +2322,34 @@ function renderActivityHeatmap(){
     var streak = computeStreak();
     lab.textContent = streak > 1 ? plural(streak, "jour de suite", "jours de suite") + " 🔥" : "12 dernières semaines";
   }
+}
+
+/* Heatmap façon GitHub, mais pour le temps de Pomodoro cumulé par jour (et non le nombre de révisions) */
+function renderPomoHeatmap(){
+  var box = el("pomoHeatmap");
+  if (!box) return;
+  var minutesByDay = pomoMinutesByDay();
+  var days = 84; // 12 semaines
+  var t = todayISO();
+  var maxMinutes = 1;
+  var cells = [];
+  for (var i = days - 1; i >= 0; i--){
+    var day = addDays(t, -i);
+    var n = minutesByDay[day] || 0;
+    if (n > maxMinutes) maxMinutes = n;
+    cells.push({ day: day, n: n });
+  }
+  var html = cells.map(function(c){
+    var lvl = c.n <= 0 ? 0 : Math.min(4, Math.ceil((c.n / maxMinutes) * 4));
+    var title = formatDate(c.day) + " — " + (c.n > 0 ? formatMinutes(c.n) + " de concentration" : "aucune session");
+    return '<span class="heatmap-cell pomo-lvl-' + lvl + '" title="' + esc(title) + '"></span>';
+  }).join("");
+  box.innerHTML = html;
+
+  var total14 = 0;
+  for (var d = 0; d < 14; d++) total14 += (minutesByDay[addDays(t, -d)] || 0);
+  var lab = el("pomoHeatmapLabel");
+  if (lab) lab.textContent = total14 > 0 ? formatMinutes(total14) + " sur les 14 derniers jours" : "12 dernières semaines";
 }
 
 function reviewItemHTML(course, review, showDate){
@@ -2143,6 +2508,7 @@ function renderAll(){
 
     var linkHtml = c.link ? '<a href="' + esc(c.link) + '" target="_blank" rel="noopener" class="resource-link">🔗 Lien ressource</a>' : '';
     var excludeHtml = (c.excludeWeekday !== null && c.excludeWeekday !== undefined) ? ' <span class="tag">🚫 ' + esc(WEEKDAY_NAMES[c.excludeWeekday]) + '</span>' : '';
+    var flashCount = getFlashcards(c.id).length;
 
     html += '' +
       '<article class="course">' +
@@ -2152,6 +2518,7 @@ function renderAll(){
             '<div class="sub small muted">J0 : ' + formatDate(c.start) + ' · ' + doneCount + '/' + c.schedule.length + ' validées</div>' +
           '</div>' +
           '<div class="actions">' +
+            '<button class="btn small course-flash-btn" data-action="flashcards" data-id="' + c.id + '">🗂 Flashcards' + (flashCount ? ' · ' + flashCount : '') + '</button>' +
             '<button class="btn small danger" data-action="delete" data-id="' + c.id + '">Supprimer</button>' +
           '</div>' +
         '</div>' +
@@ -2192,6 +2559,497 @@ function renderNotifStatus(){
     if (isIOS() && !isStandalone()) hint.classList.remove("hide");
     else hint.classList.add("hide");
   }
+}
+
+/* ==========================================================================
+   5ter. FLASHCARDS — mode question/réponse à swiper, par cours
+   ========================================================================== */
+function openFlashModal(courseId){
+  var course = findCourse(courseId);
+  if (!course) return;
+  flashState.courseId = courseId;
+  flashState.cards = getFlashcards(courseId).slice().sort(function(a, b){
+    return new Date(a.due || 0) - new Date(b.due || 0);
+  });
+  flashState.index = 0;
+  flashState.flipped = false;
+  var title = el("flashModalTitle");
+  if (title) title.textContent = "🗂 Flashcards — " + course.name;
+  resetFlashForm();
+  setFlashTab("review");
+  var modal = el("flashModal");
+  if (modal) modal.classList.remove("hide");
+}
+
+function closeFlashModal(){
+  var modal = el("flashModal");
+  if (modal) modal.classList.add("hide");
+  renderAll(); // met à jour le compteur de cartes affiché sur la fiche du cours
+}
+
+function setFlashTab(tab){
+  flashState.mode = tab;
+  var reviewView = el("flashReviewView"), manageView = el("flashManageView");
+  var tabReview = el("flashTabReview"), tabManage = el("flashTabManage");
+  if (reviewView) reviewView.classList.toggle("hide", tab !== "review");
+  if (manageView) manageView.classList.toggle("hide", tab !== "manage");
+  if (tabReview) tabReview.setAttribute("aria-pressed", tab === "review" ? "true" : "false");
+  if (tabManage) tabManage.setAttribute("aria-pressed", tab === "manage" ? "true" : "false");
+  if (tab === "review") renderFlashReview();
+  else renderFlashList();
+}
+
+function refreshFlashCardsFromStore(){
+  flashState.cards = getFlashcards(flashState.courseId);
+  if (flashState.index >= flashState.cards.length) flashState.index = Math.max(0, flashState.cards.length - 1);
+}
+
+function flashDueLabel(card){
+  if (!card.lastReviewed) return "Pas encore travaillée";
+  var level = card.level || 0;
+  if (level <= 0) return "À revoir";
+  var due = new Date(card.due);
+  var days = Math.round((due - new Date()) / 86400000);
+  var when = days <= 0 ? "aujourd'hui" : "dans " + days + " j";
+  return "Niveau " + level + "/5 · " + when;
+}
+
+function renderFlashReview(){
+  var empty = el("flashReviewEmpty"), body = el("flashReviewBody");
+  if (!flashState.cards.length){
+    if (empty) empty.classList.remove("hide");
+    if (body) body.classList.add("hide");
+    return;
+  }
+  if (empty) empty.classList.add("hide");
+  if (body) body.classList.remove("hide");
+
+  if (flashState.index >= flashState.cards.length) flashState.index = 0;
+  var card = flashState.cards[flashState.index];
+  var front = el("flashFrontText"), back = el("flashBackText");
+  if (front) front.textContent = card.q;
+  if (back) back.textContent = card.a;
+
+  var progress = el("flashProgressLabel");
+  if (progress) progress.textContent = (flashState.index + 1) + " / " + flashState.cards.length;
+
+  var badge = el("flashMasteryBadge");
+  if (badge) badge.textContent = flashDueLabel(card);
+
+  var cardEl = el("flashCard");
+  if (cardEl) cardEl.classList.toggle("flipped", flashState.flipped);
+
+  var gradeControls = el("flashGradeControls"), hint = el("flashHint");
+  if (gradeControls) gradeControls.classList.toggle("hide", !flashState.flipped);
+  if (hint) hint.classList.toggle("hide", flashState.flipped);
+}
+
+function flashFlip(){
+  if (!flashState.cards.length) return;
+  flashState.flipped = !flashState.flipped;
+  renderFlashReview();
+}
+
+function flashGo(delta){
+  if (!flashState.cards.length) return;
+  flashState.index = (flashState.index + delta + flashState.cards.length) % flashState.cards.length;
+  flashState.flipped = false;
+  renderFlashReview();
+}
+
+function flashShuffle(){
+  if (flashState.cards.length < 2) return;
+  var arr = flashState.cards;
+  for (var i = arr.length - 1; i > 0; i--){
+    var j = Math.floor(Math.random() * (i + 1));
+    var tmp = arr[i]; arr[i] = arr[j]; arr[j] = tmp;
+  }
+  flashState.index = 0;
+  flashState.flipped = false;
+  renderFlashReview();
+  toast("Cartes mélangées 🔀");
+}
+
+function renderFlashList(){
+  var box = el("flashList");
+  if (!box) return;
+  var cards = getFlashcards(flashState.courseId);
+  if (!cards.length){
+    box.innerHTML = '<div class="flash-empty">Aucune carte pour ce cours pour l’instant. Ajoute-en une ci-dessous.</div>';
+    return;
+  }
+  var html = "";
+  for (var i = 0; i < cards.length; i++){
+    var c = cards[i];
+    html += '<div class="flash-list-item">' +
+      '<div class="flash-q">Q. ' + esc(c.q) + '</div>' +
+      '<div class="flash-a">R. ' + esc(c.a) + '</div>' +
+      '<div class="flash-meta">' + esc(flashDueLabel(c)) + '</div>' +
+      '<div class="actions">' +
+        '<button type="button" class="btn small" data-flash-edit="' + c.id + '">✎ Modifier</button>' +
+        '<button type="button" class="btn small danger" data-flash-delete="' + c.id + '">🗑 Supprimer</button>' +
+      '</div>' +
+    '</div>';
+  }
+  box.innerHTML = html;
+}
+
+function resetFlashForm(){
+  var qInput = el("flashQuestionInput"), aInput = el("flashAnswerInput"), editingInput = el("flashEditingId");
+  var submitBtn = el("flashSubmitBtn"), cancelBtn = el("flashCancelEdit");
+  if (qInput) qInput.value = "";
+  if (aInput) aInput.value = "";
+  if (editingInput) editingInput.value = "";
+  if (submitBtn) submitBtn.textContent = "+ Ajouter la carte";
+  if (cancelBtn) cancelBtn.classList.add("hide");
+}
+
+function startEditFlashcard(id){
+  var cards = getFlashcards(flashState.courseId);
+  var card = null;
+  for (var i = 0; i < cards.length; i++) if (cards[i].id === id) { card = cards[i]; break; }
+  if (!card) return;
+  var qInput = el("flashQuestionInput"), aInput = el("flashAnswerInput"), editingInput = el("flashEditingId");
+  var submitBtn = el("flashSubmitBtn"), cancelBtn = el("flashCancelEdit");
+  if (qInput) qInput.value = card.q;
+  if (aInput) aInput.value = card.a;
+  if (editingInput) editingInput.value = card.id;
+  if (submitBtn) submitBtn.textContent = "✓ Enregistrer";
+  if (cancelBtn) cancelBtn.classList.remove("hide");
+  if (qInput) qInput.focus();
+}
+
+function onFlashFormSubmit(ev){
+  ev.preventDefault();
+  if (!flashState.courseId) return;
+  var qInput = el("flashQuestionInput"), aInput = el("flashAnswerInput"), editingInput = el("flashEditingId");
+  var q = qInput ? qInput.value : "", a = aInput ? aInput.value : "";
+  if (!q.trim() || !a.trim()) return;
+  var editingId = editingInput ? editingInput.value : "";
+  if (editingId){
+    updateFlashcard(flashState.courseId, editingId, q, a);
+    toast("Carte modifiée.");
+  } else {
+    addFlashcard(flashState.courseId, q, a);
+    toast("Carte ajoutée.");
+  }
+  resetFlashForm();
+  refreshFlashCardsFromStore();
+  renderFlashList();
+  renderFlashReview();
+}
+
+function flashGrade(known){
+  if (!flashState.cards.length) return;
+  var card = flashState.cards[flashState.index];
+  if (!card) return;
+  var result = updateFlashcardProgress(flashState.courseId, card.id, known);
+  refreshFlashCardsFromStore();
+  if (flashState.cards.length) flashState.index = (flashState.index + 1) % flashState.cards.length;
+  flashState.flipped = false;
+  renderFlashReview();
+  if (result){
+    toast(known
+      ? "👍 Bien joué ! On la reverra dans " + plural(result.days, "jour")
+      : "On la reverra bientôt pour la retravailler 💪");
+  }
+}
+
+function exportFlashcards(){
+  if (!flashState.courseId) return;
+  var course = findCourse(flashState.courseId);
+  var cards = getFlashcards(flashState.courseId);
+  if (!cards.length){ toast("Aucune carte à exporter pour ce cours."); return; }
+  try {
+    var payload = cards.map(function(c){ return { q: c.q, a: c.a }; });
+    var blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    var safeName = String(course ? course.name : "flashcards")
+      .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-zA-Z0-9]+/g, "-").replace(/(^-|-$)/g, "").toLowerCase() || "flashcards";
+    a.href = url;
+    a.download = "flashcards-" + safeName + ".json";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
+    toast(cards.length + " carte(s) exportée(s) 📤");
+  } catch (e) { toast("Export impossible sur ce navigateur."); }
+}
+
+/* ==========================================================================
+   5quater. RÉCAP DU JOUR — Pomodoro, révisions et flashcards travaillées aujourd'hui
+   ========================================================================== */
+function isDateToday(iso){
+  if (!iso) return false;
+  try { return String(iso).slice(0, 10) === todayISO(); } catch (e) { return false; }
+}
+
+function computeDailyRecap(){
+  var pomodoroCount = 0, pomodoroMinutes = 0;
+  (pomo.history || []).forEach(function(h){
+    if (h.mode === "work" && isDateToday(h.endedAt)){
+      pomodoroCount++;
+      pomodoroMinutes += Number(h.minutes) || 0;
+    }
+  });
+
+  var revisionsCount = 0;
+  var coursesTouched = {};
+  (state.courses || []).forEach(function(c){
+    (c.schedule || []).forEach(function(r){
+      if (r.done && isDateToday(r.doneAt)){
+        revisionsCount++;
+        coursesTouched[c.id] = true;
+      }
+    });
+  });
+
+  var flashcardsCount = 0;
+  if (state.flashcards){
+    Object.keys(state.flashcards).forEach(function(courseId){
+      (state.flashcards[courseId] || []).forEach(function(card){
+        if (isDateToday(card.lastReviewed)) flashcardsCount++;
+      });
+    });
+  }
+
+  return {
+    pomodoroCount: pomodoroCount,
+    pomodoroMinutes: pomodoroMinutes,
+    revisionsCount: revisionsCount,
+    coursesTouchedCount: Object.keys(coursesTouched).length,
+    flashcardsCount: flashcardsCount
+  };
+}
+
+function renderDailyRecap(){
+  var box = el("dailyRecapBody");
+  if (!box) return;
+  var r = computeDailyRecap();
+  var total = r.pomodoroCount + r.revisionsCount + r.flashcardsCount;
+  var dateLabel = "";
+  try {
+    dateLabel = new Date().toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" });
+    dateLabel = dateLabel.charAt(0).toUpperCase() + dateLabel.slice(1);
+  } catch (e) { dateLabel = "Aujourd'hui"; }
+
+  var msg = total === 0
+    ? "Pas encore de session aujourd'hui — à toi de jouer ! 💪"
+    : (total >= 15 ? "Journée de révision au top, bravo ! 🌟" : "Belle progression aujourd'hui ! 👏");
+
+  box.innerHTML =
+    '<p class="recap-date">' + esc(dateLabel) + '</p>' +
+    '<div class="recap-stats">' +
+      '<div class="recap-stat"><span class="recap-icon">🍅</span><div>' +
+        '<b>' + r.pomodoroCount + '</b> ' + (r.pomodoroCount > 1 ? "Pomodoro" : "Pomodoro") +
+        (r.pomodoroMinutes ? ' <span class="muted">(' + r.pomodoroMinutes + ' min)</span>' : '') +
+      '</div></div>' +
+      '<div class="recap-stat"><span class="recap-icon">📘</span><div>' +
+        '<b>' + r.revisionsCount + '</b> révision' + (r.revisionsCount > 1 ? "s" : "") + ' validée' + (r.revisionsCount > 1 ? "s" : "") +
+        (r.coursesTouchedCount ? ' <span class="muted">(' + r.coursesTouchedCount + ' cours)</span>' : '') +
+      '</div></div>' +
+      '<div class="recap-stat"><span class="recap-icon">🗂</span><div>' +
+        '<b>' + r.flashcardsCount + '</b> flashcard' + (r.flashcardsCount > 1 ? "s" : "") + ' travaillée' + (r.flashcardsCount > 1 ? "s" : "") +
+      '</div></div>' +
+    '</div>' +
+    '<p class="recap-msg">' + esc(msg) + '</p>';
+}
+
+function stripCsvQuotes(s){
+  s = (s || "").trim();
+  if (s.length >= 2 && s[0] === '"' && s[s.length - 1] === '"'){
+    s = s.slice(1, -1).replace(/""/g, '"');
+  }
+  return s.trim();
+}
+
+var FLASH_GENERIC_WORDS = ["question","réponse","reponse","answer","q","a","front","back","recto","verso","terme","term","definition","carte","card"];
+
+function isFlashHeaderWord(s){
+  return FLASH_GENERIC_WORDS.indexOf((s || "").trim().toLowerCase()) !== -1;
+}
+
+function isFlashHeaderPair(c){
+  return isFlashHeaderWord(c.q) && isFlashHeaderWord(c.a);
+}
+
+var FLASH_Q_KEYS = ["q","question","front","recto","terme","term","avant","intitule","intitulé"];
+var FLASH_A_KEYS = ["a","answer","back","verso","definition","définition","reponse","réponse","apres","après"];
+
+function pickFlashField(item, keys){
+  for (var i = 0; i < keys.length; i++){
+    var v = item[keys[i]];
+    if (v !== undefined && v !== null && String(v).trim()) return String(v).trim();
+  }
+  return "";
+}
+
+// Repli : si aucun nom de clé connu ne correspond, on prend les deux premières valeurs
+// textuelles de l'objet, dans l'ordre — ça couvre les structures JSON imprévues générées par une IA.
+function firstTwoTextValues(item){
+  var vals = [], keys = Object.keys(item);
+  for (var i = 0; i < keys.length; i++){
+    var v = item[keys[i]];
+    if ((typeof v === "string" || typeof v === "number") && String(v).trim()){
+      vals.push(String(v).trim());
+      if (vals.length === 2) break;
+    }
+  }
+  return vals;
+}
+
+// Retrouve le tableau de cartes même s'il est imbriqué dans un objet
+// (ex : {"flashcards":[...]}, {"cards":[...]}, {"chapitre":"...", "cartes":[...]})
+function extractFlashArray(data){
+  if (Array.isArray(data)) return data;
+  if (!data || typeof data !== "object") return null;
+  var preferredKeys = ["flashcards", "cards", "cartes", "items", "data", "questions", "deck", "list"];
+  for (var i = 0; i < preferredKeys.length; i++){
+    if (Array.isArray(data[preferredKeys[i]])) return data[preferredKeys[i]];
+  }
+  var keys = Object.keys(data);
+  for (var j = 0; j < keys.length; j++){
+    if (Array.isArray(data[keys[j]]) && data[keys[j]].length) return data[keys[j]];
+  }
+  return null;
+}
+
+function splitCsvLine(line, delimiter){
+  var fields = [], cur = "", inQuotes = false;
+  for (var i = 0; i < line.length; i++){
+    var ch = line[i];
+    if (inQuotes){
+      if (ch === '"'){
+        if (line[i + 1] === '"'){ cur += '"'; i++; }
+        else inQuotes = false;
+      } else cur += ch;
+    } else {
+      if (ch === '"' && cur === ""){ inQuotes = true; }
+      else if (ch === delimiter){ fields.push(cur); cur = ""; }
+      else cur += ch;
+    }
+  }
+  fields.push(cur);
+  return fields.map(function(f){ return f.trim(); });
+}
+
+function tryCsvSplit(raw, delimiter){
+  var fields = splitCsvLine(raw, delimiter);
+  if (fields.length >= 2 && fields[0] && fields[1]){
+    return [fields[0], fields.slice(1).join(delimiter)];
+  }
+  return null;
+}
+
+function parseFlashcardsFile(text, filename){
+  var ext = (filename || "").split(".").pop().toLowerCase();
+  var trimmed = String(text || "").trim();
+  var cards = [];
+
+  // 1) Tentative JSON (extension .json ou contenu qui ressemble à du JSON)
+  if (ext === "json" || trimmed.indexOf("[") === 0 || trimmed.indexOf("{") === 0){
+    try {
+      var data = JSON.parse(trimmed);
+      var arr = extractFlashArray(data);
+      if (arr){
+        arr.forEach(function(item){
+          if (!item) return;
+          if (Array.isArray(item) && item.length >= 2){
+            var q0 = String(item[0]).trim(), a0 = String(item[1]).trim();
+            if (q0 && a0) cards.push({ q: q0, a: a0 });
+          } else if (typeof item === "object"){
+            var q = pickFlashField(item, FLASH_Q_KEYS);
+            var a = pickFlashField(item, FLASH_A_KEYS);
+            if (!q || !a){
+              var fallback = firstTwoTextValues(item);
+              if (fallback.length === 2){ q = q || fallback[0]; a = a || fallback[1]; }
+            }
+            if (q && a) cards.push({ q: q, a: a });
+          } else if (typeof item === "string" && item.trim()){
+            // chaîne isolée : on tente un séparateur courant à l'intérieur
+            var sepMatch = item.split(/\s*[:\t;]\s*|\s+-\s+/);
+            if (sepMatch.length >= 2 && sepMatch[0].trim() && sepMatch.slice(1).join(" ").trim()){
+              cards.push({ q: sepMatch[0].trim(), a: sepMatch.slice(1).join(" ").trim() });
+            }
+          }
+        });
+      } else if (data && typeof data === "object" && !Array.isArray(data)){
+        // Dictionnaire plat clé -> valeur (uniquement si toutes les valeurs sont du texte simple)
+        var keys = Object.keys(data);
+        var flat = keys.length > 0 && keys.every(function(k){ return typeof data[k] === "string" || typeof data[k] === "number"; });
+        if (flat){
+          keys.forEach(function(k){
+            if (data[k] !== undefined && data[k] !== null && String(data[k]).trim()) cards.push({ q: k, a: String(data[k]).trim() });
+          });
+        }
+      }
+      cards = cards.filter(function(c){ return !isFlashHeaderPair(c); });
+      if (cards.length) return cards;
+    } catch (e){ /* pas du JSON valide : on tente le format ligne par ligne ci-dessous */ }
+  }
+
+  // 2) Format texte : une carte par ligne (tabulation, point-virgule et virgule gèrent les guillemets CSV)
+  var lines = trimmed.split(/\r\n|\r|\n/);
+  lines.forEach(function(line){
+    var raw = line.trim();
+    if (!raw) return;
+    var pair = null;
+
+    if (raw.indexOf("\t") !== -1){
+      var idx = raw.indexOf("\t");
+      pair = [raw.slice(0, idx), raw.slice(idx + 1)];
+    }
+    if (!pair && raw.indexOf(";") !== -1) pair = tryCsvSplit(raw, ";");
+    if (!pair && raw.indexOf(",") !== -1) pair = tryCsvSplit(raw, ",");
+    if (!pair){
+      var plainDelims = [" - ", " – ", " : ", ":"];
+      for (var i = 0; i < plainDelims.length; i++){
+        var d = plainDelims[i];
+        var di = raw.indexOf(d);
+        if (di > 0){ pair = [raw.slice(0, di), raw.slice(di + d.length)]; break; }
+      }
+    }
+
+    if (pair){
+      var q = stripCsvQuotes(pair[0]), a = stripCsvQuotes(pair[1]);
+      if (q && a) cards.push({ q: q, a: a });
+    }
+  });
+
+  // On retire toute ligne d'en-tête résiduelle ("question;réponse"), où qu'elle soit dans le fichier
+  cards = cards.filter(function(c){ return !isFlashHeaderPair(c); });
+
+  return cards;
+}
+
+function importFlashcardsFile(file){
+  if (!file || !flashState.courseId) return;
+  var reader = new FileReader();
+  reader.onload = function(){
+    try {
+      var cards = parseFlashcardsFile(String(reader.result), file.name);
+      var added = 0;
+      cards.forEach(function(c){
+        var q = (c.q || "").trim().slice(0, 300);
+        var a = (c.a || "").trim().slice(0, 500);
+        if (q && a){
+          addFlashcard(flashState.courseId, q, a);
+          added++;
+        }
+      });
+      refreshFlashCardsFromStore();
+      renderFlashList();
+      renderFlashReview();
+      toast(added > 0 ? added + " carte(s) importée(s) 🗂" : "Aucune carte valide trouvée dans ce fichier.");
+    } catch (e){
+      console.error("Erreur d'import des flashcards:", e);
+      toast("Import impossible : fichier invalide.");
+    }
+  };
+  reader.onerror = function(){ toast("Impossible de lire ce fichier."); };
+  reader.readAsText(file);
 }
 
 /* ==========================================================================
@@ -2245,6 +3103,8 @@ function onActionClick(ev){
     removeSpecialEvent(id);
     toast("Événement supprimé.");
     render();
+  } else if (action === "flashcards"){
+    openFlashModal(id);
   }
 }
 
@@ -2261,7 +3121,7 @@ function onFilterClick(ev){
 
 function exportData(){
   try {
-    var exportPayload = { courses: state.courses, events: state.events };
+    var exportPayload = { courses: state.courses, events: state.events, flashcards: state.flashcards || {} };
     var blob = new Blob([JSON.stringify(exportPayload, null, 2)], { type: "application/json" });
     var url = URL.createObjectURL(blob);
     var a = document.createElement("a");
@@ -2283,6 +3143,7 @@ function importData(file){
       var data = JSON.parse(String(reader.result));
       var courses = (data && Array.isArray(data.courses)) ? data.courses : (Array.isArray(data) ? data : []);
       var events = (data && Array.isArray(data.events)) ? data.events : [];
+      var flashcardsData = (data && data.flashcards && typeof data.flashcards === "object" && !Array.isArray(data.flashcards)) ? data.flashcards : {};
       
       var imported = [];
       for (var i = 0; i < courses.length; i++){
@@ -2303,6 +3164,13 @@ function importData(file){
         imported.push(cleanC);
         state.courses.push(cleanC);
         dbUpsertCourse(cleanC);
+
+        // Ré-associe les flashcards de ce cours (si présentes dans l'export) au nouvel identifiant
+        if (Array.isArray(flashcardsData[c.id])){
+          flashcardsData[c.id].forEach(function(card){
+            if (card && card.q && card.a) addFlashcard(cleanC.id, card.q, card.a);
+          });
+        }
       }
       
       var importedEvents = 0;
@@ -2510,12 +3378,88 @@ function bindEvents(){
     });
   }
 
+  // Flashcards : ouverture / fermeture, onglets, navigation, formulaire
+  var flashModal = el("flashModal"), closeFlashModalBtn = el("closeFlashModal");
+  if (closeFlashModalBtn && flashModal) closeFlashModalBtn.addEventListener("click", closeFlashModal);
+  var flashTabReviewBtn = el("flashTabReview"), flashTabManageBtn = el("flashTabManage");
+  if (flashTabReviewBtn) flashTabReviewBtn.addEventListener("click", function(){ setFlashTab("review"); });
+  if (flashTabManageBtn) flashTabManageBtn.addEventListener("click", function(){ resetFlashForm(); setFlashTab("manage"); });
+  var flashPrevBtn = el("flashPrev"), flashNextBtn = el("flashNext"), flashFlipBtn = el("flashFlip"), flashShuffleBtn = el("flashShuffle");
+  if (flashPrevBtn) flashPrevBtn.addEventListener("click", function(){ flashGo(-1); });
+  if (flashNextBtn) flashNextBtn.addEventListener("click", function(){ flashGo(1); });
+  if (flashFlipBtn) flashFlipBtn.addEventListener("click", flashFlip);
+  if (flashShuffleBtn) flashShuffleBtn.addEventListener("click", flashShuffle);
+  var flashGradeYesBtn = el("flashGradeYes"), flashGradeNoBtn = el("flashGradeNo");
+  if (flashGradeYesBtn) flashGradeYesBtn.addEventListener("click", function(){ flashGrade(true); });
+  if (flashGradeNoBtn) flashGradeNoBtn.addEventListener("click", function(){ flashGrade(false); });
+  var flashExportBtn = el("flashExportBtn");
+  if (flashExportBtn) flashExportBtn.addEventListener("click", exportFlashcards);
+  var flashFormEl = el("flashForm");
+  if (flashFormEl) flashFormEl.addEventListener("submit", onFlashFormSubmit);
+  var flashCancelEditBtn = el("flashCancelEdit");
+  if (flashCancelEditBtn) flashCancelEditBtn.addEventListener("click", resetFlashForm);
+  var flashImportBtn = el("flashImportBtn"), flashImportFile = el("flashImportFile");
+  if (flashImportBtn && flashImportFile){
+    flashImportBtn.addEventListener("click", function(){ flashImportFile.click(); });
+    flashImportFile.addEventListener("change", function(){
+      var f = flashImportFile.files && flashImportFile.files[0];
+      importFlashcardsFile(f);
+      flashImportFile.value = "";
+    });
+  }
+
+  // Swipe tactile sur la carte : glisser = naviguer, taper (sans glisser) = retourner
+  var flashCardEl = el("flashCard");
+  if (flashCardEl && typeof window !== "undefined" && window.PointerEvent){
+    var flashDrag = { active: false, startX: 0, startY: 0, moved: false };
+    flashCardEl.addEventListener("pointerdown", function(e){
+      flashDrag.active = true; flashDrag.startX = e.clientX; flashDrag.startY = e.clientY; flashDrag.moved = false;
+    });
+    flashCardEl.addEventListener("pointermove", function(e){
+      if (!flashDrag.active) return;
+      if (Math.abs(e.clientX - flashDrag.startX) > 6 || Math.abs(e.clientY - flashDrag.startY) > 6) flashDrag.moved = true;
+    });
+    var endFlashDrag = function(e){
+      if (!flashDrag.active) return;
+      flashDrag.active = false;
+      var dx = e.clientX - flashDrag.startX;
+      if (Math.abs(dx) > 55) flashGo(dx < 0 ? 1 : -1);
+      else if (!flashDrag.moved) flashFlip();
+    };
+    flashCardEl.addEventListener("pointerup", endFlashDrag);
+    flashCardEl.addEventListener("pointercancel", function(){ flashDrag.active = false; });
+  } else if (flashCardEl){
+    flashCardEl.addEventListener("click", flashFlip);
+  }
+
+  // Navigation au clavier quand la modale flashcards est ouverte (mode révision)
+  if (typeof document !== "undefined"){
+    document.addEventListener("keydown", function(e){
+      var modal = el("flashModal");
+      if (!modal || modal.classList.contains("hide") || flashState.mode !== "review") return;
+      if (e.key === "ArrowRight") flashGo(1);
+      else if (e.key === "ArrowLeft") flashGo(-1);
+      else if (e.key === " " || e.key === "Enter"){ e.preventDefault(); flashFlip(); }
+    });
+  }
+
   var openMethodInfoBtn = el("openMethodInfoBtn"), closeMethodInfoModal = el("closeMethodInfoModal"), methodInfoModal = el("methodInfoModal");
   if (openMethodInfoBtn && methodInfoModal){
     openMethodInfoBtn.addEventListener("click", function(){ methodInfoModal.classList.remove("hide"); });
   }
   if (closeMethodInfoModal && methodInfoModal){
     closeMethodInfoModal.addEventListener("click", function(){ methodInfoModal.classList.add("hide"); });
+  }
+
+  var openDailyRecapBtn = el("openDailyRecapBtn"), closeDailyRecapModal = el("closeDailyRecapModal"), dailyRecapModal = el("dailyRecapModal");
+  if (openDailyRecapBtn && dailyRecapModal){
+    openDailyRecapBtn.addEventListener("click", function(){
+      renderDailyRecap();
+      dailyRecapModal.classList.remove("hide");
+    });
+  }
+  if (closeDailyRecapModal && dailyRecapModal){
+    closeDailyRecapModal.addEventListener("click", function(){ dailyRecapModal.classList.add("hide"); });
   }
 
   // Sauvegarde des notes à la volée (input / change)
@@ -2532,6 +3476,16 @@ function bindEvents(){
     if (t && t.getAttribute){
       if (t.getAttribute("data-filter")) return onFilterClick(ev);
       if (t.getAttribute("data-action")) return onActionClick(ev);
+      if (t.getAttribute("data-flash-edit")) return startEditFlashcard(t.getAttribute("data-flash-edit"));
+      if (t.getAttribute("data-flash-delete")){
+        var fid = t.getAttribute("data-flash-delete");
+        removeFlashcard(flashState.courseId, fid);
+        refreshFlashCardsFromStore();
+        renderFlashList();
+        renderFlashReview();
+        toast("Carte supprimée.");
+        return;
+      }
       if (t.id === "notifBtn") return void requestNotifPermission().then(render);
       if (t.id === "installBtn"){
         if (!deferredInstallPrompt) return;
@@ -2549,11 +3503,13 @@ function bindEvents(){
         if (typeof confirm === "function" && !confirm("Supprimer TOUS les cours ? Action irréversible.")) return;
         state.courses = [];
         state.events = [];
+        state.flashcards = {};
         render();
         if (currentUser){
           Promise.all([
             supabase.from("courses").delete().eq("user_id", currentUser.id),
-            supabase.from("events").delete().eq("user_id", currentUser.id)
+            supabase.from("events").delete().eq("user_id", currentUser.id),
+            supabase.from("flashcards").delete().eq("user_id", currentUser.id).catch(function(){ return null; })
           ]).catch(function(){ toast("Échec de la suppression."); });
         }
         toast("Tout a été supprimé."); return;
