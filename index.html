@@ -17,67 +17,32 @@
   /* ============ Fonts ============ */
   @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700&display=swap');
 
-  /* ============ Design tokens ============ */
+  /* ============ Design tokens — thème unique "Nuit d'examen" (sombre, chaud, faible lumière bleue) ============ */
   :root{
-    --bg:#eef1f9;
-    --bg-grad-a:#eef1fb;
-    --bg-grad-b:#e7ecfb;
-    --card:#ffffff;
-    --card-soft:#f8f9fe;
-    --ink:#141a33;
-    --muted:#6b7290;
-    --line:#e4e7f3;
-    --brand:#5b53f0;
-    --brand2:#06b6d4;
-    --brand-ink:#ffffff;
-    --brand-soft:#eeecff;
-    --ok:#059669;
-    --ok-bg:#d9f7ea;
-    --warn:#b45309;
-    --warn-bg:#fef1d6;
-    --danger:#e11d48;
-    --danger-bg:#ffe4e9;
+    --bg:#130f0b;
+    --bg-grad-a:#130f0b;
+    --bg-grad-b:#1c150e;
+    --card:#1c150e;
+    --card-soft:#241b12;
+    --ink:#f3e9db;
+    --muted:#b7a68f;
+    --line:#382b1c;
+    --brand:#e2933f;
+    --brand2:#c2542f;
+    --brand-ink:#130f0b;
+    --brand-soft:#2d2113;
+    --ok:#8bc34a;
+    --ok-bg:#20290f;
+    --warn:#f2b705;
+    --warn-bg:#332405;
+    --danger:#e2665b;
+    --danger-bg:#341512;
     --radius:18px;
     --radius-sm:12px;
-    --shadow:0 1px 2px rgba(30,32,80,.04), 0 10px 30px -8px rgba(30,32,80,.12);
-    --shadow-lg:0 20px 45px -15px rgba(40,35,120,.28);
+    --shadow:0 1px 2px rgba(0,0,0,.35), 0 14px 34px -10px rgba(0,0,0,.55);
+    --shadow-lg:0 24px 55px -18px rgba(0,0,0,.65);
     --font-display:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
     --font-body:"Manrope",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
-  }
-
-  [data-theme="dark"] {
-    --bg:#0a0e1c; --bg-grad-a:#0a0e1c; --bg-grad-b:#121835; --card:#141a33; --card-soft:#181f3f;
-    --ink:#eef0fb; --muted:#98a0c4; --line:#262e52;
-    --brand:#8b85ff; --brand2:#22d3ee; --brand-ink:#0a0e1c; --brand-soft:#1c2350;
-    --ok:#34d399; --ok-bg:#0d3a2c;
-    --warn:#fbbf24; --warn-bg:#3a2a06;
-    --danger:#fb7185; --danger-bg:#3d0f1e;
-    --shadow:0 1px 2px rgba(0,0,0,.35), 0 14px 34px -10px rgba(0,0,0,.55);
-    --shadow-lg:0 24px 55px -18px rgba(0,0,0,.65);
-  }
-
-  [data-theme="exam"] {
-    --bg:#130f0b; --bg-grad-a:#130f0b; --bg-grad-b:#1c150e; --card:#1c150e; --card-soft:#241b12;
-    --ink:#f3e9db; --muted:#b7a68f; --line:#382b1c;
-    --brand:#e2933f; --brand2:#c2542f; --brand-ink:#130f0b; --brand-soft:#2d2113;
-    --ok:#8bc34a; --ok-bg:#20290f;
-    --warn:#f2b705; --warn-bg:#332405;
-    --danger:#e2665b; --danger-bg:#341512;
-    --shadow:0 1px 2px rgba(0,0,0,.35), 0 14px 34px -10px rgba(0,0,0,.55);
-    --shadow-lg:0 24px 55px -18px rgba(0,0,0,.65);
-  }
-
-  @media (prefers-color-scheme: dark){
-    :root:not([data-theme="light"]){
-      --bg:#0a0e1c; --bg-grad-a:#0a0e1c; --bg-grad-b:#121835; --card:#141a33; --card-soft:#181f3f;
-      --ink:#eef0fb; --muted:#98a0c4; --line:#262e52;
-      --brand:#8b85ff; --brand2:#22d3ee; --brand-ink:#0a0e1c; --brand-soft:#1c2350;
-      --ok:#34d399; --ok-bg:#0d3a2c;
-      --warn:#fbbf24; --warn-bg:#3a2a06;
-      --danger:#fb7185; --danger-bg:#3d0f1e;
-      --shadow:0 1px 2px rgba(0,0,0,.35), 0 14px 34px -10px rgba(0,0,0,.55);
-      --shadow-lg:0 24px 55px -18px rgba(0,0,0,.65);
-    }
   }
 
   /* ============ Base ============ */
@@ -173,16 +138,6 @@
   }
   .menu-divider {
     border: none; border-top: 1px solid var(--line); margin: 8px 0;
-  }
-  .menu-toggle-row{
-    display:flex;align-items:center;gap:8px;flex-wrap:wrap;
-    padding:11px 14px;border-radius:11px;font-size:.85rem;color:var(--ink);cursor:pointer;
-  }
-  .menu-toggle-row:hover{background:var(--card-soft)}
-  .menu-toggle-row input[type="checkbox"]{flex:none;width:16px;height:16px;accent-color:var(--brand)}
-  .menu-hour-input{
-    width:52px;padding:.3rem .4rem;border:1.5px solid var(--line);border-radius:8px;
-    background:var(--card-soft);color:var(--ink);font:inherit;text-align:center;
   }
 
   /* ============ Form ============ */
@@ -443,9 +398,8 @@
   .pomo-card.pomo-running::before{
     content:"";position:absolute;inset:-60%;z-index:0;pointer-events:none;
     background:conic-gradient(from 0deg, var(--brand), var(--brand2), var(--ok), var(--brand));
-    opacity:.16;animation:pomoSpin 6s linear infinite;
+    opacity:.28;animation:pomoSpin 6s linear infinite;
   }
-  [data-theme="dark"] .pomo-card.pomo-running::before{ opacity:.28; }
   .pomo-card.pomo-running .pomo-ring-wrap{animation:pomoPulse 1.6s ease-in-out infinite}
   @keyframes pomoSpin{ from{ transform:rotate(0deg);} to{ transform:rotate(360deg);} }
   @keyframes pomoPulse{
@@ -510,22 +464,6 @@
 
   /* ============ Flashcards ============ */
   .flash-modal-card{max-width:480px;text-align:left}
-
-  /* ============ Assistant IA ============ */
-  .ai-modal-card{max-width:560px;text-align:left;max-height:88vh;display:flex;flex-direction:column}
-  .ai-settings{border:1px solid var(--line);border-radius:var(--radius-sm);background:var(--card-soft)}
-  .ai-settings summary{cursor:pointer;list-style:none;padding:10px 14px;font-size:.85rem;font-weight:700}
-  .ai-settings summary::-webkit-details-marker{display:none}
-  .ai-settings summary::marker{content:""}
-  .ai-settings-body{padding:0 14px 14px;display:grid;gap:4px}
-  .ai-conversation{flex:1;overflow-y:auto;max-height:260px;display:flex;flex-direction:column;gap:10px;margin:6px 0 12px;padding-right:2px}
-  .ai-msg{padding:10px 12px;border-radius:var(--radius-sm);font-size:.88rem;line-height:1.5;max-width:88%;white-space:pre-wrap}
-  .ai-msg.user{align-self:flex-end;background:linear-gradient(135deg,var(--brand),color-mix(in srgb, var(--brand) 70%, var(--brand2)));color:var(--brand-ink)}
-  .ai-msg.assistant{align-self:flex-start;background:var(--card-soft);border:1px solid var(--line)}
-  .ai-msg.error{align-self:flex-start;background:var(--danger-bg);color:var(--danger);border:1px solid color-mix(in srgb, var(--danger) 35%, var(--line))}
-  .ai-msg.loading{align-self:flex-start;color:var(--muted);font-style:italic}
-  .ai-form{display:grid;gap:8px}
-  .ai-form textarea{resize:vertical;min-height:52px;font:inherit}
 
   /* ============ Sprint avant contrôle ============ */
   .sprint-modal-card{max-width:580px;text-align:left;max-height:85vh;overflow-y:auto}
@@ -680,17 +618,7 @@
     <div class="side-menu-content">
       <span id="userEmail" class="small muted user-email" style="display:block; padding: 0 8px; margin-bottom: 4px; font-weight: 600;"></span>
       <hr class="menu-divider">
-      <button id="themeBtn" class="btn ghost menu-btn">🌓 Auto</button>
-      <div class="menu-toggle-row">
-        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;flex:1;min-width:0">
-          <input type="checkbox" id="examAutoToggle">
-          <span>🌙 Nuit d'examen auto après</span>
-        </label>
-        <input type="number" id="examAutoHour" class="menu-hour-input" min="18" max="23" value="21">
-        <span>h</span>
-      </div>
       <button id="openSprintBtn" class="btn primary menu-btn">🚀 Sprint avant contrôle</button>
-      <button id="openAiBtn" class="btn menu-btn">🤖 Assistant IA (Gemini)</button>
       <button id="openEventModalBtn" class="btn menu-btn">+ Événement spécial</button>
       <button id="openPomoBtn" class="btn menu-btn">🍅 Pomodoro</button>
       <button id="openDailyRecapBtn" class="btn ghost menu-btn">📅 Récap du jour</button>
@@ -1047,48 +975,6 @@
   </div>
 </div>
 
-<!-- Modal Assistant IA -->
-<div id="aiModal" class="modal-overlay hide" aria-hidden="true">
-  <div class="modal-card ai-modal-card">
-    <div class="section-head" style="margin-bottom:6px">
-      <h2>🤖 Assistant IA</h2>
-      <button id="closeAiModal" class="btn ghost small">✕</button>
-    </div>
-
-    <details id="aiSettingsDetails" class="ai-settings">
-      <summary>⚙️ Clé API gratuite (Google Gemini)</summary>
-      <div class="ai-settings-body">
-        <label for="aiApiKeyInput">Clé API Gemini</label>
-        <input type="password" id="aiApiKeyInput" placeholder="AIza...">
-        <label for="aiModelInput" style="margin-top:8px">Modèle</label>
-        <input type="text" id="aiModelInput" placeholder="gemini-2.5-flash">
-        <p class="small muted" style="margin:8px 0 0">
-          <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">Obtenir une clé gratuite →</a> ·
-          <a href="https://ai.google.dev/gemini-api/docs/models" target="_blank" rel="noopener">Liste des modèles →</a>
-        </p>
-        <p class="small muted" style="margin:6px 0 0">
-          ⚠️ La clé est stockée uniquement sur cet appareil et envoyée directement à Google depuis ton navigateur.
-        </p>
-      </div>
-    </details>
-
-    <div style="margin:14px 0 10px">
-      <label for="aiCourseSelect">Cours concerné</label>
-      <select id="aiCourseSelect"></select>
-    </div>
-
-    <div id="aiConversation" class="ai-conversation"></div>
-
-    <form id="aiForm" class="ai-form">
-      <textarea id="aiQuestionInput" rows="2" placeholder="Pose ta question sur ce cours…" required></textarea>
-      <div class="form-actions">
-        <button type="submit" class="btn primary" id="aiSendBtn">Envoyer</button>
-        <button type="button" class="btn ghost" id="aiClearBtn">Effacer la conversation</button>
-      </div>
-    </form>
-  </div>
-</div>
-
 <!-- Modal Sprint avant contrôle -->
 <div id="sprintModal" class="modal-overlay hide" aria-hidden="true">
   <div class="modal-card sprint-modal-card">
@@ -1232,7 +1118,7 @@ var OFFSETS = [1, 3, 7, 14, 30];
 var WEEKDAY_NAMES = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"];
 
 var state = { courses: [], events: [], flashcards: {} };
-var ui = { filter: "all", subject: "all", theme: "auto" };
+var ui = { filter: "all", subject: "all" };
 var flashState = { courseId: null, cards: [], index: 0, flipped: false, mode: "review" };
 
 /* ==========================================================================
@@ -1282,53 +1168,6 @@ function relLabel(iso){
   if (n === -1) return "hier";
   if (n > 0) return "dans " + n + " jours";
   return "il y a " + Math.abs(n) + " jours";
-}
-
-function applyTheme(t){
-  ui.theme = t;
-  try { localStorage.setItem("theme", t); } catch(e){}
-  if (t === "auto") document.documentElement.removeAttribute("data-theme");
-  else document.documentElement.setAttribute("data-theme", t);
-  var btn = el("themeBtn");
-  if (btn) btn.textContent = t === "dark" ? "🌙 Sombre" : (t === "light" ? "☀️ Clair" : (t === "exam" ? "🕯️ Nuit examen" : "🌓 Auto"));
-}
-
-/* Thème "nuit d'examen" auto : bascule automatiquement sur le thème sombre à faible lumière bleue
-   à partir d'une heure donnée (par défaut 21h, jusqu'à 6h), indépendamment du thème choisi. */
-function loadExamThemeSettings(){
-  var enabled = false, hour = 21;
-  try {
-    enabled = localStorage.getItem("examAutoTheme") === "1";
-    var h = parseInt(localStorage.getItem("examAutoThemeHour"), 10);
-    if (!isNaN(h) && h >= 0 && h <= 23) hour = h;
-  } catch(e){}
-  return { enabled: enabled, hour: hour };
-}
-function saveExamThemeSettings(enabled, hour){
-  try {
-    localStorage.setItem("examAutoTheme", enabled ? "1" : "0");
-    localStorage.setItem("examAutoThemeHour", String(hour));
-  } catch(e){}
-}
-function isNightWindow(startHour, nowHour){
-  // Fenêtre nocturne de `startHour` (ex. 21h) jusqu'à 6h du matin
-  if (startHour <= 6) return nowHour >= startHour && nowHour < 6;
-  return nowHour >= startHour || nowHour < 6;
-}
-var examThemeForcedActive = false;
-function checkAutoExamTheme(){
-  if (!hasDOM()) return;
-  var settings = loadExamThemeSettings();
-  var isNight = settings.enabled && isNightWindow(settings.hour, new Date().getHours());
-  var root = document.documentElement;
-  if (isNight){
-    if (root.getAttribute("data-theme") !== "exam") root.setAttribute("data-theme", "exam");
-    examThemeForcedActive = true;
-  } else if (examThemeForcedActive){
-    examThemeForcedActive = false;
-    if (ui.theme === "auto") root.removeAttribute("data-theme");
-    else root.setAttribute("data-theme", ui.theme);
-  }
 }
 
 /* ==========================================================================
@@ -2685,7 +2524,6 @@ function renderAll(){
           '</div>' +
           '<div class="actions">' +
             '<button class="btn small course-flash-btn" data-action="flashcards" data-id="' + c.id + '">🗂 Flashcards' + (flashCount ? ' · ' + flashCount : '') + '</button>' +
-            '<button class="btn small" data-action="ask-ai" data-id="' + c.id + '">🤖 IA</button>' +
             '<button class="btn small danger" data-action="delete" data-id="' + c.id + '">Supprimer</button>' +
           '</div>' +
         '</div>' +
@@ -3357,187 +3195,6 @@ function onSprintFormSubmit(ev){
 }
 
 /* ==========================================================================
-   5quinquies. ASSISTANT IA — questions de cours via Google Gemini (clé API stockée localement)
-   ========================================================================== */
-var AI_API_BASE = "https://generativelanguage.googleapis.com/v1beta/models/";
-var AI_DEFAULT_MODEL = "gemini-2.5-flash";
-
-function loadAiSettings(){
-  var key = "", model = AI_DEFAULT_MODEL;
-  try {
-    key = localStorage.getItem("aiApiKey") || "";
-    model = localStorage.getItem("aiModel") || AI_DEFAULT_MODEL;
-  } catch(e){}
-  return { key: key, model: model };
-}
-function saveAiSettings(key, model){
-  try {
-    localStorage.setItem("aiApiKey", key || "");
-    localStorage.setItem("aiModel", model || AI_DEFAULT_MODEL);
-  } catch(e){}
-}
-
-var aiState = { courseId: null, messages: [] };
-
-function buildAiSystemPrompt(course){
-  var base = "Tu es un assistant pédagogique qui aide un élève ou étudiant à réviser ses cours. " +
-    "Réponds toujours en français, de façon claire, structurée et concise, adaptée à une session de révision. " +
-    "Si tu n'es pas sûr d'un fait précis, dis-le plutôt que d'inventer.";
-  if (course){
-    base += "\n\nContexte du cours concerné :\n- Nom : " + course.name + "\n- Matière : " + course.subject;
-    if (course.notes && course.notes.trim()){
-      base += "\n- Notes personnelles de l'élève sur ce cours :\n" + course.notes.trim().slice(0, 3000);
-    }
-    base += "\n\nAppuie-toi sur ces informations si elles sont utiles, mais tu peux aussi répondre avec tes connaissances générales sur le sujet.";
-  }
-  return base;
-}
-
-function populateAiCourseSelect(){
-  var sel = el("aiCourseSelect");
-  if (!sel) return;
-  var previous = sel.value;
-  var options = '<option value="">Question générale (sans cours précis)</option>';
-  options += state.courses.map(function(c){
-    return '<option value="' + c.id + '">' + esc(c.name) + ' (' + esc(c.subject) + ')</option>';
-  }).join("");
-  sel.innerHTML = options;
-  if (previous && findCourse(previous)) sel.value = previous;
-}
-
-function openAiModal(courseId){
-  populateAiCourseSelect();
-  var sel = el("aiCourseSelect");
-  var validId = courseId && findCourse(courseId) ? courseId : "";
-  if (sel) sel.value = validId;
-  aiState.courseId = validId;
-
-  var settings = loadAiSettings();
-  var keyInput = el("aiApiKeyInput"), modelInput = el("aiModelInput");
-  if (keyInput) keyInput.value = settings.key;
-  if (modelInput) modelInput.value = settings.model;
-  var details = el("aiSettingsDetails");
-  if (details) details.open = !settings.key;
-
-  renderAiConversation();
-  var modal = el("aiModal");
-  if (modal) modal.classList.remove("hide");
-}
-
-function closeAiModal(){
-  var modal = el("aiModal");
-  if (modal) modal.classList.add("hide");
-}
-
-function renderAiConversation(){
-  var box = el("aiConversation");
-  if (!box) return;
-  if (!aiState.messages.length){
-    box.innerHTML = '<div class="flash-empty">Pose ta première question ci-dessous 👇</div>';
-    return;
-  }
-  box.innerHTML = aiState.messages.map(function(m){
-    return '<div class="ai-msg ' + esc(m.role) + '">' + esc(m.content) + '</div>';
-  }).join("");
-  box.scrollTop = box.scrollHeight;
-}
-
-/* Gemini attend un format différent d'OpenAI/Groq : le "system" est séparé dans
-   system_instruction, et les tours "assistant" doivent être notés role "model". */
-function callGeminiAI(messages, apiKey, model){
-  var systemText = "";
-  var contents = [];
-  messages.forEach(function(m){
-    if (m.role === "system"){
-      systemText = systemText ? (systemText + "\n\n" + m.content) : m.content;
-      return;
-    }
-    contents.push({ role: m.role === "assistant" ? "model" : "user", parts: [{ text: m.content }] });
-  });
-
-  var url = AI_API_BASE + encodeURIComponent(model || AI_DEFAULT_MODEL) + ":generateContent";
-  var body = { contents: contents };
-  if (systemText) body.system_instruction = { parts: [{ text: systemText }] };
-
-  return fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", "x-goog-api-key": apiKey },
-    body: JSON.stringify(body)
-  }).then(function(res){
-    return res.json().catch(function(){ return {}; }).then(function(data){
-      if (!res.ok) throw new Error((data && data.error && data.error.message) || ("Erreur HTTP " + res.status));
-      var candidate = data && data.candidates && data.candidates[0];
-      var text = candidate && candidate.content && candidate.content.parts
-        ? candidate.content.parts.map(function(p){ return p.text || ""; }).join("")
-        : "";
-      if (!text){
-        if (candidate && candidate.finishReason === "SAFETY"){
-          throw new Error("Réponse bloquée par les filtres de sécurité de Gemini. Reformule ta question.");
-        }
-        throw new Error("Réponse vide de l'IA.");
-      }
-      return text;
-    });
-  });
-}
-
-function onAiFormSubmit(ev){
-  ev.preventDefault();
-  var keyInput = el("aiApiKeyInput"), modelInput = el("aiModelInput");
-  var apiKey = keyInput ? keyInput.value.trim() : "";
-  var model = (modelInput && modelInput.value.trim()) || AI_DEFAULT_MODEL;
-  saveAiSettings(apiKey, model);
-
-  if (!apiKey){
-    var details = el("aiSettingsDetails");
-    if (details) details.open = true;
-    toast("Ajoute d'abord ta clé API Gemini (gratuite) ci-dessus.");
-    return;
-  }
-
-  var input = el("aiQuestionInput");
-  var question = input ? input.value.trim() : "";
-  if (!question) return;
-
-  var sel = el("aiCourseSelect");
-  aiState.courseId = sel ? sel.value : "";
-  var course = aiState.courseId ? findCourse(aiState.courseId) : null;
-
-  aiState.messages.push({ role: "user", content: question });
-  if (input) input.value = "";
-
-  var sendBtn = el("aiSendBtn");
-  if (sendBtn){ sendBtn.disabled = true; sendBtn.textContent = "…"; }
-  aiState.messages.push({ role: "loading", content: "L'IA réfléchit…" });
-  renderAiConversation();
-
-  var payload = [{ role: "system", content: buildAiSystemPrompt(course) }]
-    .concat(aiState.messages
-      .filter(function(m){ return m.role === "user" || m.role === "assistant"; })
-      .map(function(m){ return { role: m.role, content: m.content }; }));
-
-  callGeminiAI(payload, apiKey, model)
-    .then(function(answer){
-      aiState.messages.pop();
-      aiState.messages.push({ role: "assistant", content: answer });
-    })
-    .catch(function(err){
-      aiState.messages.pop();
-      aiState.messages.push({ role: "error", content: "⚠️ " + (err.message || "Une erreur est survenue.") });
-      console.error("Erreur assistant IA:", err);
-    })
-    .then(function(){
-      if (sendBtn){ sendBtn.disabled = false; sendBtn.textContent = "Envoyer"; }
-      renderAiConversation();
-    });
-}
-
-function clearAiConversation(){
-  aiState.messages = [];
-  renderAiConversation();
-}
-
-/* ==========================================================================
    6. Événements & Interactions utilisateur
    ========================================================================== */
 function onFormSubmit(ev){
@@ -3590,8 +3247,6 @@ function onActionClick(ev){
     render();
   } else if (action === "flashcards"){
     openFlashModal(id);
-  } else if (action === "ask-ai"){
-    openAiModal(id);
   }
 }
 
@@ -3728,39 +3383,6 @@ function bindEvents(){
   var menuButtons = document.querySelectorAll(".menu-btn");
   for (var i = 0; i < menuButtons.length; i++) {
     menuButtons[i].addEventListener("click", function(){ toggleMenu(false); });
-  }
-
-  var themeBtn = el("themeBtn");
-  if (themeBtn){
-    themeBtn.addEventListener("click", function(){
-      var next = ui.theme === "auto" ? "dark" : (ui.theme === "dark" ? "light" : (ui.theme === "light" ? "exam" : "auto"));
-      applyTheme(next);
-      checkAutoExamTheme();
-    });
-  }
-
-  // Thème "nuit d'examen" automatique après une heure donnée
-  var examAutoToggle = el("examAutoToggle"), examAutoHour = el("examAutoHour");
-  var examSettings = loadExamThemeSettings();
-  if (examAutoToggle) examAutoToggle.checked = examSettings.enabled;
-  if (examAutoHour) examAutoHour.value = examSettings.hour;
-  if (examAutoToggle){
-    examAutoToggle.addEventListener("change", function(){
-      var hour = examAutoHour ? parseInt(examAutoHour.value, 10) : 21;
-      if (isNaN(hour)) hour = 21;
-      saveExamThemeSettings(examAutoToggle.checked, hour);
-      checkAutoExamTheme();
-      toast(examAutoToggle.checked ? "Thème nuit d'examen automatique activé." : "Thème nuit d'examen automatique désactivé.");
-    });
-  }
-  if (examAutoHour){
-    examAutoHour.addEventListener("change", function(){
-      var hour = parseInt(examAutoHour.value, 10);
-      if (isNaN(hour) || hour < 0 || hour > 23) hour = 21;
-      examAutoHour.value = hour;
-      saveExamThemeSettings(examAutoToggle ? examAutoToggle.checked : false, hour);
-      checkAutoExamTheme();
-    });
   }
 
   el("authForm").addEventListener("submit", handleAuthSubmit);
@@ -3955,20 +3577,6 @@ function bindEvents(){
     });
   }
 
-  var openAiBtn = el("openAiBtn"), closeAiModalBtn = el("closeAiModal"), aiModal = el("aiModal");
-  if (openAiBtn && aiModal){
-    openAiBtn.addEventListener("click", function(){ openAiModal(null); });
-  }
-  if (closeAiModalBtn && aiModal){
-    closeAiModalBtn.addEventListener("click", closeAiModal);
-  }
-  var aiFormEl = el("aiForm");
-  if (aiFormEl) aiFormEl.addEventListener("submit", onAiFormSubmit);
-  var aiClearBtn = el("aiClearBtn");
-  if (aiClearBtn) aiClearBtn.addEventListener("click", clearAiConversation);
-  var aiCourseSelectEl = el("aiCourseSelect");
-  if (aiCourseSelectEl) aiCourseSelectEl.addEventListener("change", function(){ aiState.courseId = aiCourseSelectEl.value; });
-
   var openSprintBtn = el("openSprintBtn"), closeSprintModalBtn = el("closeSprintModal"), sprintModal = el("sprintModal");
   if (openSprintBtn && sprintModal){
     openSprintBtn.addEventListener("click", openSprintModal);
@@ -4089,10 +3697,6 @@ async function init(){
   });
   
   if (hasDOM()){
-    var savedTheme = "auto";
-    try { savedTheme = localStorage.getItem("theme") || "auto"; } catch(e){}
-    applyTheme(savedTheme);
-    checkAutoExamTheme();
     loadPomoSettings();
     renderPomoDisplay();
     renderPomoHistory();
@@ -4115,7 +3719,6 @@ async function init(){
   if (typeof setInterval === "function"){
     setInterval(checkDailyNotifications, 60000);
     setInterval(function(){ if (hasDOM()) renderHead(); }, 60000);
-    setInterval(checkAutoExamTheme, 60000);
   }
 }
 
