@@ -17,32 +17,68 @@
   /* ============ Fonts ============ */
   @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700&display=swap');
 
-  /* ============ Design tokens — thème unique "Nuit d'examen" (sombre, chaud, faible lumière bleue) ============ */
+  /* ============ Design tokens ============ */
   :root{
-    --bg:#130f0b;
-    --bg-grad-a:#130f0b;
-    --bg-grad-b:#1c150e;
-    --card:#1c150e;
-    --card-soft:#241b12;
-    --ink:#f3e9db;
-    --muted:#b7a68f;
-    --line:#382b1c;
-    --brand:#e2933f;
-    --brand2:#c2542f;
-    --brand-ink:#130f0b;
-    --brand-soft:#2d2113;
-    --ok:#8bc34a;
-    --ok-bg:#20290f;
-    --warn:#f2b705;
-    --warn-bg:#332405;
-    --danger:#e2665b;
-    --danger-bg:#341512;
+    --bg:#eef1f9;
+    --bg-grad-a:#eef1fb;
+    --bg-grad-b:#e7ecfb;
+    --card:#ffffff;
+    --card-soft:#f8f9fe;
+    --ink:#141a33;
+    --muted:#6b7290;
+    --line:#e4e7f3;
+    --brand:#5b53f0;
+    --brand2:#06b6d4;
+    --brand-ink:#ffffff;
+    --brand-soft:#eeecff;
+    --ok:#059669;
+    --ok-bg:#d9f7ea;
+    --warn:#b45309;
+    --warn-bg:#fef1d6;
+    --danger:#e11d48;
+    --danger-bg:#ffe4e9;
     --radius:18px;
     --radius-sm:12px;
-    --shadow:0 1px 2px rgba(0,0,0,.35), 0 14px 34px -10px rgba(0,0,0,.55);
-    --shadow-lg:0 24px 55px -18px rgba(0,0,0,.65);
+    --shadow:0 1px 2px rgba(30,32,80,.04), 0 10px 30px -8px rgba(30,32,80,.12);
+    --shadow-lg:0 20px 45px -15px rgba(40,35,120,.28);
     --font-display:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
     --font-body:"Manrope",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  }
+
+  [data-theme="dark"] {
+    --bg:#0a0e1c; --bg-grad-a:#0a0e1c; --bg-grad-b:#121835; --card:#141a33; --card-soft:#181f3f;
+    --ink:#eef0fb; --muted:#98a0c4; --line:#262e52;
+    --brand:#8b85ff; --brand2:#22d3ee; --brand-ink:#0a0e1c; --brand-soft:#1c2350;
+    --ok:#34d399; --ok-bg:#0d3a2c;
+    --warn:#fbbf24; --warn-bg:#3a2a06;
+    --danger:#fb7185; --danger-bg:#3d0f1e;
+    --shadow:0 1px 2px rgba(0,0,0,.35), 0 14px 34px -10px rgba(0,0,0,.55);
+    --shadow-lg:0 24px 55px -18px rgba(0,0,0,.65);
+  }
+
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]):not([data-theme="examnight"]){
+      --bg:#0a0e1c; --bg-grad-a:#0a0e1c; --bg-grad-b:#121835; --card:#141a33; --card-soft:#181f3f;
+      --ink:#eef0fb; --muted:#98a0c4; --line:#262e52;
+      --brand:#8b85ff; --brand2:#22d3ee; --brand-ink:#0a0e1c; --brand-soft:#1c2350;
+      --ok:#34d399; --ok-bg:#0d3a2c;
+      --warn:#fbbf24; --warn-bg:#3a2a06;
+      --danger:#fb7185; --danger-bg:#3d0f1e;
+      --shadow:0 1px 2px rgba(0,0,0,.35), 0 14px 34px -10px rgba(0,0,0,.55);
+      --shadow-lg:0 24px 55px -18px rgba(0,0,0,.65);
+    }
+  }
+
+  /* Thème "Nuit d'examen" — très sombre, presque sans bleu, tons chauds ambrés pour ménager les yeux tard le soir */
+  [data-theme="examnight"] {
+    --bg:#140f0a; --bg-grad-a:#140f0a; --bg-grad-b:#1d150d; --card:#201810; --card-soft:#281e13;
+    --ink:#f4e6d2; --muted:#b39a7c; --line:#3a2c1c;
+    --brand:#e8925a; --brand2:#e0b23a; --brand-ink:#1a0f05; --brand-soft:#3a2513;
+    --ok:#9ac95a; --ok-bg:#243a12;
+    --warn:#ffb54d; --warn-bg:#3d2705;
+    --danger:#f0685f; --danger-bg:#3d1712;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 14px 34px -10px rgba(0,0,0,.6);
+    --shadow-lg:0 24px 55px -18px rgba(0,0,0,.7);
   }
 
   /* ============ Base ============ */
@@ -280,8 +316,9 @@
   .accordion{padding:0;overflow:hidden}
   .accordion > .accordion-summary{
     cursor:pointer;list-style:none;padding:22px;margin:0;
-    display:flex;align-items:center;justify-content:space-between;gap:10px;
+    display:flex;align-items:center;gap:10px;flex-wrap:wrap;
   }
+  .accordion > .accordion-summary h2{flex:1;min-width:120px}
   .accordion > .accordion-summary::-webkit-details-marker{display:none}
   .accordion > .accordion-summary::marker{content:""}
   .accordion > .accordion-summary:hover{background:var(--card-soft)}
@@ -398,8 +435,9 @@
   .pomo-card.pomo-running::before{
     content:"";position:absolute;inset:-60%;z-index:0;pointer-events:none;
     background:conic-gradient(from 0deg, var(--brand), var(--brand2), var(--ok), var(--brand));
-    opacity:.28;animation:pomoSpin 6s linear infinite;
+    opacity:.16;animation:pomoSpin 6s linear infinite;
   }
+  [data-theme="dark"] .pomo-card.pomo-running::before, [data-theme="examnight"] .pomo-card.pomo-running::before{ opacity:.28; }
   .pomo-card.pomo-running .pomo-ring-wrap{animation:pomoPulse 1.6s ease-in-out infinite}
   @keyframes pomoSpin{ from{ transform:rotate(0deg);} to{ transform:rotate(360deg);} }
   @keyframes pomoPulse{
@@ -464,17 +502,6 @@
 
   /* ============ Flashcards ============ */
   .flash-modal-card{max-width:480px;text-align:left}
-
-  /* ============ Sprint avant contrôle ============ */
-  .sprint-modal-card{max-width:580px;text-align:left;max-height:85vh;overflow-y:auto}
-  .sprint-summary{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:16px;font-size:.85rem;color:var(--muted)}
-  .sprint-day{border:1px solid var(--line);border-radius:var(--radius-sm);padding:12px 14px;background:var(--card-soft);margin-bottom:10px}
-  .sprint-day.is-examday{border-color:color-mix(in srgb, var(--danger) 40%, var(--line));background:color-mix(in srgb, var(--danger) 7%, var(--card-soft))}
-  .sprint-day-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;gap:8px}
-  .sprint-day-head strong{font-size:.92rem}
-  .sprint-day-head .tag{background:var(--danger-bg);color:var(--danger);font-size:.72rem;font-weight:800;padding:.2rem .5rem;border-radius:999px}
-  .sprint-blocks{display:flex;flex-direction:column;gap:5px}
-  .sprint-block{font-size:.85rem;line-height:1.4}
   .flash-tabs{display:flex;gap:8px;margin-bottom:14px}
   .flash-tabs .chip{flex:1;text-align:center}
   .flash-empty{border:1.5px dashed var(--line);border-radius:var(--radius-sm);padding:22px 14px;text-align:center;color:var(--muted);font-weight:600;font-size:.9rem}
@@ -511,6 +538,20 @@
   .flash-form{display:grid;gap:10px;border-top:1px solid var(--line);padding-top:14px}
 
   .course-flash-btn{position:relative}
+
+  /* ============ Sprint avant contrôle ============ */
+  .sprint-modal-card{max-width:480px;text-align:left}
+  .sprint-form-grid{display:grid;gap:14px}
+  .sprint-summary{border:1px solid var(--line);border-radius:var(--radius-sm);background:var(--brand-soft);padding:14px;margin-bottom:16px}
+  .sprint-summary-title{font-family:var(--font-display);font-weight:800;font-size:1.05rem;color:var(--brand)}
+  .sprint-summary-meta{color:var(--muted);font-size:.82rem;margin-top:4px;font-weight:600}
+  .sprint-plan{display:flex;flex-direction:column;gap:10px;max-height:420px;overflow-y:auto}
+  .sprint-day{border:1px solid var(--line);border-radius:var(--radius-sm);padding:12px 14px;background:var(--card-soft)}
+  .sprint-day-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+  .sprint-day-date{font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.03em;color:var(--muted)}
+  .sprint-day-title{font-family:var(--font-display);font-weight:800;font-size:.95rem;margin-bottom:6px}
+  .sprint-day-tasks{margin:0;padding-left:20px;color:var(--ink);font-size:.86rem;line-height:1.6}
+  .sprint-day-tasks li{margin-bottom:2px}
 
   /* ============ Récap du jour ============ */
   .recap-modal-card{max-width:360px;text-align:center}
@@ -618,10 +659,11 @@
     <div class="side-menu-content">
       <span id="userEmail" class="small muted user-email" style="display:block; padding: 0 8px; margin-bottom: 4px; font-weight: 600;"></span>
       <hr class="menu-divider">
-      <button id="openSprintBtn" class="btn primary menu-btn">🚀 Sprint avant contrôle</button>
-      <button id="openEventModalBtn" class="btn menu-btn">+ Événement spécial</button>
+      <button id="themeBtn" class="btn ghost menu-btn">🌓 Auto</button>
+      <button id="openEventModalBtn" class="btn primary menu-btn">+ Événement spécial</button>
       <button id="openPomoBtn" class="btn menu-btn">🍅 Pomodoro</button>
       <button id="openDailyRecapBtn" class="btn ghost menu-btn">📅 Récap du jour</button>
+      <button id="openSprintBtn" class="btn ghost menu-btn">🏁 Sprint avant contrôle</button>
       <button id="openMethodInfoBtn" class="btn ghost menu-btn">📖 Explication Méthode J</button>
       <button id="notifBtn" class="btn menu-btn">🔔 Activer les rappels</button>
       <button id="exportBtn" class="btn ghost menu-btn" title="Télécharger mes données">⬇ Exporter</button>
@@ -638,11 +680,13 @@
   </p>
 
   <!-- ============ Ajouter un cours ============ -->
-  <section class="card" aria-labelledby="hForm">
-    <div class="section-head">
+  <details class="card accordion" id="addCourseAccordion">
+    <summary class="accordion-summary" aria-labelledby="hForm">
       <h2 id="hForm">➕ Ajouter un cours</h2>
       <span class="small muted">J1 · J3 · J7 · J14 · J30 générés automatiquement</span>
-    </div>
+      <span class="accordion-chevron" aria-hidden="true">▾</span>
+    </summary>
+    <div class="accordion-body">
     <form id="courseForm" autocomplete="off">
       <div>
         <label for="courseName">Nom du cours</label>
@@ -684,14 +728,17 @@
         <button type="reset" class="btn ghost">Effacer</button>
       </div>
     </form>
-  </section>
+    </div>
+  </details>
 
   <!-- ============ Stats & Progression ============ -->
-  <section class="card" aria-label="Statistiques">
-    <div class="section-head">
+  <details class="card accordion" id="statsAccordion" open>
+    <summary class="accordion-summary" aria-label="Statistiques">
       <h2>📊 Vue d'ensemble</h2>
       <span class="small muted">Mise à jour en continu</span>
-    </div>
+      <span class="accordion-chevron" aria-hidden="true">▾</span>
+    </summary>
+    <div class="accordion-body">
     <div class="stats">
       <div class="stat"><b id="statDue">0</b><span>À réviser aujourd'hui</span></div>
       <div class="stat"><b id="statOver">0</b><span>En retard</span></div>
@@ -704,24 +751,31 @@
     <div class="progress-bar-wrap">
       <div id="progressBar" class="progress-bar-fill"></div>
     </div>
-  </section>
+    </div>
+  </details>
 
   <!-- ============ Aujourd'hui ============ -->
-  <section class="card" aria-labelledby="hToday">
-    <div class="section-head">
+  <details class="card accordion" id="todayAccordion" open>
+    <summary class="accordion-summary" aria-labelledby="hToday">
       <h2 id="hToday">📌 À réviser aujourd'hui</h2>
       <span id="todayDate" class="small muted"></span>
-    </div>
+      <span class="accordion-chevron" aria-hidden="true">▾</span>
+    </summary>
+    <div class="accordion-body">
     <div id="todayList"></div>
-  </section>
+    </div>
+  </details>
 
   <!-- ============ Calendrier en temps réel ============ -->
-  <section class="card" aria-labelledby="hCalendar">
-    <div class="section-head">
+  <details class="card accordion" id="calendarAccordion">
+    <summary class="accordion-summary" aria-labelledby="hCalendar">
       <h2 id="hCalendar">📅 Calendrier en temps réel (14 prochains jours)</h2>
-    </div>
+      <span class="accordion-chevron" aria-hidden="true">▾</span>
+    </summary>
+    <div class="accordion-body">
     <div id="realtimeCalendar" class="calendar-grid"></div>
-  </section>
+    </div>
+  </details>
 
   <!-- ============ Activité (heatmaps façon GitHub) — révisions & Pomodoro, dans un menu déroulant ============ -->
   <details class="card accordion" id="activityAccordion">
@@ -767,33 +821,39 @@
   </details>
 
   <!-- ============ Toutes mes révisions ============ -->
-  <section class="card" aria-labelledby="hAll">
-    <div class="section-head">
+  <details class="card accordion" id="allRevisionsAccordion">
+    <summary class="accordion-summary" aria-labelledby="hAll">
       <h2 id="hAll">🗓 Toutes mes révisions & Notes</h2>
-      <div class="filters" id="filters">
-        <select id="subjectFilter" class="chip" aria-label="Filtrer par matière" style="appearance:auto">
-          <option value="all">Toutes les matières</option>
-        </select>
-        <button class="chip" data-filter="all" aria-pressed="true">Tout</button>
-        <button class="chip" data-filter="pending" aria-pressed="false">À venir</button>
-        <button class="chip" data-filter="done" aria-pressed="false">Faites</button>
-      </div>
+      <span class="accordion-chevron" aria-hidden="true">▾</span>
+    </summary>
+    <div class="accordion-body">
+    <div class="filters" id="filters" style="margin-bottom:14px">
+      <select id="subjectFilter" class="chip" aria-label="Filtrer par matière" style="appearance:auto">
+        <option value="all">Toutes les matières</option>
+      </select>
+      <button class="chip" data-filter="all" aria-pressed="true">Tout</button>
+      <button class="chip" data-filter="pending" aria-pressed="false">À venir</button>
+      <button class="chip" data-filter="done" aria-pressed="false">Faites</button>
     </div>
     <div id="allList"></div>
-  </section>
+    </div>
+  </details>
 
   <!-- ============ Danger zone ============ -->
-  <section class="card" aria-labelledby="hData">
-    <div class="section-head">
+  <details class="card accordion" id="dataAccordion">
+    <summary class="accordion-summary" aria-labelledby="hData">
       <h2 id="hData">🗂 Mes données</h2>
       <span class="small muted" id="syncStatus">Chargement de votre espace…</span>
-    </div>
+      <span class="accordion-chevron" aria-hidden="true">▾</span>
+    </summary>
+    <div class="accordion-body">
     <div class="toolbar">
       <button id="resetDoneBtn" class="btn small">↺ Repartir de zéro (décocher toutes les révisions)</button>
       <button id="clearBtn" class="btn small danger">🗑 Tout supprimer</button>
       <span id="notifStatus" class="notif-status"></span>
     </div>
-  </section>
+    </div>
+  </details>
 
   <footer>Méthode des J — tes révisions, synchronisées dans ton espace personnel.</footer>
 </div>
@@ -975,31 +1035,38 @@
   </div>
 </div>
 
-<!-- Modal Sprint avant contrôle -->
+<!-- Modale Sprint avant contrôle -->
 <div id="sprintModal" class="modal-overlay hide" aria-hidden="true">
   <div class="modal-card sprint-modal-card">
-    <div class="section-head" style="margin-bottom:6px">
-      <h2>🚀 Sprint avant contrôle</h2>
+    <div class="section-head" style="margin-bottom:8px">
+      <h2>🏁 Sprint avant contrôle</h2>
       <button id="closeSprintModal" class="btn ghost small">✕</button>
     </div>
-    <p class="small muted" style="margin:0 0 16px">
-      Indique le cours concerné et la date du contrôle : l'appli répartit sur les jours restants un mix de révisions
-      « méthode des J », de sessions Pomodoro et de flashcards.
-    </p>
-    <form id="sprintForm" style="display:grid;gap:12px;grid-template-columns:1.3fr 1fr;align-items:end;margin-bottom:18px">
-      <div>
-        <label for="sprintCourseSelect">Cours / chapitre concerné</label>
-        <select id="sprintCourseSelect"></select>
+
+    <div id="sprintForm">
+      <p class="muted" style="margin-top:0">Choisis un cours et la date de ton contrôle : on te génère un planning condensé (méthode des J + Pomodoro + flashcards) réparti sur les jours restants.</p>
+      <div class="sprint-form-grid">
+        <div>
+          <label for="sprintCourseSelect">Cours / chapitre</label>
+          <select id="sprintCourseSelect"></select>
+        </div>
+        <div>
+          <label for="sprintExamDate">Date du contrôle</label>
+          <input id="sprintExamDate" type="date">
+        </div>
       </div>
-      <div>
-        <label for="sprintExamDate">Date du contrôle</label>
-        <input type="date" id="sprintExamDate" required>
+      <div class="form-actions" style="margin-top:16px">
+        <button type="button" id="sprintGenerateBtn" class="btn primary">⚡ Générer le planning</button>
       </div>
-      <div class="form-actions" style="grid-column:1/-1;margin:0">
-        <button type="submit" class="btn primary">⚡ Générer le planning</button>
+    </div>
+
+    <div id="sprintResult" class="hide">
+      <div id="sprintSummary" class="sprint-summary"></div>
+      <div id="sprintPlan" class="sprint-plan"></div>
+      <div class="form-actions" style="margin-top:14px">
+        <button type="button" id="sprintBackBtn" class="btn ghost small">← Modifier</button>
       </div>
-    </form>
-    <div id="sprintResult"></div>
+    </div>
   </div>
 </div>
 
@@ -1118,7 +1185,7 @@ var OFFSETS = [1, 3, 7, 14, 30];
 var WEEKDAY_NAMES = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"];
 
 var state = { courses: [], events: [], flashcards: {} };
-var ui = { filter: "all", subject: "all" };
+var ui = { filter: "all", subject: "all", theme: "auto" };
 var flashState = { courseId: null, cards: [], index: 0, flipped: false, mode: "review" };
 
 /* ==========================================================================
@@ -1168,6 +1235,30 @@ function relLabel(iso){
   if (n === -1) return "hier";
   if (n > 0) return "dans " + n + " jours";
   return "il y a " + Math.abs(n) + " jours";
+}
+
+var EXAM_NIGHT_START_HOUR = 21; // à partir de 21h
+var EXAM_NIGHT_END_HOUR = 6;    // jusqu'à 6h du matin
+
+function isExamNightHour(){
+  var h = new Date().getHours();
+  return h >= EXAM_NIGHT_START_HOUR || h < EXAM_NIGHT_END_HOUR;
+}
+
+function applyTheme(t){
+  ui.theme = t;
+  try { localStorage.setItem("theme", t); } catch(e){}
+  if (t === "auto"){
+    if (isExamNightHour()) document.documentElement.setAttribute("data-theme", "examnight");
+    else document.documentElement.removeAttribute("data-theme");
+  } else {
+    document.documentElement.setAttribute("data-theme", t);
+  }
+  var btn = el("themeBtn");
+  if (btn){
+    var labels = { dark: "🌙 Sombre", light: "☀️ Clair", examnight: "🕯️ Nuit d'examen", auto: "🌓 Auto" };
+    btn.textContent = labels[t] || "🌓 Auto";
+  }
 }
 
 /* ==========================================================================
@@ -2862,6 +2953,148 @@ function renderDailyRecap(){
     '<p class="recap-msg">' + esc(msg) + '</p>';
 }
 
+/* ==========================================================================
+   5quinto. SPRINT AVANT CONTRÔLE — planning condensé (méthode des J + Pomodoro + flashcards)
+   ========================================================================== */
+var SPRINT_CHECKPOINT_CANDIDATES = [1, 2, 3, 5, 7, 10, 14, 21, 28];
+
+function buildSprintOffsets(daysRemaining){
+  if (daysRemaining <= 0) return [0];
+  var offsets = [0];
+  SPRINT_CHECKPOINT_CANDIDATES.forEach(function(o){
+    if (o > 0 && o < daysRemaining) offsets.push(o);
+  });
+  if (daysRemaining - 2 > 0) offsets.push(daysRemaining - 2);
+  if (daysRemaining - 1 > 0) offsets.push(daysRemaining - 1);
+  offsets.push(daysRemaining);
+
+  var seen = {}, out = [];
+  offsets.sort(function(a, b){ return a - b; }).forEach(function(o){
+    if (!seen[o]){ seen[o] = true; out.push(o); }
+  });
+  // On limite à 8 étapes maxi pour ne pas surcharger le planning (on garde J1 + les 7 dernières étapes)
+  if (out.length > 8){
+    var head = out.slice(0, 1);
+    var tail = out.slice(-7).filter(function(o){ return head.indexOf(o) === -1; });
+    out = head.concat(tail);
+  }
+  return out;
+}
+
+function buildSprintPlan(courseId, examISO){
+  var course = findCourse(courseId);
+  if (!course) return null;
+  var today = todayISO();
+  var daysRemaining = diffDays(today, examISO);
+  if (daysRemaining < 0) return null;
+  var cardsCount = getFlashcards(courseId).length;
+  var offsets = buildSprintOffsets(daysRemaining);
+
+  var days = offsets.map(function(offset){
+    var dateISO = addDays(today, offset);
+    var isExamDay = offset === daysRemaining;
+    var isFirst = offset === 0;
+    var isEve = !isExamDay && offset === daysRemaining - 1;
+    var tasks = [], title;
+    var cardsPerSession = cardsCount ? Math.min(cardsCount, 15) : 0;
+
+    if (isExamDay){
+      title = daysRemaining === 0 ? "🎯 Jour J — Contrôle aujourd'hui !" : "🎯 Jour J — Contrôle";
+      tasks.push("Relecture flash de 10 à 15 min le matin (uniquement les cartes les moins maîtrisées)");
+      tasks.push("Pas de nouvelle matière — fais confiance à ton travail. Bonne chance ! 🍀");
+    } else if (isEve){
+      title = "🌙 Veille du contrôle";
+      tasks.push("2 Pomodoro (50 min) de révision flashcards intensive, en priorisant les cartes ratées");
+      tasks.push("Relecture rapide du résumé / des notes du cours");
+      tasks.push("Couche-toi tôt — le cerveau consolide la mémoire pendant le sommeil 😴");
+    } else if (isFirst){
+      title = "🚀 Jour 1 — Prise de contact";
+      tasks.push("1 Pomodoro (25 min) de lecture complète du cours");
+      if (!cardsCount) tasks.push("Crée tes flashcards pour ce chapitre (import possible depuis ChatGPT/Gemini)");
+      else tasks.push("1 Pomodoro de flashcards (" + cardsPerSession + " cartes)");
+    } else {
+      title = "📘 Checkpoint révision";
+      tasks.push("1 Pomodoro (25 min) de relecture ciblée sur tes points faibles");
+      if (cardsCount) tasks.push("1 session flashcards (~" + cardsPerSession + " cartes, priorité aux moins maîtrisées)");
+    }
+
+    return {
+      offset: offset,
+      date: dateISO,
+      dateLabel: formatDate(dateISO) + " (" + relLabel(dateISO) + ")",
+      title: title,
+      tasks: tasks
+    };
+  });
+
+  var totalPomo = days.reduce(function(sum, d){
+    var count = 0;
+    d.tasks.forEach(function(t){
+      var m = /(\d+) Pomodoro/.exec(t);
+      if (m) count += Number(m[1]);
+    });
+    return sum + count;
+  }, 0);
+
+  return { course: course, examISO: examISO, daysRemaining: daysRemaining, cardsCount: cardsCount, days: days, totalPomo: totalPomo };
+}
+
+function renderSprintPlan(plan){
+  var summary = el("sprintSummary"), box = el("sprintPlan");
+  if (!summary || !box) return;
+  summary.innerHTML =
+    '<div class="sprint-summary-title">' + esc(plan.course.name) + '</div>' +
+    '<div class="sprint-summary-meta">Contrôle ' + esc(relLabel(plan.examISO)) + ' (' + esc(formatDate(plan.examISO)) + ') · ' +
+      plan.days.length + ' étape' + (plan.days.length > 1 ? "s" : "") + ' · ~' + plan.totalPomo + ' Pomodoro au total' +
+      (plan.cardsCount ? ' · ' + plan.cardsCount + ' flashcard' + (plan.cardsCount > 1 ? "s" : "") : '') +
+    '</div>';
+
+  var html = "";
+  plan.days.forEach(function(d){
+    html += '<div class="sprint-day">' +
+      '<div class="sprint-day-head"><span class="sprint-day-date">' + esc(d.dateLabel) + '</span></div>' +
+      '<div class="sprint-day-title">' + esc(d.title) + '</div>' +
+      '<ul class="sprint-day-tasks">' + d.tasks.map(function(t){ return '<li>' + esc(t) + '</li>'; }).join('') + '</ul>' +
+    '</div>';
+  });
+  box.innerHTML = html;
+}
+
+function openSprintModal(){
+  var modal = el("sprintModal");
+  if (!modal) return;
+  var select = el("sprintCourseSelect");
+  if (select){
+    select.innerHTML = state.courses.map(function(c){
+      return '<option value="' + esc(c.id) + '">' + esc(c.name) + (c.subject ? " — " + esc(c.subject) : "") + '</option>';
+    }).join('');
+  }
+  var dateInput = el("sprintExamDate");
+  if (dateInput){
+    dateInput.min = todayISO();
+    if (!dateInput.value) dateInput.value = addDays(todayISO(), 7);
+  }
+  var form = el("sprintForm"), result = el("sprintResult");
+  if (form) form.classList.remove("hide");
+  if (result) result.classList.add("hide");
+  modal.classList.remove("hide");
+}
+
+function generateSprintPlan(){
+  var select = el("sprintCourseSelect"), dateInput = el("sprintExamDate");
+  var courseId = select ? select.value : "";
+  var examISO = dateInput ? dateInput.value : "";
+  if (!courseId){ toast("Choisis un cours."); return; }
+  if (!parseISO(examISO)){ toast("Choisis une date de contrôle valide."); return; }
+  if (diffDays(todayISO(), examISO) < 0){ toast("La date du contrôle doit être aujourd'hui ou dans le futur."); return; }
+  var plan = buildSprintPlan(courseId, examISO);
+  if (!plan) return;
+  renderSprintPlan(plan);
+  var form = el("sprintForm"), result = el("sprintResult");
+  if (form) form.classList.add("hide");
+  if (result) result.classList.remove("hide");
+}
+
 function stripCsvQuotes(s){
   s = (s || "").trim();
   if (s.length >= 2 && s[0] === '"' && s[s.length - 1] === '"'){
@@ -3058,143 +3291,6 @@ function importFlashcardsFile(file){
 }
 
 /* ==========================================================================
-   5quater. SPRINT AVANT CONTRÔLE — planning condensé (méthode des J + Pomodoro + flashcards)
-   ========================================================================== */
-function generateSprintPlan(courseId, examDateISO){
-  var course = findCourse(courseId);
-  if (!course) return { error: "Choisis d'abord un cours." };
-  if (!parseISO(examDateISO)) return { error: "Indique une date de contrôle valide." };
-
-  var today = todayISO();
-  var daysLeft = diffDays(today, examDateISO);
-  if (daysLeft < 0) return { error: "La date du contrôle est déjà passée." };
-
-  var N = Math.max(1, daysLeft || 1); // au moins 1 jour de plan (même si le contrôle est aujourd'hui)
-  var pending = course.schedule.filter(function(r){ return !r.done; })
-    .slice().sort(function(a, b){ return diffDays(a.date, b.date); });
-  var totalPending = pending.length;
-  var cardsCount = getFlashcards(course.id).length;
-
-  var days = [];
-  var cursor = 0;
-  for (var i = 0; i < N; i++){
-    var dayISO = addDays(today, i);
-    var isLastDay = (i === N - 1);
-    var intensity = (i + 1) / N;
-    var pomoCount = Math.max(2, Math.min(4, Math.round(2 + intensity * 2)));
-    var remainingSlots = N - i;
-    var takeCount = totalPending > 0 ? Math.ceil((totalPending - cursor) / remainingSlots) : 0;
-    var todaysReviews = pending.slice(cursor, cursor + takeCount);
-    cursor += todaysReviews.length;
-    if (isLastDay && cursor < totalPending){
-      todaysReviews = todaysReviews.concat(pending.slice(cursor));
-      cursor = totalPending;
-    }
-
-    var blocks = [];
-    if (todaysReviews.length){
-      blocks.push("📖 " + plural(todaysReviews.length, "séance de révision « méthode des J »", "séances de révision « méthode des J »"));
-    }
-    blocks.push("🍅 " + pomoCount + "× Pomodoro (25 min) sur « " + course.name + " »");
-    if (cardsCount > 0){
-      blocks.push(isLastDay
-        ? "🗂 Relecture intégrale des " + plural(cardsCount, "flashcard", "flashcards")
-        : "🗂 Révision flashcards (priorité aux cartes non maîtrisées)");
-    } else if (i === 0){
-      blocks.push("💡 Crée quelques flashcards clés pour ce chapitre (bouton « Flashcards » sur le cours)");
-    }
-    if (isLastDay){
-      blocks.push("🔁 Relecture complète du chapitre, puis repos avant le contrôle");
-    }
-
-    days.push({
-      date: dayISO,
-      dayLabel: (i === 0 ? "Aujourd'hui" : formatDate(dayISO)),
-      isLastDay: isLastDay,
-      blocks: blocks
-    });
-  }
-
-  return { course: course, examDate: examDateISO, daysLeft: daysLeft, totalPending: totalPending, cardsCount: cardsCount, days: days };
-}
-
-function populateSprintCourseSelect(){
-  var sel = el("sprintCourseSelect");
-  if (!sel) return;
-  var previous = sel.value;
-  if (!state.courses.length){
-    sel.innerHTML = '<option value="">Aucun cours — ajoute-en un d\u2019abord</option>';
-    return;
-  }
-  sel.innerHTML = state.courses.map(function(c){
-    return '<option value="' + c.id + '">' + esc(c.name) + ' (' + esc(c.subject) + ')</option>';
-  }).join("");
-  var savedCourse = null;
-  try { savedCourse = localStorage.getItem("sprintCourseId"); } catch(e){}
-  if (previous && findCourse(previous)) sel.value = previous;
-  else if (savedCourse && findCourse(savedCourse)) sel.value = savedCourse;
-}
-
-function openSprintModal(){
-  populateSprintCourseSelect();
-  var examInput = el("sprintExamDate");
-  if (examInput && !examInput.value){
-    var savedDate = null;
-    try { savedDate = localStorage.getItem("sprintExamDate"); } catch(e){}
-    examInput.value = (savedDate && parseISO(savedDate) && diffDays(todayISO(), savedDate) >= 0) ? savedDate : addDays(todayISO(), 7);
-  }
-  var box = el("sprintResult");
-  if (box) box.innerHTML = "";
-  var modal = el("sprintModal");
-  if (modal) modal.classList.remove("hide");
-}
-
-function closeSprintModal(){
-  var modal = el("sprintModal");
-  if (modal) modal.classList.add("hide");
-}
-
-function renderSprintResult(plan){
-  var box = el("sprintResult");
-  if (!box) return;
-  if (!plan) { box.innerHTML = ""; return; }
-  if (plan.error){
-    box.innerHTML = '<div class="flash-empty">' + esc(plan.error) + '</div>';
-    return;
-  }
-
-  var html = '<div class="sprint-summary">' +
-    '<span>📘 <strong>' + esc(plan.course.name) + '</strong></span>' +
-    '<span>📅 Contrôle ' + esc(relLabel(plan.examDate)) + ' (' + esc(formatDate(plan.examDate)) + ')</span>' +
-    '<span>🗓️ ' + esc(plural(plan.days.length, "jour de révision", "jours de révision")) + '</span>' +
-  '</div>';
-
-  html += plan.days.map(function(day){
-    return '<div class="sprint-day' + (day.isLastDay ? ' is-examday' : '') + '">' +
-      '<div class="sprint-day-head"><strong>' + esc(day.dayLabel) + '</strong>' +
-      (day.isLastDay ? '<span class="tag">Veille du contrôle</span>' : '') +
-      '</div>' +
-      '<div class="sprint-blocks">' +
-      day.blocks.map(function(b){ return '<div class="sprint-block">' + esc(b) + '</div>'; }).join("") +
-      '</div>' +
-    '</div>';
-  }).join("");
-
-  box.innerHTML = html;
-}
-
-function onSprintFormSubmit(ev){
-  ev.preventDefault();
-  var sel = el("sprintCourseSelect"), dateInput = el("sprintExamDate");
-  var courseId = sel ? sel.value : "";
-  var examDate = dateInput ? dateInput.value : "";
-  if (!courseId){ toast("Choisis un cours."); return; }
-  try { localStorage.setItem("sprintCourseId", courseId); localStorage.setItem("sprintExamDate", examDate); } catch(e){}
-  var plan = generateSprintPlan(courseId, examDate);
-  renderSprintResult(plan);
-}
-
-/* ==========================================================================
    6. Événements & Interactions utilisateur
    ========================================================================== */
 function onFormSubmit(ev){
@@ -3383,6 +3479,17 @@ function bindEvents(){
   var menuButtons = document.querySelectorAll(".menu-btn");
   for (var i = 0; i < menuButtons.length; i++) {
     menuButtons[i].addEventListener("click", function(){ toggleMenu(false); });
+  }
+
+  var themeBtn = el("themeBtn");
+  if (themeBtn){
+    themeBtn.addEventListener("click", function(){
+      var order = ["auto", "dark", "light", "examnight"];
+      var idx = order.indexOf(ui.theme);
+      var next = order[(idx + 1) % order.length];
+      applyTheme(next);
+      if (next === "examnight") toast("🕯️ Thème Nuit d'examen activé.");
+    });
   }
 
   el("authForm").addEventListener("submit", handleAuthSubmit);
@@ -3577,16 +3684,6 @@ function bindEvents(){
     });
   }
 
-  var openSprintBtn = el("openSprintBtn"), closeSprintModalBtn = el("closeSprintModal"), sprintModal = el("sprintModal");
-  if (openSprintBtn && sprintModal){
-    openSprintBtn.addEventListener("click", openSprintModal);
-  }
-  if (closeSprintModalBtn && sprintModal){
-    closeSprintModalBtn.addEventListener("click", closeSprintModal);
-  }
-  var sprintFormEl = el("sprintForm");
-  if (sprintFormEl) sprintFormEl.addEventListener("submit", onSprintFormSubmit);
-
   var openMethodInfoBtn = el("openMethodInfoBtn"), closeMethodInfoModal = el("closeMethodInfoModal"), methodInfoModal = el("methodInfoModal");
   if (openMethodInfoBtn && methodInfoModal){
     openMethodInfoBtn.addEventListener("click", function(){ methodInfoModal.classList.remove("hide"); });
@@ -3604,6 +3701,27 @@ function bindEvents(){
   }
   if (closeDailyRecapModal && dailyRecapModal){
     closeDailyRecapModal.addEventListener("click", function(){ dailyRecapModal.classList.add("hide"); });
+  }
+
+  var openSprintBtn = el("openSprintBtn"), closeSprintModal = el("closeSprintModal"), sprintModal = el("sprintModal");
+  if (openSprintBtn && sprintModal){
+    openSprintBtn.addEventListener("click", function(){
+      if (!state.courses.length){ toast("Ajoute d'abord un cours à réviser."); return; }
+      openSprintModal();
+    });
+  }
+  if (closeSprintModal && sprintModal){
+    closeSprintModal.addEventListener("click", function(){ sprintModal.classList.add("hide"); });
+  }
+  var sprintGenerateBtn = el("sprintGenerateBtn");
+  if (sprintGenerateBtn) sprintGenerateBtn.addEventListener("click", generateSprintPlan);
+  var sprintBackBtn = el("sprintBackBtn");
+  if (sprintBackBtn){
+    sprintBackBtn.addEventListener("click", function(){
+      var form = el("sprintForm"), result = el("sprintResult");
+      if (result) result.classList.add("hide");
+      if (form) form.classList.remove("hide");
+    });
   }
 
   // Sauvegarde des notes à la volée (input / change)
@@ -3697,6 +3815,9 @@ async function init(){
   });
   
   if (hasDOM()){
+    var savedTheme = "auto";
+    try { savedTheme = localStorage.getItem("theme") || "auto"; } catch(e){}
+    applyTheme(savedTheme);
     loadPomoSettings();
     renderPomoDisplay();
     renderPomoHistory();
@@ -3719,6 +3840,7 @@ async function init(){
   if (typeof setInterval === "function"){
     setInterval(checkDailyNotifications, 60000);
     setInterval(function(){ if (hasDOM()) renderHead(); }, 60000);
+    setInterval(function(){ if (ui.theme === "auto") applyTheme("auto"); }, 5 * 60000);
   }
 }
 
