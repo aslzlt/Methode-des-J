@@ -263,6 +263,10 @@
   .progress-bar-wrap{margin-top:16px;background:var(--card-soft);border-radius:999px;height:11px;overflow:hidden;border:1px solid var(--line)}
   .progress-bar-fill{background:linear-gradient(90deg,var(--brand),var(--brand2));height:100%;width:0%;transition:width .5s cubic-bezier(.4,0,.2,1);border-radius:999px}
 
+  .weekly-goal{margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
+  .weekly-goal-head{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;font-size:.92rem;font-weight:600}
+  input.weekly-goal-input{width:64px;display:inline-block;padding:.25rem .4rem;text-align:center;font-weight:700}
+
   /* ============ Sections & lists ============ */
   .section-head{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:14px}
   .section-head h2{font-size:1.08rem;font-weight:800;letter-spacing:-.01em}
@@ -296,6 +300,8 @@
   .tag.over{background:var(--danger-bg);color:var(--danger)}
   .tag.done{background:var(--ok-bg);color:var(--ok)}
   .tag.subject{background:var(--brand-soft);border:1px solid transparent;color:var(--brand);font-weight:700}
+  .tag.diff-easy{background:var(--ok-bg);color:var(--ok)}
+  .tag.diff-hard{background:var(--danger-bg);color:var(--danger)}
 
   .resource-link{
     display:inline-flex;align-items:center;gap:4px;font-size:.8rem;color:var(--brand);font-weight:600;
@@ -446,6 +452,9 @@
   @keyframes modalPop{ from{opacity:0; transform:translateY(8px) scale(.98)} to{opacity:1; transform:translateY(0) scale(1)} }
 
   .filters{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+  input.search-input{flex:1 1 200px;width:auto;min-width:160px;max-width:320px;padding:.5rem .8rem;margin:0}
+
+  .confirm-modal-card{max-width:380px;text-align:left}
   .chip{
     border:1px solid var(--line);background:var(--card);color:var(--muted);
     padding:.35rem .8rem;border-radius:999px;font-size:.8rem;font-weight:700;
@@ -809,6 +818,14 @@
         <label for="courseDuration">Durée estimée par révision (minutes)</label>
         <input id="courseDuration" name="courseDuration" type="number" min="1" max="600" step="1" placeholder="15">
       </div>
+      <div>
+        <label for="courseDifficulty">Difficulté ressentie</label>
+        <select id="courseDifficulty" name="courseDifficulty">
+          <option value="easy">🟢 Facile</option>
+          <option value="normal" selected>🟡 Normal</option>
+          <option value="hard">🔴 Difficile</option>
+        </select>
+      </div>
       <div class="form-actions">
         <button type="submit" class="btn primary">Ajouter le cours</button>
         <button type="reset" class="btn ghost">Effacer</button>
@@ -836,6 +853,16 @@
     </div>
     <div class="progress-bar-wrap">
       <div id="progressBar" class="progress-bar-fill"></div>
+    </div>
+
+    <div class="weekly-goal" id="weeklyGoalBox">
+      <div class="weekly-goal-head">
+        <span>🎯 Objectif hebdo : <b id="weeklyGoalValue">0 min</b> sur <input id="weeklyGoalInput" type="number" min="10" max="4000" step="5" class="weekly-goal-input" aria-label="Objectif hebdomadaire en minutes"> min</span>
+        <span class="small muted" id="weeklyGoalPct">0%</span>
+      </div>
+      <div class="progress-bar-wrap" style="margin-top:8px">
+        <div id="weeklyGoalBar" class="progress-bar-fill"></div>
+      </div>
     </div>
     </div>
   </details>
@@ -914,6 +941,7 @@
     </summary>
     <div class="accordion-body">
     <div class="filters" id="filters" style="margin-bottom:14px">
+      <input id="courseSearchInput" type="text" class="search-input" placeholder="🔎 Rechercher un cours…" aria-label="Rechercher un cours" maxlength="120">
       <select id="subjectFilter" class="chip" aria-label="Filtrer par matière" style="appearance:auto">
         <option value="all">Toutes les matières</option>
       </select>
@@ -945,7 +973,7 @@
 </div>
 
 <!-- Modal Événement spécial -->
-<div id="eventModal" class="modal-overlay hide" aria-hidden="true">
+<div id="eventModal" class="modal-overlay hide" aria-hidden="true" data-close="closeEventModal">
   <div class="modal-card">
     <div class="section-head" style="margin-bottom:8px">
       <h2>📌 Ajouter un événement spécial</h2>
@@ -968,7 +996,7 @@
 </div>
 
 <!-- Modal Mode vacances / pause -->
-<div id="vacationModal" class="modal-overlay hide" aria-hidden="true">
+<div id="vacationModal" class="modal-overlay hide" aria-hidden="true" data-close="closeVacationModal">
   <div class="modal-card vac-modal-card">
     <div class="section-head" style="margin-bottom:8px">
       <h2>🌴 Mode vacances / pause</h2>
@@ -1000,7 +1028,7 @@
 </div>
 
 <!-- Modal Modifier un cours -->
-<div id="courseEditModal" class="modal-overlay hide" aria-hidden="true">
+<div id="courseEditModal" class="modal-overlay hide" aria-hidden="true" data-close="closeCourseEditModal">
   <div class="modal-card" style="max-width:460px;text-align:left">
     <div class="section-head" style="margin-bottom:8px">
       <h2>✎ Modifier le cours</h2>
@@ -1041,6 +1069,14 @@
         <label for="editCourseDuration">Durée estimée par révision (minutes)</label>
         <input id="editCourseDuration" type="number" min="1" max="600" step="1">
       </div>
+      <div>
+        <label for="editCourseDifficulty">Difficulté ressentie</label>
+        <select id="editCourseDifficulty">
+          <option value="easy">🟢 Facile</option>
+          <option value="normal">🟡 Normal</option>
+          <option value="hard">🔴 Difficile</option>
+        </select>
+      </div>
       <p class="small muted" style="margin:0">Changer la date J0 ou le jour exclu recalcule les échéances J1 → J30 ; les révisions déjà validées restent cochées.</p>
       <div class="form-actions">
         <button type="button" id="courseEditSaveBtn" class="btn primary">✓ Enregistrer</button>
@@ -1051,7 +1087,7 @@
 </div>
 
 <!-- Modal Pomodoro -->
-<div id="pomoModal" class="modal-overlay hide" aria-hidden="true">
+<div id="pomoModal" class="modal-overlay hide" aria-hidden="true" data-close="closePomoModal">
   <div class="modal-card pomo-card" id="pomoCard">
     <div class="section-head" style="margin-bottom:8px">
       <h2>🍅 Pomodoro</h2>
@@ -1095,7 +1131,7 @@
 </button>
 
 <!-- Modale d'alerte Pomodoro (pause démarrée / travail repris) -->
-<div id="pomoAlertModal" class="modal-overlay hide" aria-hidden="true">
+<div id="pomoAlertModal" class="modal-overlay hide" aria-hidden="true" data-close="pomoAlertLater">
   <div class="modal-card pomo-alert-card" id="pomoAlertCard">
     <div class="pomo-alert-emoji" id="pomoAlertEmoji">🔔</div>
     <h2 id="pomoAlertTitle">Titre</h2>
@@ -1108,7 +1144,7 @@
 </div>
 
 <!-- Modale Historique Pomodoro -->
-<div id="pomoHistoryModal" class="modal-overlay hide" aria-hidden="true">
+<div id="pomoHistoryModal" class="modal-overlay hide" aria-hidden="true" data-close="closePomoHistoryModal">
   <div class="modal-card" style="max-width:420px;text-align:left">
     <div class="section-head" style="margin-bottom:8px">
       <h2>🕘 Historique Pomodoro</h2>
@@ -1122,7 +1158,7 @@
 </div>
 
 <!-- Modal Flashcards -->
-<div id="flashModal" class="modal-overlay hide" aria-hidden="true">
+<div id="flashModal" class="modal-overlay hide" aria-hidden="true" data-close="closeFlashModal">
   <div class="modal-card flash-modal-card" id="flashModalCard">
     <div class="section-head" style="margin-bottom:8px">
       <h2 id="flashModalTitle">🗂 Flashcards</h2>
@@ -1194,7 +1230,7 @@
 </div>
 
 <!-- Modale Récap du jour -->
-<div id="dailyRecapModal" class="modal-overlay hide" aria-hidden="true">
+<div id="dailyRecapModal" class="modal-overlay hide" aria-hidden="true" data-close="closeDailyRecapModal">
   <div class="modal-card recap-modal-card">
     <div class="section-head" style="margin-bottom:8px">
       <h2>📅 Récap du jour</h2>
@@ -1205,7 +1241,7 @@
 </div>
 
 <!-- Modale Sprint avant contrôle -->
-<div id="sprintModal" class="modal-overlay hide" aria-hidden="true">
+<div id="sprintModal" class="modal-overlay hide" aria-hidden="true" data-close="closeSprintModal">
   <div class="modal-card sprint-modal-card">
     <div class="section-head" style="margin-bottom:8px">
       <h2>🏁 Sprint avant contrôle</h2>
@@ -1240,7 +1276,7 @@
 </div>
 
 <!-- Modal Explication Méthode J -->
-<div id="methodInfoModal" class="modal-overlay hide" aria-hidden="true">
+<div id="methodInfoModal" class="modal-overlay hide" aria-hidden="true" data-close="closeMethodInfoModal">
   <div class="modal-card info-modal-card">
     <div class="section-head" style="margin-bottom:8px">
       <h2>📖 Explication de la Méthode des J</h2>
@@ -1275,6 +1311,17 @@
     </ul>
 
     <p class="info-source">Contenu reformulé à partir de l'article « Tout savoir sur la Méthode des J » — <a href="https://noubliejamais.fr/blog/tout-savoir-sur-la-methode-des-j/" target="_blank" rel="noopener">lire l'article complet sur noubliejamais.fr ↗</a></p>
+  </div>
+</div>
+
+<!-- Modale de confirmation générique (remplace les confirm() natifs du navigateur) -->
+<div id="confirmModal" class="modal-overlay hide" aria-hidden="true" data-close="confirmCancelBtn">
+  <div class="modal-card confirm-modal-card">
+    <p id="confirmMessage" style="margin:0 0 18px;font-weight:600"></p>
+    <div class="form-actions" style="justify-content:flex-end">
+      <button type="button" id="confirmCancelBtn" class="btn ghost">Annuler</button>
+      <button type="button" id="confirmOkBtn" class="btn primary">Confirmer</button>
+    </div>
   </div>
 </div>
 
@@ -1354,7 +1401,7 @@ var OFFSETS = [1, 3, 7, 14, 30];
 var WEEKDAY_NAMES = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"];
 
 var state = { courses: [], events: [], flashcards: {} };
-var ui = { filter: "all", subject: "all", theme: "auto" };
+var ui = { filter: "all", subject: "all", theme: "auto", search: "" };
 var flashState = { courseId: null, cards: [], index: 0, flipped: false, mode: "review" };
 
 /* ==========================================================================
@@ -1450,6 +1497,34 @@ function setCourseDuration(id, minutes){
   var v = parseInt(minutes, 10);
   map[id] = (!isNaN(v) && v > 0) ? Math.min(600, v) : 15;
   try { localStorage.setItem("courseDurations", JSON.stringify(map)); } catch (e) {}
+}
+
+var DIFFICULTY_LEVELS = ["easy", "normal", "hard"];
+var DIFFICULTY_LABELS = { easy: "🟢 Facile", normal: "🟡 Normal", hard: "🔴 Difficile" };
+var DIFFICULTY_RANK = { hard: 2, normal: 1, easy: 0 };
+
+/* Difficulté ressentie par cours, stockée localement par appareil (même principe que la durée) */
+function loadCourseDifficulties(){
+  try { return JSON.parse(localStorage.getItem("courseDifficulties") || "{}") || {}; } catch (e) { return {}; }
+}
+function getCourseDifficulty(id){
+  var map = loadCourseDifficulties();
+  return DIFFICULTY_LEVELS.indexOf(map[id]) !== -1 ? map[id] : "normal";
+}
+function setCourseDifficulty(id, level){
+  var map = loadCourseDifficulties();
+  map[id] = DIFFICULTY_LEVELS.indexOf(level) !== -1 ? level : "normal";
+  try { localStorage.setItem("courseDifficulties", JSON.stringify(map)); } catch (e) {}
+}
+
+/* Objectif hebdomadaire de révision (en minutes), stocké localement par appareil */
+function getWeeklyGoal(){
+  var v = parseInt((function(){ try { return localStorage.getItem("weeklyGoalMinutes"); } catch(e){ return null; } })(), 10);
+  return (!isNaN(v) && v > 0) ? v : 150;
+}
+function setWeeklyGoal(minutes){
+  var v = parseInt(minutes, 10);
+  if (!isNaN(v) && v > 0) { try { localStorage.setItem("weeklyGoalMinutes", String(Math.min(4000, v))); } catch (e) {} }
 }
 
 /* Flashcards (question / réponse) par cours — synchronisées via la table Supabase "flashcards".
@@ -1609,7 +1684,7 @@ function computeSchedule(startISO, offsets, excludeWeekday){
   return out;
 }
 
-function makeCourse(name, subject, link, startISO, excludeWeekday, durationMin){
+function makeCourse(name, subject, link, startISO, excludeWeekday, durationMin, difficulty){
   var ew = (excludeWeekday === "" || excludeWeekday === undefined || excludeWeekday === null) ? null : Number(excludeWeekday);
   if (ew !== null && (isNaN(ew) || ew < 0 || ew > 6)) ew = null;
   var dur = parseInt(durationMin, 10);
@@ -1625,14 +1700,16 @@ function makeCourse(name, subject, link, startISO, excludeWeekday, durationMin){
     createdAt: new Date().toISOString(),
     excludeWeekday: ew,
     durationMin: dur,
+    difficulty: DIFFICULTY_LEVELS.indexOf(difficulty) !== -1 ? difficulty : "normal",
     schedule: computeSchedule(startISO, null, ew)
   };
 }
 
-function addCourse(name, subject, link, startISO, excludeWeekday, durationMin){
+function addCourse(name, subject, link, startISO, excludeWeekday, durationMin, difficulty){
   if (!String(name || "").trim() || !parseISO(startISO)) return null;
-  var c = makeCourse(name, subject, link, startISO, excludeWeekday, durationMin);
+  var c = makeCourse(name, subject, link, startISO, excludeWeekday, durationMin, difficulty);
   setCourseDuration(c.id, c.durationMin);
+  setCourseDifficulty(c.id, c.difficulty);
   state.courses.push(c);
   dbUpsertCourse(c);
   return c;
@@ -1750,6 +1827,22 @@ function computeTotalMinutes(){
   return total;
 }
 
+/* Minutes révisées sur les 7 derniers jours (glissant, basé sur la date de validation) */
+function computeWeekMinutes(){
+  var t = todayISO(), from = addDays(t, -6), total = 0;
+  for (var i = 0; i < state.courses.length; i++){
+    var c = state.courses[i];
+    var dur = (c.durationMin && c.durationMin > 0) ? c.durationMin : 15;
+    for (var j = 0; j < c.schedule.length; j++){
+      var r = c.schedule[j];
+      if (!r.done) continue;
+      var day = r.doneAt ? String(r.doneAt).slice(0, 10) : r.date;
+      if (day >= from && day <= t) total += dur;
+    }
+  }
+  return total;
+}
+
 function formatMinutes(total){
   if (total < 60) return total + " min";
   var h = Math.floor(total / 60), m = total % 60;
@@ -1813,6 +1906,7 @@ function rowToCourse(row){
     createdAt: row.created_at || new Date().toISOString(),
     excludeWeekday: (row.exclude_weekday === null || row.exclude_weekday === undefined) ? null : Number(row.exclude_weekday),
     durationMin: getCourseDuration(row.id),
+    difficulty: getCourseDifficulty(row.id),
     schedule: Array.isArray(row.schedule)
       ? row.schedule.filter(function(r){ return r && parseISO(r.date); })
           .map(function(r){ return { offset: Number(r.offset) || 0, date: r.date, done: !!r.done, doneAt: r.doneAt || null }; })
@@ -2574,6 +2668,29 @@ function toast(msg){
   setTimeout(function(){ if (t.parentNode) t.parentNode.removeChild(t); }, 3500);
 }
 
+/* Confirmation stylée (remplace window.confirm) : résout true/false selon le bouton cliqué. */
+function showConfirm(message, opts){
+  opts = opts || {};
+  return new Promise(function(resolve){
+    var modal = el("confirmModal"), msgEl = el("confirmMessage"), okBtn = el("confirmOkBtn"), cancelBtn = el("confirmCancelBtn");
+    if (!modal || !okBtn || !cancelBtn){ resolve(typeof confirm === "function" ? confirm(message) : true); return; }
+    if (msgEl) msgEl.textContent = message;
+    okBtn.textContent = opts.okLabel || "Confirmer";
+    okBtn.className = "btn " + (opts.danger ? "danger" : "primary");
+    modal.classList.remove("hide");
+
+    function cleanup(){
+      modal.classList.add("hide");
+      okBtn.removeEventListener("click", onOk);
+      cancelBtn.removeEventListener("click", onCancel);
+    }
+    function onOk(){ cleanup(); resolve(true); }
+    function onCancel(){ cleanup(); resolve(false); }
+    okBtn.addEventListener("click", onOk);
+    cancelBtn.addEventListener("click", onCancel);
+  });
+}
+
 function setAuthMode(mode){
   authMode = mode;
   var signupMode = mode === "signup";
@@ -2690,6 +2807,28 @@ function renderStats(){
 
   var pb = el("progressBar");
   if (pb) pb.style.width = s.rate + "%";
+
+  renderWeeklyGoal();
+}
+
+function renderWeeklyGoal(){
+  var box = el("weeklyGoalBox");
+  if (!box) return;
+  var goal = getWeeklyGoal();
+  var done = computeWeekMinutes();
+  var pct = goal > 0 ? Math.min(100, Math.round((done / goal) * 100)) : 0;
+
+  var val = el("weeklyGoalValue");
+  if (val) val.textContent = formatMinutes(done);
+  var input = el("weeklyGoalInput");
+  if (input && document.activeElement !== input) input.value = goal;
+  var pctLabel = el("weeklyGoalPct");
+  if (pctLabel) pctLabel.textContent = pct + "%";
+  var bar = el("weeklyGoalBar");
+  if (bar){
+    bar.style.width = pct + "%";
+    bar.style.background = pct >= 100 ? "linear-gradient(90deg, var(--ok), var(--brand2))" : "";
+  }
 }
 
 function renderActivityHeatmap(){
@@ -2759,6 +2898,10 @@ function reviewItemHTML(course, review, showDate){
     ? '<a href="' + esc(course.link) + '" target="_blank" rel="noopener" class="resource-link" title="Ouvrir la ressource">🔗 Lien ressource</a>'
     : '';
 
+  var diffHtml = (course.difficulty && course.difficulty !== "normal")
+    ? '<span class="tag diff-' + esc(course.difficulty) + '">' + DIFFICULTY_LABELS[course.difficulty] + '</span>'
+    : '';
+
   var buttons = review.done
     ? '<button class="btn small" data-action="undo" data-id="' + course.id + '" data-date="' + review.date + '">↺ Annuler</button>'
     : '<button class="btn ok small" data-action="done" data-id="' + course.id + '" data-date="' + review.date + '">✓ Fait</button>' +
@@ -2770,6 +2913,7 @@ function reviewItemHTML(course, review, showDate){
         '<div class="title"><span class="tag">J' + review.offset + '</span> ' + esc(course.name) + '</div>' +
         '<div class="sub">' + tag +
           '<span class="tag subject">' + esc(course.subject) + '</span>' +
+          diffHtml +
           linkHtml +
           (showDate ? '<span>' + formatDate(review.date) + ' · ' + relLabel(review.date) + '</span>' : '') +
         '</div>' +
@@ -2785,6 +2929,11 @@ function renderToday(){
   var due = dueOn(t);
   var late = overdue(t);
   var html = "";
+
+  // Les cours ressentis comme plus difficiles remontent en premier parmi ceux du jour
+  due.sort(function(a, b){
+    return (DIFFICULTY_RANK[b.course.difficulty] || 1) - (DIFFICULTY_RANK[a.course.difficulty] || 1);
+  });
 
   // 1. Afficher les révisions prévues aujourd'hui
   for (var i = 0; i < due.length; i++) html += reviewItemHTML(due[i].course, due[i].review, false);
@@ -2877,6 +3026,7 @@ function renderAll(){
     var c = ordered[i];
 
     if (ui.subject !== "all" && c.subject !== ui.subject) continue;
+    if (ui.search && (c.name + " " + c.subject).toLowerCase().indexOf(ui.search) === -1) continue;
 
     var slots = c.schedule.slice().sort(function(a, b){ return a.offset - b.offset; })
       .filter(function(r){
@@ -2905,13 +3055,14 @@ function renderAll(){
 
     var linkHtml = c.link ? '<a href="' + esc(c.link) + '" target="_blank" rel="noopener" class="resource-link">🔗 Lien ressource</a>' : '';
     var excludeHtml = (c.excludeWeekday !== null && c.excludeWeekday !== undefined) ? ' <span class="tag">🚫 ' + esc(WEEKDAY_NAMES[c.excludeWeekday]) + '</span>' : '';
+    var courseDiffHtml = (c.difficulty && c.difficulty !== "normal") ? ' <span class="tag diff-' + esc(c.difficulty) + '">' + DIFFICULTY_LABELS[c.difficulty] + '</span>' : '';
     var flashCount = getFlashcards(c.id).length;
 
     html += '' +
       '<article class="course">' +
         '<div class="course-head">' +
           '<div>' +
-            '<div class="title"><strong>' + esc(c.name) + '</strong> <span class="tag subject">' + esc(c.subject) + '</span>' + excludeHtml + ' ' + linkHtml + '</div>' +
+            '<div class="title"><strong>' + esc(c.name) + '</strong> <span class="tag subject">' + esc(c.subject) + '</span>' + courseDiffHtml + excludeHtml + ' ' + linkHtml + '</div>' +
             '<div class="sub small muted">J0 : ' + formatDate(c.start) + ' · ' + doneCount + '/' + c.schedule.length + ' validées</div>' +
           '</div>' +
           '<div class="actions">' +
@@ -2929,7 +3080,7 @@ function renderAll(){
   }
 
   if (!html && ordered.length > 0){
-    html = '<div class="empty">Aucun cours trouvé pour cette matière.</div>';
+    html = '<div class="empty">Aucun cours ne correspond à ces filtres.</div>';
   }
 
   box.innerHTML = html;
@@ -3623,8 +3774,8 @@ function importFlashcardsFile(file){
    ========================================================================== */
 function onFormSubmit(ev){
   ev.preventDefault();
-  var name = el("courseName"), subj = el("courseSubject"), link = el("courseLink"), start = el("courseStart"), exclude = el("courseExclude"), duration = el("courseDuration");
-  var c = addCourse(name ? name.value : "", subj ? subj.value : "", link ? link.value : "", start ? start.value : "", exclude ? exclude.value : "", duration ? duration.value : "");
+  var name = el("courseName"), subj = el("courseSubject"), link = el("courseLink"), start = el("courseStart"), exclude = el("courseExclude"), duration = el("courseDuration"), difficulty = el("courseDifficulty");
+  var c = addCourse(name ? name.value : "", subj ? subj.value : "", link ? link.value : "", start ? start.value : "", exclude ? exclude.value : "", duration ? duration.value : "", difficulty ? difficulty.value : "normal");
   if (!c){ toast("Vérifie le nom du cours et la date (J0)."); return; }
   var due = dueOn(todayISO()).length;
   var excludeMsg = (c.excludeWeekday !== null && c.excludeWeekday !== undefined) ? " (" + WEEKDAY_NAMES[c.excludeWeekday] + " exclu)" : "";
@@ -3634,6 +3785,7 @@ function onFormSubmit(ev){
   if (link) link.value = "";
   if (exclude) exclude.value = "";
   if (duration) duration.value = "";
+  if (difficulty) difficulty.value = "normal";
   render();
   checkDailyNotifications();
 }
@@ -3661,10 +3813,12 @@ function onActionClick(ev){
   } else if (action === "delete"){
     var c = findCourse(id);
     var label = c ? c.name : "ce cours";
-    if (!(typeof confirm === "function" && confirm("Supprimer « " + label + " » et tout son calendrier ?"))) return;
-    removeCourse(id);
-    toast("Cours supprimé.");
-    render();
+    showConfirm("Supprimer « " + label + " » et tout son calendrier ?", { danger: true, okLabel: "Supprimer" }).then(function(ok){
+      if (!ok) return;
+      removeCourse(id);
+      toast("Cours supprimé.");
+      render();
+    });
   } else if (action === "delete-event"){
     removeSpecialEvent(id);
     toast("Événement supprimé.");
@@ -3845,6 +3999,22 @@ function bindEvents(){
     });
   }
 
+  var searchInput = el("courseSearchInput");
+  if (searchInput){
+    searchInput.addEventListener("input", function(e){
+      ui.search = e.target.value.trim().toLowerCase();
+      renderAll();
+    });
+  }
+
+  var weeklyGoalInput = el("weeklyGoalInput");
+  if (weeklyGoalInput){
+    weeklyGoalInput.addEventListener("change", function(){
+      setWeeklyGoal(weeklyGoalInput.value);
+      renderWeeklyGoal();
+    });
+  }
+
   var form = el("courseForm");
   if (form) form.addEventListener("submit", onFormSubmit);
 
@@ -3953,8 +4123,9 @@ function bindEvents(){
   }
   if (clearPomoHistoryBtn){
     clearPomoHistoryBtn.addEventListener("click", function(){
-      if (typeof confirm === "function" && !confirm("Effacer tout l'historique Pomodoro ?")) return;
-      clearPomoHistory();
+      showConfirm("Effacer tout l'historique Pomodoro ?", { danger: true, okLabel: "Effacer" }).then(function(ok){
+        if (ok) clearPomoHistory();
+      });
     });
   }
 
@@ -4101,31 +4272,39 @@ function bindEvents(){
       if (t.id === "exportBtn") return exportData();
       if (t.id === "importBtn"){ var f = el("importFile"); if (f) f.click(); return; }
       if (t.id === "clearBtn"){
-        if (typeof confirm === "function" && !confirm("Supprimer TOUS les cours ? Action irréversible.")) return;
-        if (typeof confirm === "function" && confirm("Veux-tu d'abord télécharger une sauvegarde de tes données ?")) exportData();
-        state.courses = [];
-        state.events = [];
-        state.flashcards = {};
-        render();
-        if (currentUser){
-          Promise.all([
-            supabase.from("courses").delete().eq("user_id", currentUser.id),
-            supabase.from("events").delete().eq("user_id", currentUser.id),
-            supabase.from("flashcards").delete().eq("user_id", currentUser.id).catch(function(){ return null; })
-          ]).catch(function(){ toast("Échec de la suppression."); });
-        }
-        toast("Tout a été supprimé."); return;
+        showConfirm("Supprimer TOUS les cours ? Action irréversible.", { danger: true, okLabel: "Tout supprimer" }).then(function(ok){
+          if (!ok) return;
+          showConfirm("Veux-tu d'abord télécharger une sauvegarde de tes données ?", { okLabel: "Télécharger" }).then(function(backup){
+            if (backup) exportData();
+            state.courses = [];
+            state.events = [];
+            state.flashcards = {};
+            render();
+            if (currentUser){
+              Promise.all([
+                supabase.from("courses").delete().eq("user_id", currentUser.id),
+                supabase.from("events").delete().eq("user_id", currentUser.id),
+                supabase.from("flashcards").delete().eq("user_id", currentUser.id).catch(function(){ return null; })
+              ]).catch(function(){ toast("Échec de la suppression."); });
+            }
+            toast("Tout a été supprimé.");
+          });
+        });
+        return;
       }
       if (t.id === "resetDoneBtn"){
-        if (typeof confirm === "function" && !confirm("Décocher TOUTES les révisions déjà validées ?")) return;
-        for (var i = 0; i < state.courses.length; i++){
-          for (var j = 0; j < state.courses[i].schedule.length; j++){
-            state.courses[i].schedule[j].done = false;
-            state.courses[i].schedule[j].doneAt = null;
+        showConfirm("Décocher TOUTES les révisions déjà validées ?", { danger: true, okLabel: "Décocher tout" }).then(function(ok){
+          if (!ok) return;
+          for (var i = 0; i < state.courses.length; i++){
+            for (var j = 0; j < state.courses[i].schedule.length; j++){
+              state.courses[i].schedule[j].done = false;
+              state.courses[i].schedule[j].doneAt = null;
+            }
+            dbUpsertCourse(state.courses[i]);
           }
-          dbUpsertCourse(state.courses[i]);
-        }
-        render(); toast("Toutes les révisions sont redevenues à faire."); return;
+          render(); toast("Toutes les révisions sont redevenues à faire.");
+        });
+        return;
       }
     }
   });
@@ -4398,16 +4577,6 @@ function bindVacationUI(){
       var t = ev.target;
       if(t && t.getAttribute && t.getAttribute("data-vacation-action") === "resume") resumeVacationFlow();
     });
-    document.addEventListener("keydown", function(e){
-      if(e.key !== "Escape") return;
-      var menu = el("sideMenu"), ov = el("sideMenuOverlay");
-      if(menu && menu.classList.contains("open")){
-        menu.classList.remove("open");
-        if(ov){ ov.classList.remove("show"); setTimeout(function(){ ov.classList.add("hide"); }, 300); }
-      }
-      var m = el("vacationModal");
-      if(m && !m.classList.contains("hide")) m.classList.add("hide");
-    });
   }
   if(typeof setInterval === "function"){
     setInterval(function(){ if(checkVacationAutoEnd()) render(); }, 60000);
@@ -4427,6 +4596,8 @@ function openCourseEditModal(id){
   el("editCourseStart").value = c.start;
   el("editCourseExclude").value = (c.excludeWeekday === null || c.excludeWeekday === undefined) ? "" : String(c.excludeWeekday);
   el("editCourseDuration").value = c.durationMin || getCourseDuration(c.id);
+  var diffSel = el("editCourseDifficulty");
+  if (diffSel) diffSel.value = c.difficulty || getCourseDifficulty(c.id);
   el("courseEditModal").classList.remove("hide");
 }
 
@@ -4449,6 +4620,9 @@ function saveCourseEdit(){
   var dur = parseInt(el("editCourseDuration").value, 10);
   c.durationMin = (!isNaN(dur) && dur > 0) ? Math.min(600, dur) : 15;
   setCourseDuration(c.id, c.durationMin);
+  var diffSel = el("editCourseDifficulty");
+  c.difficulty = diffSel ? diffSel.value : (c.difficulty || "normal");
+  setCourseDifficulty(c.id, c.difficulty);
 
   if (scheduleChanged){
     // On recalcule les dates à partir du nouveau J0 en conservant ce qui est validé
@@ -4476,13 +4650,6 @@ function bindExtraUI(){
   if (cancelBtn && modal) cancelBtn.addEventListener("click", function(){ modal.classList.add("hide"); });
   if (saveBtn) saveBtn.addEventListener("click", saveCourseEdit);
 
-  if (typeof document !== "undefined"){
-    document.addEventListener("keydown", function(e){
-      if (e.key !== "Escape") return;
-      if (modal && !modal.classList.contains("hide")) modal.classList.add("hide");
-    });
-  }
-
   // Retour du réseau : on rejoue les écritures mises de côté
   if (typeof window !== "undefined"){
     window.addEventListener("online", function(){ renderSyncStatus(); flushQueue(); });
@@ -4493,9 +4660,41 @@ function bindExtraUI(){
   }
 }
 
+/* Fermeture générique de toute modale : clic sur le fond sombre, ou touche Échap.
+   Chaque .modal-overlay porte data-close="<idDuBoutonFermer>" pour rejouer le même
+   bouton que celui déjà branché (et donc ses éventuels effets de bord). */
+function setupModalDismissal(){
+  if (typeof document === "undefined") return;
+
+  function closeOverlay(overlay){
+    var closeId = overlay.getAttribute("data-close");
+    var btn = closeId ? el(closeId) : null;
+    if (btn) btn.click(); else overlay.classList.add("hide");
+  }
+
+  document.addEventListener("click", function(e){
+    if (e.target && e.target.classList && e.target.classList.contains("modal-overlay")){
+      closeOverlay(e.target);
+    }
+  });
+
+  document.addEventListener("keydown", function(e){
+    if (e.key !== "Escape") return;
+    var overlays = document.querySelectorAll(".modal-overlay:not(.hide)");
+    for (var i = 0; i < overlays.length; i++) closeOverlay(overlays[i]);
+
+    var menu = el("sideMenu"), ov = el("sideMenuOverlay");
+    if (menu && menu.classList.contains("open")){
+      menu.classList.remove("open");
+      if (ov){ ov.classList.remove("show"); setTimeout(function(){ ov.classList.add("hide"); }, 300); }
+    }
+  });
+}
+
 loadVacation();
 bindVacationUI();
 bindExtraUI();
+setupModalDismissal();
 renderVacation();
 
 init();
