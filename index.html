@@ -146,34 +146,93 @@
   .btn.danger{color:var(--danger);border-color:color-mix(in srgb, var(--danger) 35%, var(--line))}
   .btn.danger:hover{background:var(--danger-bg)}
 
-  /* ============ Side Menu ============ */
-  .side-menu-overlay {
-    position: fixed; inset: 0; background: rgba(10,12,30,0.55); backdrop-filter: blur(2px); z-index: 1040;
-    opacity: 0; transition: opacity 0.3s ease;
+  /* ============ Side Menu (refonte) ============ */
+  .side-menu-overlay{
+    position:fixed;inset:0;background:rgba(10,12,30,.55);backdrop-filter:blur(3px);z-index:1040;
+    opacity:0;transition:opacity .3s ease;
   }
-  .side-menu-overlay.show { opacity: 1; }
+  .side-menu-overlay.show{opacity:1}
 
-  .side-menu {
-    position: fixed; top: 0; left: 0; bottom: 0; width: 290px; max-width: 85vw;
-    background: var(--card); border-right: 1px solid var(--line);
-    z-index: 1050; transform: translateX(-100%); transition: transform 0.3s cubic-bezier(.4,0,.2,1);
-    display: flex; flex-direction: column; box-shadow: var(--shadow-lg);
+  .side-menu{
+    position:fixed;top:0;left:0;bottom:0;width:308px;max-width:86vw;
+    background:linear-gradient(180deg, color-mix(in srgb, var(--brand) 8%, var(--card)), var(--card) 210px);
+    border-right:1px solid var(--line);
+    z-index:1050;transform:translateX(-100%);transition:transform .32s cubic-bezier(.4,0,.2,1);
+    display:flex;flex-direction:column;box-shadow:var(--shadow-lg);
   }
-  .side-menu.open { transform: translateX(0); }
+  .side-menu.open{transform:translateX(0)}
 
-  .side-menu-header {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 18px 18px 16px; border-bottom: 1px solid var(--line);
+  .side-menu-header{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:18px 16px 12px}
+  .side-menu-header .menu-brand{display:flex;align-items:center;gap:10px;font-family:var(--font-display);font-weight:800;font-size:1rem}
+  .side-menu-header .logo{width:34px;height:34px;border-radius:11px;font-size:.85rem}
+
+  .menu-user{
+    display:flex;align-items:center;gap:11px;margin:0 16px 12px;padding:10px 12px;
+    border:1px solid var(--line);border-radius:14px;background:var(--card-soft);
   }
-  .side-menu-content {
-    padding: 16px; display: flex; flex-direction: column; gap: 8px; overflow-y: auto;
+  .menu-avatar{
+    width:36px;height:36px;border-radius:50%;flex:none;display:grid;place-items:center;
+    background:linear-gradient(135deg,var(--brand),var(--brand2));color:#fff;
+    font-weight:800;font-family:var(--font-display);
   }
-  .menu-btn {
-    width: 100%; text-align: left; display: flex; justify-content: flex-start;
-    padding: 11px 14px; border-radius: 11px;
+  .menu-user-meta{min-width:0}
+  .menu-user-role{font-size:.66rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+
+  .side-menu-content{padding:0 14px 10px;display:flex;flex-direction:column;gap:4px;overflow-y:auto;flex:1}
+  .menu-section-label{
+    font-size:.66rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);
+    margin:14px 0 4px;padding-left:8px;
   }
-  .menu-divider {
-    border: none; border-top: 1px solid var(--line); margin: 8px 0;
+  .side-menu-content .menu-section-label:first-child{margin-top:2px}
+
+  .menu-btn{
+    width:100%;text-align:left;display:flex;align-items:center;justify-content:flex-start;gap:11px;
+    padding:10px 11px;border-radius:12px;border-color:transparent;background:transparent;
+    font-weight:600;font-size:.93rem;box-shadow:none;
+  }
+  .menu-btn:hover{background:var(--card-soft);border-color:var(--line);transform:none;filter:none;box-shadow:none}
+  .menu-btn:active{transform:scale(.99)}
+  .menu-btn[disabled]{opacity:.6;cursor:default}
+  .menu-btn.primary{
+    background:linear-gradient(135deg,var(--brand),color-mix(in srgb,var(--brand) 70%,var(--brand2)));
+    color:var(--brand-ink);border-color:transparent;
+  }
+  .menu-btn.primary:hover{filter:brightness(1.05);border-color:transparent}
+  /* Les libellés/icônes ne doivent jamais intercepter le clic (boutons gérés par délégation) */
+  .menu-btn > span{pointer-events:none}
+  .menu-icon{
+    flex:none;width:30px;height:30px;border-radius:9px;display:grid;place-items:center;
+    background:var(--brand-soft);font-size:.95rem;line-height:1;
+  }
+  .menu-btn.primary .menu-icon{background:rgba(255,255,255,.22)}
+  .menu-label{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .menu-pill{
+    flex:none;font-size:.64rem;font-weight:800;padding:.15rem .5rem;border-radius:999px;
+    background:var(--line);color:var(--muted);letter-spacing:.02em;
+  }
+  .menu-pill.warn{background:var(--warn-bg);color:var(--warn)}
+  .side-menu-footer{padding:10px 14px 18px;border-top:1px solid var(--line)}
+  .menu-divider{border:none;border-top:1px solid var(--line);margin:8px 0}
+
+  /* ============ Mode vacances / pause ============ */
+  .vacation-banner{
+    display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+    border:1px solid transparent;border-radius:var(--radius);
+    background:linear-gradient(135deg,var(--warn-bg),color-mix(in srgb,var(--warn-bg) 50%,var(--card)));
+    color:var(--warn);padding:14px 16px;margin-bottom:18px;box-shadow:var(--shadow);
+  }
+  .vacation-banner .vac-emoji{font-size:1.6rem;line-height:1}
+  .vacation-banner .vac-text{flex:1;min-width:180px}
+  .vacation-banner .vac-title{font-family:var(--font-display);font-weight:800;font-size:1rem}
+  .vacation-banner .vac-sub{font-size:.85rem;font-weight:600;opacity:.92}
+  .vac-modal-card{max-width:440px;text-align:left}
+  .vac-info{
+    border:1px solid var(--line);background:var(--card-soft);border-radius:var(--radius-sm);
+    padding:12px 14px;font-size:.85rem;color:var(--muted);line-height:1.55;
+  }
+  .vac-active-box{
+    background:var(--warn-bg);color:var(--warn);border-radius:var(--radius-sm);
+    padding:14px;font-weight:700;margin-bottom:14px;line-height:1.5;
   }
 
   /* ============ Form ============ */
@@ -651,28 +710,55 @@
 
   <!-- ============ MENU LATÉRAL ============ -->
   <div id="sideMenuOverlay" class="side-menu-overlay hide"></div>
-  <nav id="sideMenu" class="side-menu">
+  <nav id="sideMenu" class="side-menu" aria-label="Menu principal">
     <div class="side-menu-header">
-      <div style="font-weight: bold; font-size: 1.1rem;">Menu</div>
-      <button id="closeMenuBtn" class="btn ghost small">✕</button>
+      <div class="menu-brand"><div class="logo" aria-hidden="true">J+</div><span>Méthode des J</span></div>
+      <button id="closeMenuBtn" class="btn ghost small" aria-label="Fermer le menu">✕</button>
     </div>
+
+    <div class="menu-user">
+      <div class="menu-avatar" id="userAvatar" aria-hidden="true">?</div>
+      <div class="menu-user-meta">
+        <div class="menu-user-role">Connecté</div>
+        <span id="userEmail" class="small muted user-email"></span>
+      </div>
+    </div>
+
     <div class="side-menu-content">
-      <span id="userEmail" class="small muted user-email" style="display:block; padding: 0 8px; margin-bottom: 4px; font-weight: 600;"></span>
-      <hr class="menu-divider">
-      <button id="themeBtn" class="btn ghost menu-btn">🌓 Auto</button>
-      <button id="openEventModalBtn" class="btn primary menu-btn">+ Événement spécial</button>
-      <button id="openPomoBtn" class="btn menu-btn">🍅 Pomodoro</button>
-      <button id="openDailyRecapBtn" class="btn ghost menu-btn">📅 Récap du jour</button>
-      <button id="openSprintBtn" class="btn ghost menu-btn">🏁 Sprint avant contrôle</button>
-      <button id="openMethodInfoBtn" class="btn ghost menu-btn">📖 Explication Méthode J</button>
-      <button id="notifBtn" class="btn menu-btn">🔔 Activer les rappels</button>
-      <button id="exportBtn" class="btn ghost menu-btn" title="Télécharger mes données">⬇ Exporter</button>
-      <button id="importBtn" class="btn ghost menu-btn" title="Charger un fichier exporté">⬆ Importer</button>
-      <button id="installBtn" class="btn ghost menu-btn hide">📲 Installer l'app</button>
-      <hr class="menu-divider">
-      <button id="logoutBtn" class="btn ghost menu-btn danger" style="color: var(--danger);">Déconnexion</button>
+      <div class="menu-section-label">Travailler</div>
+      <button id="openPomoBtn" class="btn menu-btn"><span class="menu-icon">🍅</span><span class="menu-label">Pomodoro</span></button>
+      <button id="openSprintBtn" class="btn menu-btn"><span class="menu-icon">🏁</span><span class="menu-label">Sprint avant contrôle</span></button>
+      <button id="openDailyRecapBtn" class="btn menu-btn"><span class="menu-icon">📅</span><span class="menu-label">Récap du jour</span></button>
+
+      <div class="menu-section-label">Planning</div>
+      <button id="openEventModalBtn" class="btn menu-btn primary"><span class="menu-icon">📌</span><span class="menu-label">Ajouter un événement</span></button>
+      <button id="openVacationBtn" class="btn menu-btn"><span class="menu-icon">🌴</span><span class="menu-label">Mode vacances / pause</span><span class="menu-pill" id="vacationPill">Off</span></button>
+      <button id="notifBtn" class="btn menu-btn"><span class="menu-icon">🔔</span><span class="menu-label">Activer les rappels</span></button>
+
+      <div class="menu-section-label">Mon espace</div>
+      <button id="themeBtn" class="btn menu-btn"><span class="menu-icon">🌓</span><span class="menu-label">Thème auto</span></button>
+      <button id="exportBtn" class="btn menu-btn" title="Télécharger mes données"><span class="menu-icon">⬇️</span><span class="menu-label">Exporter mes données</span></button>
+      <button id="importBtn" class="btn menu-btn" title="Charger un fichier exporté"><span class="menu-icon">⬆️</span><span class="menu-label">Importer un fichier</span></button>
+      <button id="installBtn" class="btn menu-btn hide"><span class="menu-icon">📲</span><span class="menu-label">Installer l'application</span></button>
+
+      <div class="menu-section-label">Aide</div>
+      <button id="openMethodInfoBtn" class="btn menu-btn"><span class="menu-icon">📖</span><span class="menu-label">Explication Méthode J</span></button>
+    </div>
+
+    <div class="side-menu-footer">
+      <button id="logoutBtn" class="btn menu-btn" style="color:var(--danger)"><span class="menu-icon" style="background:var(--danger-bg)">⏻</span><span class="menu-label">Déconnexion</span></button>
     </div>
   </nav>
+
+  <!-- Bandeau « mode vacances » -->
+  <div id="vacationBanner" class="vacation-banner hide">
+    <span class="vac-emoji" aria-hidden="true">🌴</span>
+    <div class="vac-text">
+      <div class="vac-title">Mode vacances activé</div>
+      <div class="vac-sub" id="vacationBannerSub">—</div>
+    </div>
+    <button id="vacationResumeBtn" class="btn small">▶ Reprendre maintenant</button>
+  </div>
 
   <p id="iosHint" class="small muted hide" style="margin:-8px 0 16px">
     📱 Sur iPhone/iPad : ouvre ce site dans <strong>Safari</strong>, appuie sur <strong>Partager</strong> puis
@@ -777,7 +863,7 @@
     </div>
   </details>
 
-  <!-- ============ Activité (heatmaps façon GitHub) — révisions & Pomodoro, dans un menu déroulant ============ -->
+  <!-- ============ Activité (heatmaps façon GitHub) — révisions & Pomodoro ============ -->
   <details class="card accordion" id="activityAccordion">
     <summary class="accordion-summary" aria-labelledby="hActivity">
       <h2 id="hActivity">🔥 Activité (révisions & Pomodoro)</h2>
@@ -878,6 +964,89 @@
         <button type="submit" class="btn primary">Enregistrer</button>
       </div>
     </form>
+  </div>
+</div>
+
+<!-- Modal Mode vacances / pause -->
+<div id="vacationModal" class="modal-overlay hide" aria-hidden="true">
+  <div class="modal-card vac-modal-card">
+    <div class="section-head" style="margin-bottom:8px">
+      <h2>🌴 Mode vacances / pause</h2>
+      <button id="closeVacationModal" class="btn ghost small">✕</button>
+    </div>
+
+    <div id="vacationInactiveView">
+      <p class="muted" style="margin-top:0">Suspends tes rappels le temps des vacances. À la reprise, toutes les révisions <strong>non faites</strong> sont automatiquement décalées du nombre de jours de pause : tu gardes ton planning et l'espacement entre les J.</p>
+      <div style="margin-bottom:14px">
+        <label for="vacationEndDate">Date de reprise prévue (optionnel)</label>
+        <input id="vacationEndDate" type="date">
+        <span class="small muted">Laisse vide pour reprendre manuellement quand tu veux.</span>
+      </div>
+      <div class="vac-info">🔕 Pendant la pause : aucune notification, aucune révision affichée « en retard ».<br>✅ À la reprise : décalage automatique des échéances restantes.<br>📱 Réglage propre à cet appareil (comme les réglages Pomodoro).</div>
+      <div class="form-actions" style="margin-top:16px">
+        <button type="button" id="vacationStartBtn" class="btn primary">🌴 Activer le mode vacances</button>
+      </div>
+    </div>
+
+    <div id="vacationActiveView" class="hide">
+      <div class="vac-active-box" id="vacationActiveInfo"></div>
+      <div class="vac-info">À la reprise, les révisions encore à faire seront décalées d'autant de jours que la pause a duré (les jours exclus du planning restent respectés).</div>
+      <div class="form-actions" style="margin-top:16px">
+        <button type="button" id="vacationResumeBtn2" class="btn primary">▶ Reprendre les révisions</button>
+        <button type="button" id="vacationCancelBtn" class="btn ghost danger">Annuler la pause (sans décaler)</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Modifier un cours -->
+<div id="courseEditModal" class="modal-overlay hide" aria-hidden="true">
+  <div class="modal-card" style="max-width:460px;text-align:left">
+    <div class="section-head" style="margin-bottom:8px">
+      <h2>✎ Modifier le cours</h2>
+      <button id="closeCourseEditModal" class="btn ghost small">✕</button>
+    </div>
+    <input type="hidden" id="editCourseId" value="">
+    <div style="display:grid;gap:12px">
+      <div>
+        <label for="editCourseName">Nom du cours</label>
+        <input id="editCourseName" type="text" maxlength="120">
+      </div>
+      <div>
+        <label for="editCourseSubject">Matière</label>
+        <input id="editCourseSubject" type="text" list="subjectsList" maxlength="60">
+      </div>
+      <div>
+        <label for="editCourseLink">Lien ou ressource</label>
+        <input id="editCourseLink" type="url" maxlength="255">
+      </div>
+      <div>
+        <label for="editCourseStart">Date de début (J0)</label>
+        <input id="editCourseStart" type="date">
+      </div>
+      <div>
+        <label for="editCourseExclude">Jour de la semaine exclu</label>
+        <select id="editCourseExclude">
+          <option value="">Aucun</option>
+          <option value="1">Lundi</option>
+          <option value="2">Mardi</option>
+          <option value="3">Mercredi</option>
+          <option value="4">Jeudi</option>
+          <option value="5">Vendredi</option>
+          <option value="6">Samedi</option>
+          <option value="0">Dimanche</option>
+        </select>
+      </div>
+      <div>
+        <label for="editCourseDuration">Durée estimée par révision (minutes)</label>
+        <input id="editCourseDuration" type="number" min="1" max="600" step="1">
+      </div>
+      <p class="small muted" style="margin:0">Changer la date J0 ou le jour exclu recalcule les échéances J1 → J30 ; les révisions déjà validées restent cochées.</p>
+      <div class="form-actions">
+        <button type="button" id="courseEditSaveBtn" class="btn primary">✓ Enregistrer</button>
+        <button type="button" id="courseEditCancelBtn" class="btn ghost">Annuler</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -1328,13 +1497,17 @@ function dbUpsertFlashcard(courseId, card){
     last_reviewed: card.lastReviewed || null
   }).then(function(res){
     if (res.error) throw res.error;
+    renderSyncStatus();
     return true;
   }).catch(function(e){
     if (isMissingTableError(e)){
       console.warn("Table 'flashcards' introuvable dans Supabase — la carte n'est pas synchronisée.");
     } else {
       console.error("Erreur de sauvegarde de la flashcard:", e);
-      toast("Échec de synchronisation de la carte.");
+      enqueueOp({ k: "flash.upsert", id: card.id, row: {
+        id: card.id, user_id: currentUser.id, course_id: courseId, question: card.q, answer: card.a,
+        level: card.level || 0, due_at: card.due || new Date().toISOString(), last_reviewed: card.lastReviewed || null
+      } });
     }
     return false;
   });
@@ -1342,22 +1515,28 @@ function dbUpsertFlashcard(courseId, card){
 
 function dbDeleteFlashcard(id){
   if (!currentUser) return Promise.resolve(false);
-  return supabase.from("flashcards").delete().eq("id", id).then(function(res){
+  return supabase.from("flashcards").delete().eq("id", id).eq("user_id", currentUser.id).then(function(res){
     if (res.error) throw res.error;
     return true;
   }).catch(function(e){
-    if (!isMissingTableError(e)){ console.error("Erreur de suppression de la flashcard:", e); toast("Échec de suppression de la carte."); }
+    if (!isMissingTableError(e)){
+      console.error("Erreur de suppression de la flashcard:", e);
+      enqueueOp({ k: "flash.delete", id: id });
+    }
     return false;
   });
 }
 
 function dbDeleteFlashcardsForCourse(courseId){
   if (!currentUser) return Promise.resolve(false);
-  return supabase.from("flashcards").delete().eq("course_id", courseId).then(function(res){
+  return supabase.from("flashcards").delete().eq("course_id", courseId).eq("user_id", currentUser.id).then(function(res){
     if (res.error) throw res.error;
     return true;
   }).catch(function(e){
-    if (!isMissingTableError(e)) console.error("Erreur de suppression des flashcards du cours:", e);
+    if (!isMissingTableError(e)){
+      console.error("Erreur de suppression des flashcards du cours:", e);
+      enqueueOp({ k: "flash.deleteCourse", id: courseId });
+    }
     return false;
   });
 }
@@ -1548,7 +1727,7 @@ function computeStats(){
       if (r.done) weekDone++;
     }
   }
-  
+
   var rate = list.length > 0 ? Math.round((done / list.length) * 100) : 0;
   var weekRate = weekTotal > 0 ? Math.round((weekDone / weekTotal) * 100) : 0;
 
@@ -1592,33 +1771,18 @@ function activityByDay(){
   return map;
 }
 
-/* Nombre de jours consécutifs (jusqu'à aujourd'hui) sans révision manquée */
+/* Série : nombre de jours consécutifs (jusqu'à aujourd'hui) avec au moins une
+   révision validée. Une échéance oubliée dans le passé ne casse plus la série
+   indéfiniment — seule une journée entière sans rien travailler l'interrompt. */
 function computeStreak(){
-  var t = todayISO();
-  var reviewsByDate = {};
-  for (var i = 0; i < state.courses.length; i++){
-    var c = state.courses[i];
-    for (var j = 0; j < c.schedule.length; j++){
-      var r = c.schedule[j];
-      if (r.offset === 0) continue;
-      if (!reviewsByDate[r.date]) reviewsByDate[r.date] = [];
-      reviewsByDate[r.date].push(r);
-    }
-  }
-  var cursor = t;
-  // Si des révisions du jour restent à faire, on part d'hier pour ne pas casser la série en cours.
-  var todays = reviewsByDate[t] || [];
-  var todayIncomplete = todays.some(function(r){ return !r.done; });
-  if (todayIncomplete) cursor = addDays(t, -1);
-
+  var counts = activityByDay();
+  var cursor = todayISO();
+  // La journée n'est pas finie : si rien n'a encore été fait aujourd'hui, on part d'hier.
+  if (!counts[cursor]) cursor = addDays(cursor, -1);
   var streak = 0;
-  for (var guard = 0; guard < 365; guard++){
-    var revs = reviewsByDate[cursor];
-    if (revs && revs.length){
-      var allDone = revs.every(function(r){ return r.done; });
-      if (!allDone) break;
-      streak++;
-    }
+  for (var guard = 0; guard < 400; guard++){
+    if (!counts[cursor]) break;
+    streak++;
     cursor = addDays(cursor, -1);
   }
   return streak;
@@ -1695,39 +1859,175 @@ function loadUserData(){
     };
   }).catch(function(e){
     console.error("Erreur de chargement:", e);
+    var cached = loadLocalCache();
+    if (cached){
+      setSyncStatus("📴 Mode hors ligne — données locales (dernière synchro réussie).");
+      toast("Hors ligne : tes données locales sont affichées.");
+      return cached;
+    }
     setSyncStatus("⚠️ Synchronisation momentanément indisponible.");
     toast("Impossible de charger vos révisions.");
     return defaultState();
   });
 }
 
-function dbUpsertCourse(course){
-  if (!currentUser) return Promise.resolve(false);
-  return supabase.from("courses").upsert(courseToRow(course)).then(function(res){
-    if (res.error) throw res.error;
-    setSyncStatus("✅ Données synchronisées.");
+/* --------------------------------------------------------------------------
+   Cache local & file d'attente hors-ligne
+   Toute écriture qui échoue (réseau coupé, Supabase indisponible) est mise de
+   côté dans le navigateur puis rejouée automatiquement au retour du réseau.
+   L'état complet est aussi mis en cache pour rester utilisable sans connexion.
+   -------------------------------------------------------------------------- */
+var pendingOps = [];
+var flushing = false;
+
+function cacheKey(){ return currentUser ? "cacheState:" + currentUser.id : null; }
+function queueKey(){ return currentUser ? "pendingOps:" + currentUser.id : null; }
+
+function saveLocalCache(){
+  var k = cacheKey();
+  if (!k) return;
+  try {
+    localStorage.setItem(k, JSON.stringify({
+      courses: state.courses, events: state.events, flashcards: state.flashcards,
+      savedAt: new Date().toISOString()
+    }));
+  } catch (e) {}
+}
+
+function loadLocalCache(){
+  var k = cacheKey();
+  if (!k) return null;
+  try {
+    var raw = localStorage.getItem(k);
+    if (!raw) return null;
+    var d = JSON.parse(raw);
+    if (!d || !Array.isArray(d.courses)) return null;
+    return {
+      courses: d.courses,
+      events: Array.isArray(d.events) ? d.events : [],
+      flashcards: (d.flashcards && typeof d.flashcards === "object") ? d.flashcards : {}
+    };
+  } catch (e) { return null; }
+}
+
+function loadQueue(){
+  pendingOps = [];
+  var k = queueKey();
+  if (!k) return;
+  try {
+    var arr = JSON.parse(localStorage.getItem(k) || "[]");
+    if (Array.isArray(arr)) pendingOps = arr;
+  } catch (e) {}
+}
+
+function saveQueue(){
+  var k = queueKey();
+  if (!k) return;
+  try { localStorage.setItem(k, JSON.stringify(pendingOps)); } catch (e) {}
+}
+
+function enqueueOp(op){
+  // Une seule écriture en attente par objet : la plus récente remplace la précédente
+  if (op.id) pendingOps = pendingOps.filter(function(o){ return !(o.k === op.k && o.id === op.id); });
+  op.at = new Date().toISOString();
+  pendingOps.push(op);
+  saveQueue();
+  renderSyncStatus();
+}
+
+function isOnline(){ return typeof navigator === "undefined" || navigator.onLine !== false; }
+
+function runOp(op){
+  if (!currentUser) return Promise.resolve({ error: null });
+  switch (op.k){
+    case "course.upsert": return supabase.from("courses").upsert(op.row);
+    case "course.delete": return supabase.from("courses").delete().eq("id", op.id).eq("user_id", currentUser.id);
+    case "event.insert":  return supabase.from("events").insert(op.row);
+    case "event.delete":  return supabase.from("events").delete().eq("id", op.id).eq("user_id", currentUser.id);
+    case "flash.upsert":  return supabase.from("flashcards").upsert(op.row);
+    case "flash.delete":  return supabase.from("flashcards").delete().eq("id", op.id).eq("user_id", currentUser.id);
+    case "flash.deleteCourse": return supabase.from("flashcards").delete().eq("course_id", op.id).eq("user_id", currentUser.id);
+    case "pomo.insert":   return supabase.from("pomodoro_history").insert(op.row);
+    default: return Promise.resolve({ error: null });
+  }
+}
+
+function flushQueue(){
+  if (flushing || !currentUser || !pendingOps.length || !isOnline()) return Promise.resolve(false);
+  flushing = true;
+  var op = pendingOps[0];
+  var wasPending = pendingOps.length;
+  return Promise.resolve(runOp(op)).then(function(res){
+    if (res && res.error) throw res.error;
+    pendingOps.shift();
+    saveQueue();
+    flushing = false;
+    renderSyncStatus();
+    if (pendingOps.length) return flushQueue();
+    if (wasPending) toast("✅ Modifications hors-ligne synchronisées.");
     return true;
-  }).catch(function(e){ console.error("Erreur sauvegarde:", e); toast("Échec de synchronisation."); return false; });
+  }).catch(function(){
+    flushing = false;
+    renderSyncStatus();
+    return false;
+  });
+}
+
+function renderSyncStatus(){
+  var n = pendingOps.length;
+  if (!isOnline()){
+    setSyncStatus(n
+      ? "📴 Hors ligne — " + n + " modification(s) en attente."
+      : "📴 Hors ligne — tes modifications seront synchronisées au retour du réseau.");
+  } else if (n){
+    setSyncStatus("⏳ " + n + " modification(s) en attente de synchronisation…");
+  } else {
+    setSyncStatus("✅ Données synchronisées.");
+  }
+}
+
+function dbUpsertCourse(course){
+  saveLocalCache();
+  if (!currentUser) return Promise.resolve(false);
+  var row = courseToRow(course);
+  return supabase.from("courses").upsert(row).then(function(res){
+    if (res.error) throw res.error;
+    renderSyncStatus();
+    return true;
+  }).catch(function(e){
+    console.error("Erreur sauvegarde:", e);
+    enqueueOp({ k: "course.upsert", id: course.id, row: row });
+    return false;
+  });
 }
 
 function dbDeleteCourse(id){
+  saveLocalCache();
   if (!currentUser) return Promise.resolve(false);
-  return supabase.from("courses").delete().eq("id", id).then(function(res){
+  return supabase.from("courses").delete().eq("id", id).eq("user_id", currentUser.id).then(function(res){
     if (res.error) throw res.error;
+    renderSyncStatus();
     return true;
-  }).catch(function(e){ console.error("Erreur suppression:", e); toast("Échec de la suppression."); return false; });
+  }).catch(function(e){
+    console.error("Erreur suppression:", e);
+    enqueueOp({ k: "course.delete", id: id });
+    return false;
+  });
 }
 function dbSaveEvent(event){
+  saveLocalCache();
   if (!currentUser) return Promise.resolve(false);
-  return supabase.from("events").insert({ id: event.id, user_id: currentUser.id, name: event.name, event_date: event.date })
-    .then(function(res){ if (res.error) throw res.error; return true; })
-    .catch(function(){ toast("Échec de synchronisation de l’événement."); return false; });
+  var row = { id: event.id, user_id: currentUser.id, name: event.name, event_date: event.date };
+  return supabase.from("events").insert(row)
+    .then(function(res){ if (res.error) throw res.error; renderSyncStatus(); return true; })
+    .catch(function(){ enqueueOp({ k: "event.insert", id: event.id, row: row }); return false; });
 }
 function dbDeleteEvent(id){
+  saveLocalCache();
   if (!currentUser) return Promise.resolve(false);
-  return supabase.from("events").delete().eq("id", id)
-    .then(function(res){ if (res.error) throw res.error; return true; })
-    .catch(function(){ toast("Échec de suppression de l’événement."); return false; });
+  return supabase.from("events").delete().eq("id", id).eq("user_id", currentUser.id)
+    .then(function(res){ if (res.error) throw res.error; renderSyncStatus(); return true; })
+    .catch(function(){ enqueueOp({ k: "event.delete", id: id }); return false; });
 }
 
 /* ==========================================================================
@@ -1875,18 +2175,19 @@ function dbLoadPomoHistory(){
 
 function dbInsertPomoHistory(entry){
   if (!currentUser) return Promise.resolve(false);
-  return supabase.from("pomodoro_history").insert({
+  var row = {
     user_id: currentUser.id,
     mode: entry.mode,
     minutes: entry.minutes,
     title: entry.title || null,
     ended_at: entry.endedAt
-  }).then(function(res){
+  };
+  return supabase.from("pomodoro_history").insert(row).then(function(res){
     if (res.error) throw res.error;
     return true;
   }).catch(function(e){
     console.error("Erreur de sauvegarde de l'historique Pomodoro:", e);
-    toast("Échec de synchronisation de l'historique Pomodoro.");
+    enqueueOp({ k: "pomo.insert", id: entry.endedAt, row: row });
     return false;
   });
 }
@@ -2117,9 +2418,7 @@ function pomoStopInterval(){
 
 // Recalcule le temps restant à partir de l'horodatage de fin (endAt) plutôt que
 // de décrémenter seconde par seconde : ça évite toute dérive quand l'onglet est
-// en arrière-plan, l'écran verrouillé ou le minuteur ralenti par le navigateur,
-// et ça permet de bien rattraper (et faire sonner) la fin de session même après
-// une longue mise en veille.
+// en arrière-plan, l'écran verrouillé ou le minuteur ralenti par le navigateur.
 function pomoSyncRemaining(){
   if (!pomo.running || !pomo.endAt) return pomo.remaining;
   return Math.round((pomo.endAt - Date.now()) / 1000);
@@ -2228,9 +2527,7 @@ function stopPomo(){
 }
 
 // Recale l'affichage (et déclenche la sonnerie si besoin) dès que l'onglet
-// redevient visible ou que l'appareil se réveille : répare le cas où le
-// rappel de fin de session/pause ne se déclenchait pas quand le téléphone
-// était verrouillé ou l'onglet en arrière-plan.
+// redevient visible ou que l'appareil se réveille.
 function pomoCatchUp(){
   if (!pomo.running) return;
   var remaining = pomoSyncRemaining();
@@ -2333,8 +2630,11 @@ async function handleAuthSubmit(ev){
 
 async function enterApp(user){
   showApp(user);
+  loadQueue();
   var fresh = await loadUserData();
   state = fresh;
+  saveLocalCache();
+  flushQueue();
   render();
   checkDailyNotifications();
   pomo.history = await dbLoadPomoHistory();
@@ -2365,7 +2665,7 @@ function renderSubjects(){
   var subjects = subjectsUsed();
   var dl = el("subjectsList");
   if (dl) dl.innerHTML = subjects.map(function(s){ return '<option value="' + esc(s) + '"></option>'; }).join("");
-  
+
   var sf = el("subjectFilter");
   if (sf) {
     var current = ui.subject;
@@ -2378,7 +2678,7 @@ function renderSubjects(){
 function renderStats(){
   var s = computeStats();
   var set = function(id, v){ var n = el(id); if (n) n.textContent = String(v); };
-  
+
   set("statDue", s.due);
   set("statOver", s.overdue);
   set("statDone", s.done);
@@ -2387,7 +2687,7 @@ function renderStats(){
   set("statWeek", s.weekRate + "%");
   set("statStreak", s.streak);
   set("statTimeSpent", formatMinutes(s.totalMinutes));
-  
+
   var pb = el("progressBar");
   if (pb) pb.style.width = s.rate + "%";
 }
@@ -2420,7 +2720,7 @@ function renderActivityHeatmap(){
   }
 }
 
-/* Heatmap façon GitHub, mais pour le temps de Pomodoro cumulé par jour (et non le nombre de révisions) */
+/* Heatmap façon GitHub, mais pour le temps de Pomodoro cumulé par jour */
 function renderPomoHeatmap(){
   var box = el("pomoHeatmap");
   if (!box) return;
@@ -2455,13 +2755,14 @@ function reviewItemHTML(course, review, showDate){
     : (review.date === todayISO() ? '<span class="tag today">Aujourd\'hui</span>'
       : (review.date < todayISO() ? '<span class="tag over">En retard</span>' : '<span class="tag">' + formatDate(review.date) + '</span>'));
 
-  var linkHtml = course.link 
-    ? '<a href="' + esc(course.link) + '" target="_blank" rel="noopener" class="resource-link" title="Ouvrir la ressource">🔗 Lien ressource</a>' 
+  var linkHtml = course.link
+    ? '<a href="' + esc(course.link) + '" target="_blank" rel="noopener" class="resource-link" title="Ouvrir la ressource">🔗 Lien ressource</a>'
     : '';
 
   var buttons = review.done
     ? '<button class="btn small" data-action="undo" data-id="' + course.id + '" data-date="' + review.date + '">↺ Annuler</button>'
-    : '<button class="btn ok small" data-action="done" data-id="' + course.id + '" data-date="' + review.date + '">✓ Fait</button>';
+    : '<button class="btn ok small" data-action="done" data-id="' + course.id + '" data-date="' + review.date + '">✓ Fait</button>' +
+      '<button class="btn small" title="Reporter cette révision au lendemain" data-action="postpone" data-id="' + course.id + '" data-date="' + review.date + '">⏭ +1 j</button>';
 
   return '' +
     '<div class="item ' + cls + '" data-review-card="' + course.id + '-' + review.date + '">' +
@@ -2487,7 +2788,7 @@ function renderToday(){
 
   // 1. Afficher les révisions prévues aujourd'hui
   for (var i = 0; i < due.length; i++) html += reviewItemHTML(due[i].course, due[i].review, false);
-  
+
   // 2. Afficher les révisions en retard
   for (var j = 0; j < late.length; j++) html += reviewItemHTML(late[j].course, late[j].review, true);
 
@@ -2574,7 +2875,7 @@ function renderAll(){
 
   for (var i = 0; i < ordered.length; i++){
     var c = ordered[i];
-    
+
     if (ui.subject !== "all" && c.subject !== ui.subject) continue;
 
     var slots = c.schedule.slice().sort(function(a, b){ return a.offset - b.offset; })
@@ -2615,6 +2916,7 @@ function renderAll(){
           '</div>' +
           '<div class="actions">' +
             '<button class="btn small course-flash-btn" data-action="flashcards" data-id="' + c.id + '">🗂 Flashcards' + (flashCount ? ' · ' + flashCount : '') + '</button>' +
+            '<button class="btn small" data-action="edit" data-id="' + c.id + '">✎ Modifier</button>' +
             '<button class="btn small danger" data-action="delete" data-id="' + c.id + '">Supprimer</button>' +
           '</div>' +
         '</div>' +
@@ -2625,11 +2927,11 @@ function renderAll(){
         '</div>' +
       '</article>';
   }
-  
+
   if (!html && ordered.length > 0){
     html = '<div class="empty">Aucun cours trouvé pour cette matière.</div>';
   }
-  
+
   box.innerHTML = html;
 }
 
@@ -2664,9 +2966,8 @@ function openFlashModal(courseId){
   var course = findCourse(courseId);
   if (!course) return;
   flashState.courseId = courseId;
-  flashState.cards = getFlashcards(courseId).slice().sort(function(a, b){
-    return new Date(a.due || 0) - new Date(b.due || 0);
-  });
+  flashState.onlyDue = true;
+  flashState.cards = flashDeck();
   flashState.index = 0;
   flashState.flipped = false;
   var title = el("flashModalTitle");
@@ -2695,8 +2996,21 @@ function setFlashTab(tab){
   else renderFlashList();
 }
 
+/* Paquet de cartes proposé en révision : par défaut, uniquement celles arrivées
+   à échéance (ou jamais travaillées), les plus en retard en premier. */
+function flashDeck(){
+  var all = getFlashcards(flashState.courseId).slice().sort(function(a, b){
+    return new Date(a.due || 0) - new Date(b.due || 0);
+  });
+  if (!flashState.onlyDue) return all;
+  var now = Date.now();
+  return all.filter(function(c){
+    return !c.lastReviewed || !c.due || new Date(c.due).getTime() <= now;
+  });
+}
+
 function refreshFlashCardsFromStore(){
-  flashState.cards = getFlashcards(flashState.courseId);
+  flashState.cards = flashDeck();
   if (flashState.index >= flashState.cards.length) flashState.index = Math.max(0, flashState.cards.length - 1);
 }
 
@@ -2713,7 +3027,24 @@ function flashDueLabel(card){
 function renderFlashReview(){
   var empty = el("flashReviewEmpty"), body = el("flashReviewBody");
   if (!flashState.cards.length){
-    if (empty) empty.classList.remove("hide");
+    if (empty){
+      var total = getFlashcards(flashState.courseId).length;
+      empty.innerHTML = total
+        ? '🎉 Toutes les cartes de ce cours sont à jour — rien à revoir aujourd\'hui.' +
+          '<div style="margin-top:12px"><button type="button" class="btn small" id="flashReviewAllBtn">Réviser quand même les ' + total + ' cartes</button></div>'
+        : 'Ajoute des cartes question / réponse (onglet « Gérer les cartes ») pour réviser ce cours en mode flashcards.';
+      empty.classList.remove("hide");
+      var reviewAllBtn = el("flashReviewAllBtn");
+      if (reviewAllBtn){
+        reviewAllBtn.addEventListener("click", function(){
+          flashState.onlyDue = false;
+          refreshFlashCardsFromStore();
+          flashState.index = 0;
+          flashState.flipped = false;
+          renderFlashReview();
+        });
+      }
+    }
     if (body) body.classList.add("hide");
     return;
   }
@@ -2727,7 +3058,8 @@ function renderFlashReview(){
   if (back) back.textContent = card.a;
 
   var progress = el("flashProgressLabel");
-  if (progress) progress.textContent = (flashState.index + 1) + " / " + flashState.cards.length;
+  if (progress) progress.textContent = (flashState.index + 1) + " / " + flashState.cards.length +
+    (flashState.onlyDue ? " à revoir" : " (toutes)");
 
   var badge = el("flashMasteryBadge");
   if (badge) badge.textContent = flashDueLabel(card);
@@ -2875,7 +3207,7 @@ function exportFlashcards(){
 }
 
 /* ==========================================================================
-   5quater. RÉCAP DU JOUR — Pomodoro, révisions et flashcards travaillées aujourd'hui
+   5quater. RÉCAP DU JOUR
    ========================================================================== */
 function isDateToday(iso){
   if (!iso) return false;
@@ -2939,7 +3271,7 @@ function renderDailyRecap(){
     '<p class="recap-date">' + esc(dateLabel) + '</p>' +
     '<div class="recap-stats">' +
       '<div class="recap-stat"><span class="recap-icon">🍅</span><div>' +
-        '<b>' + r.pomodoroCount + '</b> ' + (r.pomodoroCount > 1 ? "Pomodoro" : "Pomodoro") +
+        '<b>' + r.pomodoroCount + '</b> Pomodoro' +
         (r.pomodoroMinutes ? ' <span class="muted">(' + r.pomodoroMinutes + ' min)</span>' : '') +
       '</div></div>' +
       '<div class="recap-stat"><span class="recap-icon">📘</span><div>' +
@@ -2954,7 +3286,7 @@ function renderDailyRecap(){
 }
 
 /* ==========================================================================
-   5quinto. SPRINT AVANT CONTRÔLE — planning condensé (méthode des J + Pomodoro + flashcards)
+   5quinto. SPRINT AVANT CONTRÔLE
    ========================================================================== */
 var SPRINT_CHECKPOINT_CANDIDATES = [1, 2, 3, 5, 7, 10, 14, 21, 28];
 
@@ -2972,7 +3304,7 @@ function buildSprintOffsets(daysRemaining){
   offsets.sort(function(a, b){ return a - b; }).forEach(function(o){
     if (!seen[o]){ seen[o] = true; out.push(o); }
   });
-  // On limite à 8 étapes maxi pour ne pas surcharger le planning (on garde J1 + les 7 dernières étapes)
+  // On limite à 8 étapes maxi pour ne pas surcharger le planning
   if (out.length > 8){
     var head = out.slice(0, 1);
     var tail = out.slice(-7).filter(function(o){ return head.indexOf(o) === -1; });
@@ -3125,7 +3457,7 @@ function pickFlashField(item, keys){
 }
 
 // Repli : si aucun nom de clé connu ne correspond, on prend les deux premières valeurs
-// textuelles de l'objet, dans l'ordre — ça couvre les structures JSON imprévues générées par une IA.
+// textuelles de l'objet, dans l'ordre.
 function firstTwoTextValues(item){
   var vals = [], keys = Object.keys(item);
   for (var i = 0; i < keys.length; i++){
@@ -3139,7 +3471,6 @@ function firstTwoTextValues(item){
 }
 
 // Retrouve le tableau de cartes même s'il est imbriqué dans un objet
-// (ex : {"flashcards":[...]}, {"cards":[...]}, {"chapitre":"...", "cartes":[...]})
 function extractFlashArray(data){
   if (Array.isArray(data)) return data;
   if (!data || typeof data !== "object") return null;
@@ -3186,7 +3517,7 @@ function parseFlashcardsFile(text, filename){
   var trimmed = String(text || "").trim();
   var cards = [];
 
-  // 1) Tentative JSON (extension .json ou contenu qui ressemble à du JSON)
+  // 1) Tentative JSON
   if (ext === "json" || trimmed.indexOf("[") === 0 || trimmed.indexOf("{") === 0){
     try {
       var data = JSON.parse(trimmed);
@@ -3206,7 +3537,6 @@ function parseFlashcardsFile(text, filename){
             }
             if (q && a) cards.push({ q: q, a: a });
           } else if (typeof item === "string" && item.trim()){
-            // chaîne isolée : on tente un séparateur courant à l'intérieur
             var sepMatch = item.split(/\s*[:\t;]\s*|\s+-\s+/);
             if (sepMatch.length >= 2 && sepMatch[0].trim() && sepMatch.slice(1).join(" ").trim()){
               cards.push({ q: sepMatch[0].trim(), a: sepMatch.slice(1).join(" ").trim() });
@@ -3214,7 +3544,6 @@ function parseFlashcardsFile(text, filename){
           }
         });
       } else if (data && typeof data === "object" && !Array.isArray(data)){
-        // Dictionnaire plat clé -> valeur (uniquement si toutes les valeurs sont du texte simple)
         var keys = Object.keys(data);
         var flat = keys.length > 0 && keys.every(function(k){ return typeof data[k] === "string" || typeof data[k] === "number"; });
         if (flat){
@@ -3225,10 +3554,10 @@ function parseFlashcardsFile(text, filename){
       }
       cards = cards.filter(function(c){ return !isFlashHeaderPair(c); });
       if (cards.length) return cards;
-    } catch (e){ /* pas du JSON valide : on tente le format ligne par ligne ci-dessous */ }
+    } catch (e){ /* pas du JSON valide : format ligne par ligne ci-dessous */ }
   }
 
-  // 2) Format texte : une carte par ligne (tabulation, point-virgule et virgule gèrent les guillemets CSV)
+  // 2) Format texte : une carte par ligne
   var lines = trimmed.split(/\r\n|\r|\n/);
   lines.forEach(function(line){
     var raw = line.trim();
@@ -3256,7 +3585,6 @@ function parseFlashcardsFile(text, filename){
     }
   });
 
-  // On retire toute ligne d'en-tête résiduelle ("question;réponse"), où qu'elle soit dans le fichier
   cards = cards.filter(function(c){ return !isFlashHeaderPair(c); });
 
   return cards;
@@ -3322,7 +3650,7 @@ function onActionClick(ev){
   if (action === "done"){
     var cardEl = document.querySelector('[data-review-card="' + id + '-' + date + '"]');
     if(cardEl) cardEl.classList.add("just-done");
-    
+
     setReviewDone(id, date, true);
     toast("Révision validée 👍");
     setTimeout(render, 300);
@@ -3341,6 +3669,17 @@ function onActionClick(ev){
     removeSpecialEvent(id);
     toast("Événement supprimé.");
     render();
+  } else if (action === "postpone"){
+    var pc = findCourse(id), pr = findReview(id, date);
+    if (pc && pr && !pr.done){
+      pr.date = skipExcludedWeekday(addDays(pr.date, 1), pc.excludeWeekday);
+      pr.doneAt = null;
+      dbUpsertCourse(pc);
+      toast("Révision reportée au " + formatDate(pr.date) + ".");
+      render();
+    }
+  } else if (action === "edit"){
+    openCourseEditModal(id);
   } else if (action === "flashcards"){
     openFlashModal(id);
   }
@@ -3382,7 +3721,7 @@ function importData(file){
       var courses = (data && Array.isArray(data.courses)) ? data.courses : (Array.isArray(data) ? data : []);
       var events = (data && Array.isArray(data.events)) ? data.events : [];
       var flashcardsData = (data && data.flashcards && typeof data.flashcards === "object" && !Array.isArray(data.flashcards)) ? data.flashcards : {};
-      
+
       var imported = [];
       for (var i = 0; i < courses.length; i++){
         var c = courses[i];
@@ -3403,14 +3742,14 @@ function importData(file){
         state.courses.push(cleanC);
         dbUpsertCourse(cleanC);
 
-        // Ré-associe les flashcards de ce cours (si présentes dans l'export) au nouvel identifiant
+        // Ré-associe les flashcards de ce cours au nouvel identifiant
         if (Array.isArray(flashcardsData[c.id])){
           flashcardsData[c.id].forEach(function(card){
             if (card && card.q && card.a) addFlashcard(cleanC.id, card.q, card.a);
           });
         }
       }
-      
+
       var importedEvents = 0;
       if (events.length > 0){
         if (!Array.isArray(state.events)) state.events = [];
@@ -3435,7 +3774,7 @@ function importData(file){
 
 function bindEvents(){
   if (!hasDOM()) return;
-  
+
   if (typeof window !== "undefined"){
     window.addEventListener("beforeinstallprompt", function(e){
       e.preventDefault();
@@ -3460,8 +3799,8 @@ function bindEvents(){
   function toggleMenu(show) {
     if (show) {
       sideMenuOverlay.classList.remove("hide");
-      setTimeout(function(){ 
-        sideMenu.classList.add("open"); 
+      setTimeout(function(){
+        sideMenu.classList.add("open");
         sideMenuOverlay.classList.add("show");
       }, 10);
     } else {
@@ -3732,7 +4071,7 @@ function bindEvents(){
       updateCourseNotes(courseId, target.value);
     }
   });
-  
+
   document.body.addEventListener("click", function(ev){
     var t = ev.target;
     if (t && t.getAttribute){
@@ -3763,6 +4102,7 @@ function bindEvents(){
       if (t.id === "importBtn"){ var f = el("importFile"); if (f) f.click(); return; }
       if (t.id === "clearBtn"){
         if (typeof confirm === "function" && !confirm("Supprimer TOUS les cours ? Action irréversible.")) return;
+        if (typeof confirm === "function" && confirm("Veux-tu d'abord télécharger une sauvegarde de tes données ?")) exportData();
         state.courses = [];
         state.events = [];
         state.flashcards = {};
@@ -3777,6 +4117,7 @@ function bindEvents(){
         toast("Tout a été supprimé."); return;
       }
       if (t.id === "resetDoneBtn"){
+        if (typeof confirm === "function" && !confirm("Décocher TOUTES les révisions déjà validées ?")) return;
         for (var i = 0; i < state.courses.length; i++){
           for (var j = 0; j < state.courses[i].schedule.length; j++){
             state.courses[i].schedule[j].done = false;
@@ -3788,12 +4129,11 @@ function bindEvents(){
       }
     }
   });
-  
+
   var file = el("importFile");
   if (file) file.addEventListener("change", function(e){ importData(e.target.files && e.target.files[0]); e.target.value = ""; });
 
-  // Rattrape le minuteur Pomodoro (et déclenche le rappel manqué) dès que
-  // l'onglet redevient visible ou que l'appareil se réveille.
+  // Rattrape le minuteur Pomodoro dès que l'onglet redevient visible
   if (typeof document !== "undefined"){
     document.addEventListener("visibilitychange", function(){
       if (document.visibilityState === "visible") pomoCatchUp();
@@ -3813,7 +4153,7 @@ async function init(){
   registerServiceWorker().then(function(reg){
     if (reg && notifPermission() === "granted") registerPeriodicSync(reg);
   });
-  
+
   if (hasDOM()){
     var savedTheme = "auto";
     try { savedTheme = localStorage.getItem("theme") || "auto"; } catch(e){}
@@ -3836,13 +4176,327 @@ async function init(){
     if (event === "logout") showAuth();
     else if (userNow && (!currentUser || userNow.id !== currentUser.id)) enterApp(userNow);
   });
-  
+
   if (typeof setInterval === "function"){
     setInterval(checkDailyNotifications, 60000);
     setInterval(function(){ if (hasDOM()) renderHead(); }, 60000);
     setInterval(function(){ if (ui.theme === "auto") applyTheme("auto"); }, 5 * 60000);
   }
 }
+
+/* ==========================================================================
+   8. MODE VACANCES / PAUSE (+ libellés du menu latéral)
+   ========================================================================== */
+var vacation = { active:false, start:null, end:null };
+
+function loadVacation(){
+  try{
+    var raw = localStorage.getItem("vacationMode");
+    if(raw){
+      var p = JSON.parse(raw);
+      if(p && p.active && parseISO(p.start)){
+        vacation = { active:true, start:p.start, end: parseISO(p.end) ? p.end : null };
+      }
+    }
+  }catch(e){}
+}
+function saveVacation(){ try{ localStorage.setItem("vacationMode", JSON.stringify(vacation)); }catch(e){} }
+function isVacationActive(){ return !!vacation.active; }
+function vacationDays(){ return vacation.start ? Math.max(0, diffDays(vacation.start, todayISO())) : 0; }
+
+function startVacation(endISO){
+  vacation = { active:true, start: todayISO(), end: parseISO(endISO) ? endISO : null };
+  saveVacation();
+}
+
+/* Décale les révisions non faites postérieures au début de la pause,
+   en respectant le jour de la semaine exclu de chaque cours. */
+function shiftPendingReviews(days){
+  if(!days || days <= 0) return 0;
+  var from = vacation.start || todayISO(), moved = 0;
+  for(var i = 0; i < state.courses.length; i++){
+    var c = state.courses[i], touched = false;
+    for(var j = 0; j < c.schedule.length; j++){
+      var r = c.schedule[j];
+      if(r.offset === 0 || r.done || r.date < from) continue;
+      r.date = skipExcludedWeekday(addDays(r.date, days), c.excludeWeekday);
+      touched = true; moved++;
+    }
+    if(touched) dbUpsertCourse(c);
+  }
+  return moved;
+}
+
+function endVacation(shift){
+  if(!vacation.active) return { days:0, moved:0 };
+  var days = shift ? vacationDays() : 0;
+  var moved = shift ? shiftPendingReviews(days) : 0;
+  vacation = { active:false, start:null, end:null };
+  saveVacation();
+  return { days: days, moved: moved };
+}
+
+function checkVacationAutoEnd(){
+  if(!vacation.active || !vacation.end) return false;
+  if(todayISO() <= vacation.end) return false;
+  var res = endVacation(true);
+  toast("🎒 Fin des vacances — " + res.moved + " révision(s) décalée(s) de " + plural(res.days, "jour") + ".");
+  return true;
+}
+
+function resumeVacationFlow(){
+  if(!isVacationActive()) return;
+  var res = endVacation(true);
+  var m = el("vacationModal"); if(m) m.classList.add("hide");
+  render();
+  toast(res.moved
+    ? "▶ Reprise — " + res.moved + " révision(s) décalée(s) de " + plural(res.days, "jour") + "."
+    : "▶ Reprise des révisions !");
+}
+
+function renderVacation(){
+  if(!hasDOM()) return;
+  var pill = el("vacationPill");
+  if(pill){
+    pill.textContent = isVacationActive() ? "Actif" : "Off";
+    pill.className = "menu-pill" + (isVacationActive() ? " warn" : "");
+  }
+  var banner = el("vacationBanner");
+  if(banner){
+    banner.classList.toggle("hide", !isVacationActive());
+    var sub = el("vacationBannerSub");
+    if(sub && isVacationActive()){
+      sub.textContent = "Depuis le " + formatDate(vacation.start) + " · " + plural(vacationDays(), "jour") + " de pause · " +
+        (vacation.end ? "reprise prévue le " + formatDate(vacation.end) : "reprise manuelle") +
+        ". Rappels suspendus, échéances décalées à la reprise.";
+    }
+  }
+  var inactive = el("vacationInactiveView"), active = el("vacationActiveView");
+  if(inactive) inactive.classList.toggle("hide", isVacationActive());
+  if(active) active.classList.toggle("hide", !isVacationActive());
+  var info = el("vacationActiveInfo");
+  if(info && isVacationActive()){
+    info.textContent = "🌴 Pause active depuis le " + formatDate(vacation.start) + " (" + plural(vacationDays(), "jour") + "). " +
+      (vacation.end ? "Reprise automatique le " + formatDate(vacation.end) + "." : "Reprise manuelle.");
+  }
+}
+
+/* Le menu affiche une icône + un libellé : on reconstruit le contenu des boutons
+   dont le texte est écrasé par les fonctions de rendu d'origine. */
+function setMenuBtn(id, icon, label){
+  var b = el(id);
+  if(!b) return;
+  b.innerHTML = '<span class="menu-icon">' + icon + '</span><span class="menu-label">' + esc(label) + '</span>';
+}
+
+var _applyTheme = applyTheme;
+applyTheme = function(t){
+  _applyTheme(t);
+  var icons  = { dark:"🌙", light:"☀️", examnight:"🕯️", auto:"🌓" };
+  var labels = { dark:"Thème sombre", light:"Thème clair", examnight:"Nuit d'examen", auto:"Thème auto" };
+  setMenuBtn("themeBtn", icons[ui.theme] || "🌓", labels[ui.theme] || "Thème auto");
+};
+
+var _renderNotifStatus = renderNotifStatus;
+renderNotifStatus = function(){
+  _renderNotifStatus();
+  var perm = notifPermission();
+  setMenuBtn("notifBtn", perm === "granted" ? "🔔" : "🔕", perm === "granted" ? "Rappels activés" : "Activer les rappels");
+  var s = el("notifStatus");
+  if(s && isVacationActive()) s.textContent = "⏸ Rappels suspendus — mode vacances actif.";
+};
+
+var _checkDailyNotifications = checkDailyNotifications;
+checkDailyNotifications = function(){
+  if(isVacationActive()) return Promise.resolve(false);
+  return _checkDailyNotifications();
+};
+
+var _reviewItemHTML = reviewItemHTML;
+reviewItemHTML = function(course, review, showDate){
+  var html = _reviewItemHTML(course, review, showDate);
+  if(isVacationActive() && !review.done){
+    html = html.replace('<span class="tag over">En retard</span>', '<span class="tag">⏸ En pause</span>')
+               .replace('<span class="tag today">Aujourd\'hui</span>', '<span class="tag">⏸ En pause</span>');
+  }
+  return html;
+};
+
+var _renderToday = renderToday;
+renderToday = function(){
+  _renderToday();
+  if(!isVacationActive()) return;
+  var box = el("todayList");
+  if(!box) return;
+  box.insertAdjacentHTML("afterbegin",
+    '<div class="item" style="border-left:4px solid var(--warn)">' +
+      '<div><div class="title">🌴 Mode vacances actif</div>' +
+      '<div class="sub">Rappels suspendus · les révisions non faites seront décalées de ' +
+        plural(vacationDays(), "jour") + ' à la reprise.</div></div>' +
+      '<div class="actions"><button class="btn small" data-vacation-action="resume">▶ Reprendre</button></div>' +
+    '</div>');
+};
+
+var _render = render;
+render = function(){ _render(); renderVacation(); saveLocalCache(); renderSyncStatus(); };
+
+var _showApp = showApp;
+showApp = function(user){
+  _showApp(user);
+  var av = el("userAvatar");
+  if(av) av.textContent = String((user && user.email) || "?").charAt(0).toUpperCase();
+};
+
+var _enterApp = enterApp;
+enterApp = function(user){
+  return _enterApp(user).then(function(){
+    if(checkVacationAutoEnd()) render();
+    else renderVacation();
+  });
+};
+
+function bindVacationUI(){
+  var modal = el("vacationModal");
+  var openBtn = el("openVacationBtn"), closeBtn = el("closeVacationModal");
+  if(openBtn && modal){
+    openBtn.addEventListener("click", function(){
+      var d = el("vacationEndDate");
+      if(d){ d.min = addDays(todayISO(), 1); if(!d.value) d.value = addDays(todayISO(), 7); }
+      renderVacation();
+      modal.classList.remove("hide");
+    });
+  }
+  if(closeBtn && modal) closeBtn.addEventListener("click", function(){ modal.classList.add("hide"); });
+
+  var startBtn = el("vacationStartBtn");
+  if(startBtn){
+    startBtn.addEventListener("click", function(){
+      var d = el("vacationEndDate");
+      var endISO = d && d.value ? d.value : "";
+      if(endISO && diffDays(todayISO(), endISO) < 1){ toast("La date de reprise doit être postérieure à aujourd'hui."); return; }
+      startVacation(endISO);
+      if(modal) modal.classList.add("hide");
+      render();
+      toast("🌴 Mode vacances activé — rappels suspendus.");
+    });
+  }
+  var r1 = el("vacationResumeBtn"), r2 = el("vacationResumeBtn2");
+  if(r1) r1.addEventListener("click", resumeVacationFlow);
+  if(r2) r2.addEventListener("click", resumeVacationFlow);
+  var cancelBtn = el("vacationCancelBtn");
+  if(cancelBtn){
+    cancelBtn.addEventListener("click", function(){
+      endVacation(false);
+      if(modal) modal.classList.add("hide");
+      render();
+      toast("Pause annulée — aucun décalage appliqué.");
+    });
+  }
+
+  if(typeof document !== "undefined"){
+    document.body.addEventListener("click", function(ev){
+      var t = ev.target;
+      if(t && t.getAttribute && t.getAttribute("data-vacation-action") === "resume") resumeVacationFlow();
+    });
+    document.addEventListener("keydown", function(e){
+      if(e.key !== "Escape") return;
+      var menu = el("sideMenu"), ov = el("sideMenuOverlay");
+      if(menu && menu.classList.contains("open")){
+        menu.classList.remove("open");
+        if(ov){ ov.classList.remove("show"); setTimeout(function(){ ov.classList.add("hide"); }, 300); }
+      }
+      var m = el("vacationModal");
+      if(m && !m.classList.contains("hide")) m.classList.add("hide");
+    });
+  }
+  if(typeof setInterval === "function"){
+    setInterval(function(){ if(checkVacationAutoEnd()) render(); }, 60000);
+  }
+}
+
+/* ==========================================================================
+   9. MODIFIER UN COURS & SYNCHRO RÉSEAU
+   ========================================================================== */
+function openCourseEditModal(id){
+  var c = findCourse(id);
+  if (!c) return;
+  el("editCourseId").value = c.id;
+  el("editCourseName").value = c.name;
+  el("editCourseSubject").value = (c.subject === "Sans matière") ? "" : c.subject;
+  el("editCourseLink").value = c.link || "";
+  el("editCourseStart").value = c.start;
+  el("editCourseExclude").value = (c.excludeWeekday === null || c.excludeWeekday === undefined) ? "" : String(c.excludeWeekday);
+  el("editCourseDuration").value = c.durationMin || getCourseDuration(c.id);
+  el("courseEditModal").classList.remove("hide");
+}
+
+function saveCourseEdit(){
+  var c = findCourse(el("editCourseId").value);
+  if (!c) return;
+  var name = String(el("editCourseName").value || "").trim();
+  var startISO = el("editCourseStart").value;
+  if (!name || !parseISO(startISO)){ toast("Vérifie le nom du cours et la date J0."); return; }
+
+  var ewRaw = el("editCourseExclude").value;
+  var ew = (ewRaw === "") ? null : Number(ewRaw);
+  if (ew !== null && (isNaN(ew) || ew < 0 || ew > 6)) ew = null;
+  var scheduleChanged = (startISO !== c.start) || (ew !== c.excludeWeekday);
+
+  c.name = name;
+  c.subject = String(el("editCourseSubject").value || "").trim() || "Sans matière";
+  c.link = String(el("editCourseLink").value || "").trim();
+  c.excludeWeekday = ew;
+  var dur = parseInt(el("editCourseDuration").value, 10);
+  c.durationMin = (!isNaN(dur) && dur > 0) ? Math.min(600, dur) : 15;
+  setCourseDuration(c.id, c.durationMin);
+
+  if (scheduleChanged){
+    // On recalcule les dates à partir du nouveau J0 en conservant ce qui est validé
+    c.start = startISO;
+    c.schedule = c.schedule.map(function(r){
+      return {
+        offset: r.offset,
+        date: r.offset === 0 ? startISO : skipExcludedWeekday(addDays(startISO, r.offset), ew),
+        done: r.done,
+        doneAt: r.doneAt || null
+      };
+    });
+  }
+
+  dbUpsertCourse(c);
+  el("courseEditModal").classList.add("hide");
+  render();
+  toast(scheduleChanged ? "Cours modifié — calendrier recalculé." : "Cours modifié.");
+}
+
+function bindExtraUI(){
+  var modal = el("courseEditModal");
+  var closeBtn = el("closeCourseEditModal"), cancelBtn = el("courseEditCancelBtn"), saveBtn = el("courseEditSaveBtn");
+  if (closeBtn && modal) closeBtn.addEventListener("click", function(){ modal.classList.add("hide"); });
+  if (cancelBtn && modal) cancelBtn.addEventListener("click", function(){ modal.classList.add("hide"); });
+  if (saveBtn) saveBtn.addEventListener("click", saveCourseEdit);
+
+  if (typeof document !== "undefined"){
+    document.addEventListener("keydown", function(e){
+      if (e.key !== "Escape") return;
+      if (modal && !modal.classList.contains("hide")) modal.classList.add("hide");
+    });
+  }
+
+  // Retour du réseau : on rejoue les écritures mises de côté
+  if (typeof window !== "undefined"){
+    window.addEventListener("online", function(){ renderSyncStatus(); flushQueue(); });
+    window.addEventListener("offline", function(){ renderSyncStatus(); });
+  }
+  if (typeof setInterval === "function"){
+    setInterval(function(){ flushQueue(); }, 30000);
+  }
+}
+
+loadVacation();
+bindVacationUI();
+bindExtraUI();
+renderVacation();
 
 init();
 </script>
